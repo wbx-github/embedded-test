@@ -484,7 +484,7 @@ EOF
 	kernel=openadk/firmware/qemu-${march}_${libc}/qemu-${march}-initramfsarchive-kernel
 
 	echo "Creating initramfs filesystem"
-	(cd $root; find . | cpio -o -C512 -Hnewc --quiet |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
+	(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
 	rm -rf $root
 
 	echo "Now running the tests in qemu for architecture ${arch}"
