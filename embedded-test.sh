@@ -26,8 +26,15 @@
 #  xtensa needs uImage format for initrd
 #  sheb network card get no ip
 
-ADK_ARCH_LIST="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-BR_ARCH_LIST="bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
+adk_arch_list_uclibcng="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+adk_arch_list_uclibc="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+adk_arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
+adk_arch_list_glibc="aarch64 arm armhf mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+
+br_arch_list_uclibcng="bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
+br_arch_list_uclibc="bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
+br_arch_list_musl="arm mips mipsel ppc sh x86 x86_64"
+br_arch_list_glibc="aarch64 arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64"
 
 topdir=$(pwd)
 
@@ -158,10 +165,42 @@ esac
 
 if [ -z $archlist ];then
 	if [ $vendor = "openadk" ];then
-		archlist=$ADK_ARCH_LIST
+		case $libc in
+			uclibc-ng)
+				archlist=$adk_arch_list_uclibcng
+				;;
+			uclibc)
+				archlist=$adk_arch_list_uclibc
+				;;
+			glibc)
+				archlist=$adk_arch_list_glibc
+				;;
+			musl)
+				archlist=$adk_arch_list_musl
+				;;
+			*)
+				exit 1
+				;;
+		esac
 	fi
 	if [ $vendor = "buildroot" ];then
-		archlist=$BR_ARCH_LIST
+		case $libc in
+			uclibc-ng)
+				archlist=$br_arch_list_uclibcng
+				;;
+			uclibc)
+				archlist=$br_arch_list_uclibc
+				;;
+			glibc)
+				archlist=$br_arch_list_glibc
+				;;
+			musl)
+				archlist=$br_arch_list_musl
+				;;
+			*)
+				exit 1
+				;;
+		esac
 	fi
 fi
 
@@ -597,6 +636,12 @@ build_openadk() {
 			uclibc)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_TESTSUITE=y"
 				;;
+			glibc)
+				DEFAULT="$DEFAULT ADK_TEST_GLIBC_TESTSUITE=y"
+				;;
+			musl)
+				DEFAULT="$DEFAULT ADK_TEST_MUSL_TESTSUITE=y"
+				;;
 			*)
 				echo "test suite not available"
 				exit 1
@@ -611,6 +656,12 @@ build_openadk() {
 				;;
 			uclibc)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NATIVE=y"
+				;;
+			musl)
+				DEFAULT="$DEFAULT ADK_TEST_MUSL_NATIVE=y"
+				;;
+			glibc)
+				DEFAULT="$DEFAULT ADK_TEST_GLIBC_NATIVE=y"
 				;;
 			*)
 				echo "native build not available"
