@@ -43,11 +43,12 @@ if [ $f -eq 1 ];then exit 1; fi
 
 help() {
 	cat >&2 <<EOF
-Syntax: $0 -a <arch> -v <vendor> -s <source>
+Syntax: $0 -v <vendor> -l <libc> -s <source> -a <arch>
 
 Explanation:
-	-a: architecture to check
 	-v: vendor for buildsystem (openadk|buildroot)
+	-l: c library to use (uclibc-ng|musl|glibc|uclibc)
+	-a: architecture to check
 	-u: update vendor source via git pull
 	-s: use directory with source for C library
 	-d: enable debug
@@ -71,8 +72,6 @@ test=0
 gcc=0
 
 ntp=time.fu-berlin.de
-libc=uclibc-ng
-vendor=openadk
 
 while getopts "hgptumdcbn:a:v:s:l:" ch; do
         case $ch in
@@ -122,6 +121,18 @@ while getopts "hgptumdcbn:a:v:s:l:" ch; do
         esac
 done
 shift $((OPTIND - 1))
+
+if [ -z $vendor ];then
+	echo "You need to provide a vendor/buildsystem"
+	echo "Either openadk or buildroot is supported."
+	exit 1
+fi
+
+if [ -z $libc ];then
+	echo "You need to provide a C library"
+	echo "Either uclibc-ng, musl, glibc or uClibc is supported."
+	exit 1
+fi
 
 case $libc in
 	uclibc-ng)
@@ -371,7 +382,12 @@ runtest() {
 		exit 1
 	fi
 
-	cross=${cpu_arch}-${vendor}-linux-uclibc${suffix}
+	if [ "$libc" = "uclibc-ng" ];then
+		prefix=uclibc
+	else
+		prefix=$libc
+	fi
+	cross=${cpu_arch}-${vendor}-linux-${prefix}${suffix}
 	if [ -z $psuffix ];then
 		TCPATH=${topdir}/${vendor}/toolchain_qemu-${march}_${libc}_${cpu_arch}
 	else
