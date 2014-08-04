@@ -144,19 +144,23 @@ fi
 case $libc in
 	uclibc-ng)
 		version=1.0.0beta5
-		libver=uClibc-ng-${version}
+		gitversion=git
+		libver=uClibc-ng-${gitversion}
 		;;
 	uclibc)
 		version=0.9.33.2
-		libver=uClibc-${version}
+		gitversion=0.9.34-git
+		libver=uClibc-${gitversion}
 		;;
 	glibc)
 		version=2.19
-		libver=glibc-${version}
+		gitversion=2.19.90
+		libver=glibc-${gitversion}
 		;;
 	musl)
 		version=1.1.4
-		libver=musl-${version}
+		gitversion=git
+		libver=musl-${gitversion}
 		;;
 	*)
 		echo "c library not supported"
@@ -620,7 +624,7 @@ build_openadk() {
 		DEFAULT="$DEFAULT VERBOSE=1"
 	fi
 	if [ ! -z $source ];then
-		DEFAULT="$DEFAULT ADK_NO_CHECKSUM=1"
+		DEFAULT="$DEFAULT ADK_NO_CHECKSUM=y ADK_LIBC_GIT=y"
 	fi
 	if [ $2 -eq 0 ];then
 		DEFAULT="$DEFAULT ADK_TEST_BASE=y"
