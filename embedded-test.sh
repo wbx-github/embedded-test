@@ -474,6 +474,9 @@ exit
 EOF
 	fi
 	if [ $2 -eq 2 ];then
+
+		case $libc in
+			uclibc-ng|uclibc)
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
@@ -482,6 +485,19 @@ cd /opt/$libc/test
 CROSS_COMPILE=": ||" make UCLIBC_ONLY=y -k run
 exit
 EOF
+			;;
+			musl|glibc)
+cat > ${root}/run.sh << EOF
+#!/bin/sh
+uname -a
+rdate -n \$ntp_server
+cd /opt/libc-test
+make run
+exit
+EOF
+			;;
+		esac
+
 	fi
 	chmod u+x ${root}/run.sh
 
