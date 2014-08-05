@@ -674,6 +674,9 @@ build_openadk() {
 		esac
 	fi
 	case $1 in
+		aarch64)
+			make $DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=arm-fm defconfig all
+			;;
 		arm)
 			make $DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=little defconfig all
 			;;
@@ -740,7 +743,7 @@ if [ "$vendor" = "openadk" ];then
 		build_openadk $arch 99
 		if [ $boot -eq 1 ];then
 			case $arch in
-			m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
@@ -751,7 +754,7 @@ if [ "$vendor" = "openadk" ];then
 		fi
 		if [ $ltp -eq 1 ];then
 			case $arch in
-			m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
@@ -762,7 +765,7 @@ if [ "$vendor" = "openadk" ];then
 		fi
 		if [ $test -eq 1 ];then
 			case $arch in
-			m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
@@ -773,7 +776,7 @@ if [ "$vendor" = "openadk" ];then
 		fi
 		if [ $gcc -eq 1 ];then
 			case $arch in
-			m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
