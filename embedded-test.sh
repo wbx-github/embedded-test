@@ -420,8 +420,8 @@ runtest() {
 		exit 1
 	fi
 	qemuver=$(${qemu} -version|awk '{ print $4 }')
-	if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 200 ];then
-		echo "Your qemu version is too old. Please update to 2.0 or greater"
+	if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 210 ];then
+		echo "Your qemu version is too old. Please update to 2.1 or greater"
 		exit 1
 	fi
 
