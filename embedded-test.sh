@@ -31,8 +31,8 @@ adk_arch_list_uclibc="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64
 adk_arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
 adk_arch_list_glibc="aarch64 arm armhf mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
 
-br_arch_list_uclibcng="bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
-br_arch_list_uclibc="bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
+br_arch_list_uclibcng="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
+br_arch_list_uclibc="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
 br_arch_list_musl="arm mips mipsel ppc sh x86 x86_64"
 br_arch_list_glibc="aarch64 arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64"
 
