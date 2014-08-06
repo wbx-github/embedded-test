@@ -143,7 +143,7 @@ fi
 
 case $libc in
 	uclibc-ng)
-		version=1.0.0beta5
+		version=1.0.0rc1
 		gitversion=git
 		libver=uClibc-ng-${gitversion}
 		;;
