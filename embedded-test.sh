@@ -425,11 +425,17 @@ runtest() {
 		exit 1
 	fi
 
-	if [ "$libc" = "uclibc-ng" ];then
-		prefix=uclibc
-	else
-		prefix=$libc
-	fi
+	case $libc in
+		uclibc-ng)
+			prefix=uclibc
+			;;
+		glibc)
+			prefix=gnu
+			;;
+		*)
+			prefix=$libc
+			;;
+	esac
 	cross=${cpu_arch}-${vendor}-linux-${prefix}${suffix}
 	if [ -z $psuffix ];then
 		TCPATH=${topdir}/${vendor}/toolchain_qemu-${march}_${libc}_${cpu_arch}
