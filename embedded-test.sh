@@ -633,6 +633,11 @@ build_buildroot() {
 			exit 1
 			;;
 	esac
+	if [ $? -ne 0 ];then
+		echo "build failed"
+		exit 1
+	fi
+	cd ..
 }
 
 build_openadk() {
