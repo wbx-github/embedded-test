@@ -23,7 +23,6 @@
 
 # architecture specific notes:
 #  mips64n32/mips64eln32 produces segfaults on boot
-#  xtensa needs uImage format for initrd
 #  sheb network card get no ip
 
 adk_arch_list_uclibcng="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
@@ -410,6 +409,7 @@ runtest() {
 			cpu_arch=xtensa
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=lx60
+			qemu_args="${qemu_args} -cpu dc232b"
 			;;
 		*) 
 			echo "architecture ${arch} not supported"; exit 1;;
@@ -770,7 +770,7 @@ if [ "$vendor" = "openadk" ];then
 		build_openadk $arch 99
 		if [ $boot -eq 1 ];then
 			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
@@ -781,7 +781,7 @@ if [ "$vendor" = "openadk" ];then
 		fi
 		if [ $ltp -eq 1 ];then
 			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
@@ -792,7 +792,7 @@ if [ "$vendor" = "openadk" ];then
 		fi
 		if [ $test -eq 1 ];then
 			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
@@ -803,7 +803,7 @@ if [ "$vendor" = "openadk" ];then
 		fi
 		if [ $gcc -eq 1 ];then
 			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|xtensa|mips64eln32|mips64n32)
+			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 				echo "runtime tests disabled for $arch."
 				;;
 			*)
