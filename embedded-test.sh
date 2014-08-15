@@ -26,9 +26,9 @@
 #  sheb network card get no ip
 
 adk_arch_list_uclibcng="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-adk_arch_list_uclibc="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+adk_arch_list_uclibc="arm armhf mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
 adk_arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
-adk_arch_list_glibc="aarch64 arm armhf mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+adk_arch_list_glibc="aarch64 arm armhf mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
 br_arch_list_uclibcng="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
 br_arch_list_uclibc="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
@@ -515,12 +515,12 @@ EOF
 
 	echo "Now running the tests in qemu for architecture ${arch}"
 	echo "${qemu} -M ${qemu_machine} ${qemu_args} -append ${qemu_append} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
-	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}
+	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${libc}
 	if [ $? -eq 0 ];then
-		echo "Test for ${arch} finished. See REPORT.${arch}."
+		echo "Test for ${arch} finished. See REPORT.${arch}.${libc}"
 		echo 
 	else
-		echo "Test failed for ${arch}."
+		echo "Test failed for ${arch} with ${libc}."
 		echo 
 	fi
 }
