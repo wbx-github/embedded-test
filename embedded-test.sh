@@ -136,30 +136,34 @@ fi
 
 if [ -z $libc ];then
 	echo "You need to provide a C library"
-	echo "Either uclibc-ng, musl, glibc or uClibc is supported."
+	echo "Either uclibc-ng, musl, glibc or uclibc is supported."
 	exit 1
 fi
 
 case $libc in
 	uclibc-ng)
 		version=1.0.0rc1
-		gitversion=git
+		gitversion=1.0.0
 		libver=uClibc-ng-${gitversion}
+		libdir=uClibc-ng
 		;;
 	uclibc)
 		version=0.9.33.2
 		gitversion=0.9.34-git
 		libver=uClibc-${gitversion}
+		libdir=uClibc
 		;;
 	glibc)
 		version=2.19
 		gitversion=2.19.90
 		libver=glibc-${gitversion}
+		libdir=glibc
 		;;
 	musl)
 		version=1.1.4
 		gitversion=git
 		libver=musl-${gitversion}
+		libdir=musl
 		;;
 	*)
 		echo "c library not supported"
@@ -244,9 +248,10 @@ fi
 
 if [ ! -z $source ];then
 	usrc=$(mktemp -d /tmp/XXXX)
-	cp -a $source $usrc/$libver
 	echo "Creating source tarball $vendor/dl/${libver}.tar.xz"
+	cp -a $source $usrc/$libver
 	mkdir -p $topdir/$vendor/dl 2>/dev/null
+	rm $topdir/$vendor/dl/${libver}.tar.xz 2>/dev/null
 	(cd $usrc && tar cJf $topdir/$vendor/dl/${libver}.tar.xz ${libver} )
 fi
 
@@ -642,6 +647,9 @@ build_buildroot() {
 
 build_openadk() {
 	cd openadk
+	# always trigger regeneration of kernel config
+	rm build_*_${libc}_${arch}*/linux/.config
+	make package=$libc clean
 	# start with a clean dir
 	if [ $clean -eq 1 ];then
 		make cleandir
@@ -678,7 +686,6 @@ build_openadk() {
 				exit 1
 				;;
 		esac
-		make package=$libc clean
 	fi
 	if [ $2 -eq 3 ];then
 		case $libc in
@@ -757,7 +764,7 @@ build_openadk() {
 	cd ..
 }	
 
-echo "compiling base system and toolchain"
+echo "Compiling base system and toolchain"
 
 if [ "$vendor" = "buildroot" ];then
 	for arch in ${archlist}; do
