@@ -647,12 +647,13 @@ build_buildroot() {
 
 build_openadk() {
 	cd openadk
-	# always trigger regeneration of kernel config
-	rm build_*_${libc}_${arch}*/linux/.config
-	make package=$libc clean
 	# start with a clean dir
 	if [ $clean -eq 1 ];then
 		make cleandir
+	else
+		# always trigger regeneration of kernel config
+		rm build_*_${libc}_${arch}*/linux/.config
+		make package=$libc clean
 	fi
 	DEFAULT="ADK_TARGET_LIBC=$libc ADK_TARGET_FS=initramfsarchive ADK_TARGET_COLLECTION=test"
 	if [ $debug -eq 1 ];then
