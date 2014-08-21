@@ -49,20 +49,19 @@ if [ $f -eq 1 ];then exit 1; fi
 
 help() {
 	cat >&2 <<EOF
-Syntax: $0 -v <vendor> -l <libc> -s <source> -a <arch>
+Syntax: $0 -v <vendor> -l <libc> -s <source> -a <arch> -t <tests>
 
 Explanation:
 	-v: vendor for buildsystem (openadk|buildroot)
 	-l: c library to use (uclibc-ng|musl|glibc|uclibc)
+	-g: use latest git version
 	-a: architecture to check
 	-u: update vendor source via git pull
 	-s: use directory with source for C library
 	-d: enable debug
 	-c: clean build directory before build
 	-n: set NTP server for test run
-	-b: only run basic bootup test
-	-t: run libc testsuite
-	-p: run Linux test project (LTP)
+	-t: run tests (boot|libc|ltp|native)
 	-h: help text
 EOF
 
@@ -72,41 +71,29 @@ clean=0
 shell=0
 update=0
 debug=0
-boot=0
-ltp=0
-test=0
-gcc=0
+git=0
 
 ntp=time.fu-berlin.de
 
-while getopts "hgptumdcbn:a:v:s:l:" ch; do
+while getopts "hgumdcn:a:v:s:l:t:" ch; do
         case $ch in
-                b)
-                        boot=1
-                        ;;
-                p)
-                        ltp=1
-                        ;;
-                t)
-                        test=1
-                        ;;
                 m)
                         shell=1
                         ;;
                 g)
-                        gcc=1
+                        git=1
                         ;;
                 c)
                         clean=1
+                        ;;
+                d)
+                        debug=1
                         ;;
                 u)
                         update=1
                         ;;
                 s)
                         source=$OPTARG
-                        ;;
-                d)
-                        debug=1
                         ;;
                 l)
                         libc=$OPTARG
@@ -116,6 +103,9 @@ while getopts "hgptumdcbn:a:v:s:l:" ch; do
                         ;;
                 a)
                         archlist=$OPTARG
+                        ;;
+                t)
+                        tests=$OPTARG
                         ;;
                 v)
                         vendor=$OPTARG
@@ -221,7 +211,7 @@ case $vendor in
 		vendor_git=http://git.buildroot.net/git/buildroot.git
 		;;
 	*)
-		echo "Vendor $vendor not supported"
+		echo "Vendor $vendor not supported."
 		exit 1
 		;;
 esac
@@ -247,6 +237,11 @@ else
 fi
 
 if [ ! -z $source ];then
+	if [ ! -d $source ];then
+		echo "Not a directory."
+		exit 1
+	fi
+	git=1
 	usrc=$(mktemp -d /tmp/XXXX)
 	echo "Creating source tarball $vendor/dl/${libver}.tar.xz"
 	cp -a $source $usrc/$libver
@@ -463,7 +458,7 @@ runtest() {
 	fi
 	tar -xf openadk/firmware/qemu-${march}_${libc}/qemu-${march}-${libc}-initramfsarchive.tar.gz -C $root
 
-	if [ $2 -eq 0 ];then
+	if [ $2 = "boot" ];then
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
@@ -475,7 +470,7 @@ done
 exit
 EOF
 	fi
-	if [ $2 -eq 1 ];then
+	if [ $2 = "ltp" ];then
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
@@ -484,7 +479,7 @@ rdate -n \$ntp_server
 exit
 EOF
 	fi
-	if [ $2 -eq 2 ];then
+	if [ $2 -eq "libc" ];then
 
 		case $libc in
 			uclibc-ng|uclibc)
@@ -647,28 +642,30 @@ build_buildroot() {
 
 build_openadk() {
 	cd openadk
+	# always trigger regeneration of kernel config
+	rm build_*_${libc}_${arch}*/linux/.config 2>/dev/null
+	make package=$libc clean
 	# start with a clean dir
 	if [ $clean -eq 1 ];then
 		make cleandir
-	else
-		# always trigger regeneration of kernel config
-		rm build_*_${libc}_${arch}*/linux/.config
-		make package=$libc clean
 	fi
 	DEFAULT="ADK_TARGET_LIBC=$libc ADK_TARGET_FS=initramfsarchive ADK_TARGET_COLLECTION=test"
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT VERBOSE=1"
 	fi
-	if [ ! -z $source ];then
-		DEFAULT="$DEFAULT ADK_NO_CHECKSUM=y ADK_LIBC_GIT=y"
+	if [ $git -eq 1 ];then
+		DEFAULT="$DEFAULT ADK_LIBC_GIT=y"
 	fi
-	if [ $2 -eq 0 ];then
+	if [ ! -z $source ];then
+		DEFAULT="$DEFAULT ADK_NO_CHECKSUM=y"
+	fi
+	if [ $2 = "boot" ];then
 		DEFAULT="$DEFAULT ADK_TEST_BASE=y"
 	fi
-	if [ $2 -eq 1 ];then
+	if [ $2 = "ltp" ];then
 		DEFAULT="$DEFAULT ADK_TEST_LTP=y"
 	fi
-	if [ $2 -eq 2 ];then
+	if [ $2 = "libc" ];then
 		case $libc in
 			uclibc-ng)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_TESTSUITE=y"
@@ -688,7 +685,7 @@ build_openadk() {
 				;;
 		esac
 	fi
-	if [ $2 -eq 3 ];then
+	if [ $2 = "native" ];then
 		case $libc in
 			uclibc-ng)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_NATIVE=y"
@@ -710,7 +707,7 @@ build_openadk() {
 	fi
 	case $1 in
 		aarch64)
-			make $DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=arm-fm defconfig all
+			make $DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64 defconfig all
 			;;
 		arm)
 			make $DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=little defconfig all
@@ -769,56 +766,29 @@ echo "Compiling base system and toolchain"
 
 if [ "$vendor" = "buildroot" ];then
 	for arch in ${archlist}; do
-		build_buildroot $arch 0
+		build_buildroot $arch notest
 	done
 fi
 
 if [ "$vendor" = "openadk" ];then
 	for arch in ${archlist}; do
-		build_openadk $arch 99
-		if [ $boot -eq 1 ];then
-			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
-				echo "runtime tests disabled for $arch."
-				;;
-			*)
-				build_openadk $arch 0
-				runtest $arch 0
-				;;
-			esac
-		fi
-		if [ $ltp -eq 1 ];then
-			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
-				echo "runtime tests disabled for $arch."
-				;;
-			*)
-				build_openadk $arch 1
-				runtest $arch 1
-				;;
-			esac
-		fi
-		if [ $test -eq 1 ];then
-			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
-				echo "runtime tests disabled for $arch."
-				;;
-			*)
-				build_openadk $arch 2
-				runtest $arch 2
-				;;
-			esac
-		fi
-		if [ $gcc -eq 1 ];then
-			case $arch in
-			aarch64|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
-				echo "runtime tests disabled for $arch."
-				;;
-			*)
-				build_openadk $arch 3
-				runtest $arch 3
-				;;
-			esac
+		build_openadk $arch notest
+		if [ ! -z $tests ];then
+			for test in ${tests}; do
+				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
+					case $arch in
+						m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
+						echo "runtime tests disabled for $arch."
+						;;
+					*)
+						build_openadk $arch $test
+						runtest $arch $test
+						;;
+					esac
+				else
+					echo "Test $test is not valid. Allowed tests: boot libc ltp native"
+				fi
+			done
 		fi
 	done
 fi
