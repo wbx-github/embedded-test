@@ -479,7 +479,7 @@ rdate -n \$ntp_server
 exit
 EOF
 	fi
-	if [ $2 -eq "libc" ];then
+	if [ $2 = "libc" ];then
 
 		case $libc in
 			uclibc-ng|uclibc)
@@ -773,7 +773,7 @@ fi
 if [ "$vendor" = "openadk" ];then
 	for arch in ${archlist}; do
 		build_openadk $arch notest
-		if [ ! -z $tests ];then
+		if [ ! -z "$tests" ];then
 			for test in ${tests}; do
 				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
 					case $arch in
