@@ -388,10 +388,10 @@ runtest() {
 			qemu_args="${qemu_args} -net nic,model=virtio -net user"
 			;;
 		x86) 
-			cpu_arch=i686
+			cpu_arch=i486
 			qemu=qemu-system-i386
 			qemu_machine=pc
-			qemu_args="${qemu_args} -cpu pentium2"
+			qemu_args="${qemu_args}"
 			;;
 		x86_64) 
 			cpu_arch=x86_64
