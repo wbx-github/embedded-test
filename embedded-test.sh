@@ -25,10 +25,10 @@
 #  mips64n32/mips64eln32 produces segfaults on boot
 #  sheb network card get no ip
 
-adk_arch_list_uclibcng="arm armhf m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-adk_arch_list_uclibc="arm armhf mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+adk_arch_list_uclibcng="arm armhf m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+adk_arch_list_uclibc="arm armhf m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
 adk_arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
-adk_arch_list_glibc="aarch64 arm armhf mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
+adk_arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
 br_arch_list_uclibcng="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
 br_arch_list_uclibc="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
@@ -777,7 +777,7 @@ if [ "$vendor" = "openadk" ];then
 			for test in ${tests}; do
 				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
 					case $arch in
-						m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
+						m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 						echo "runtime tests disabled for $arch."
 						;;
 					*)
