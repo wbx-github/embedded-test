@@ -22,13 +22,13 @@
 # ware Foundation.
 
 # architecture specific notes:
-#  mips64n32/mips64eln32 produces segfaults on boot
+#  mips64n32/mips64eln32 produces segfaults on boot for uClibc/uClibc-ng
 #  sheb network card get no ip
 
 adk_arch_list_uclibcng="arm armhf m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 adk_arch_list_uclibc="arm armhf m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
 adk_arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
-adk_arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
+adk_arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
 br_arch_list_uclibcng="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
 br_arch_list_uclibc="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
@@ -268,6 +268,11 @@ runtest() {
 	march=${arch}
 
 	case ${arch} in
+		aarch64)
+			cpu_arch=aarch64
+			qemu_machine=virt
+			qemu_args="${qemu_args} -cpu cortex-a57 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+			;;
 		arm) 
 			cpu_arch=arm
 			qemu_machine=vexpress-a9
@@ -515,12 +520,12 @@ EOF
 
 	echo "Now running the tests in qemu for architecture ${arch}"
 	echo "${qemu} -M ${qemu_machine} ${qemu_args} -append ${qemu_append} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
-	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${libc}
+	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${libc}.$2
 	if [ $? -eq 0 ];then
-		echo "Test for ${arch} finished. See REPORT.${arch}.${libc}"
+		echo "Test for ${arch} finished. See REPORT.${arch}.${libc}.$2"
 		echo 
 	else
-		echo "Test failed for ${arch} with ${libc}."
+		echo "Test $2 failed for ${arch} with ${libc}."
 		echo 
 	fi
 }
