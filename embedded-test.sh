@@ -720,6 +720,9 @@ build_openadk() {
 		armhf)
 			make $DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little defconfig all
 			;;
+		m68k)
+			make $DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k defconfig all
+			;;
 		m68k-nommu)
 			make $DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k defconfig all
 			;;
