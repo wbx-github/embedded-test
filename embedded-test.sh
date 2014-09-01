@@ -160,7 +160,7 @@ case $libc in
 		exit 1
 esac
 
-if [ -z $archlist ];then
+if [ -z "$archlist" ];then
 	if [ $vendor = "openadk" ];then
 		case $libc in
 			uclibc-ng)
