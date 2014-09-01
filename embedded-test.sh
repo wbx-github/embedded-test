@@ -647,9 +647,10 @@ build_buildroot() {
 
 build_openadk() {
 	cd openadk
+	make prereq
 	# always trigger regeneration of kernel config
 	rm build_*_${libc}_${arch}*/linux/.config 2>/dev/null
-	make package=$libc clean
+	make package=$libc clean 2>/dev/null
 	# start with a clean dir
 	if [ $clean -eq 1 ];then
 		make cleandir
