@@ -62,6 +62,7 @@ Explanation:
 	-c: clean build directory before build
 	-n: set NTP server for test run
 	-t: run tests (boot|libc|ltp|native)
+	-p: add extra packages
 	-h: help text
 EOF
 
@@ -75,7 +76,7 @@ git=0
 
 ntp=time.fu-berlin.de
 
-while getopts "hgumdcn:a:v:s:l:t:" ch; do
+while getopts "hgumdcn:a:v:s:l:t:p:" ch; do
         case $ch in
                 m)
                         shell=1
@@ -103,6 +104,9 @@ while getopts "hgumdcn:a:v:s:l:t:" ch; do
                         ;;
                 a)
                         archlist=$OPTARG
+                        ;;
+                p)
+                        pkgs=$OPTARG
                         ;;
                 t)
                         tests=$OPTARG
@@ -645,12 +649,19 @@ build_buildroot() {
 	cd ..
 }
 
+compile_openadk() {
+	rm .config*
+	make $1 defconfig
+	for pkg in $pkgs; do p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config;done
+	make $1 all
+}
+
 build_openadk() {
 	cd openadk
 	make prereq
 	# always trigger regeneration of kernel config
 	rm build_*_${libc}_${arch}*/linux/.config 2>/dev/null
-	make package=$libc clean 2>/dev/null
+	make package=$libc clean >/dev/null 2>&1
 	# start with a clean dir
 	if [ $clean -eq 1 ];then
 		make cleandir
@@ -713,55 +724,72 @@ build_openadk() {
 	fi
 	case $1 in
 		aarch64)
-			make $DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
+			compile_openadk "$DEFAULT"
 			;;
 		arm)
-			make $DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=little defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=little"
+			compile_openadk "$DEFAULT"
 			;;
 		armhf)
-			make $DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little" 
+			compile_openadk $DEFAULT
 			;;
 		m68k)
-			make $DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k"
+			compile_openadk $DEFAULT
 			;;
 		m68k-nommu)
-			make $DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k"
+			compile_openadk $DEFAULT
 			;;
 		mips)
-			make $DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big"
+			compile_openadk $DEFAULT
 			;;
 		mipsel)
-			make $DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little"
+			compile_openadk $DEFAULT
 			;;
 		mips64)
-			make $DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
+			compile_openadk $DEFAULT
 			;;
 		mips64n32)
-			make $DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
+			compile_openadk $DEFAULT
 			;;
 		mips64n64)
-			make $DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
+			compile_openadk $DEFAULT
 			;;
 		mips64el)
-			make $DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
+			compile_openadk $DEFAULT
 			;;
 		mips64eln32)
-			make $DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
+			compile_openadk $DEFAULT
 			;;
 		mips64eln64)
-			make $DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
+			compile_openadk $DEFAULT
 			;;
 		ppc-nofpu)
-			make $DEFAULT ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc"
+			compile_openadk $DEFAULT
 			;;
 		sh)
-			make $DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+			compile_openadk $DEFAULT
 			;;
 		sheb)
-			make $DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+			compile_openadk $DEFAULT
 			;;
 		*)
-			make $DEFAULT ADK_TARGET_ARCH=$1 ADK_TARGET_SYSTEM=qemu-$1 defconfig all
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=$1 ADK_TARGET_SYSTEM=qemu-$1"
+			compile_openadk $DEFAULT
 			;;
 	esac
 	if [ $? -ne 0 ];then
