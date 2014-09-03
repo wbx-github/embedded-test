@@ -828,6 +828,7 @@ if [ "$vendor" = "openadk" ];then
 					esac
 				else
 					echo "Test $test is not valid. Allowed tests: boot libc ltp native"
+					exit 1
 				fi
 			done
 		fi
