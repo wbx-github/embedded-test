@@ -733,7 +733,7 @@ build_openadk() {
 			;;
 		armhf)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little" 
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		bfin)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
@@ -741,59 +741,59 @@ build_openadk() {
 			;;
 		m68k)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		m68k-nommu)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mips)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mipsel)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mips64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mips64n32)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mips64n64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mips64el)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mips64eln32)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		mips64eln64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		ppc-nofpu)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		sh)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		sheb)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 		*)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=$1 ADK_TARGET_SYSTEM=qemu-$1"
-			compile_openadk $DEFAULT
+			compile_openadk "$DEFAULT"
 			;;
 	esac
 	if [ $? -ne 0 ];then
