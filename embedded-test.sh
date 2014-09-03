@@ -735,6 +735,10 @@ build_openadk() {
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little" 
 			compile_openadk $DEFAULT
 			;;
+		bfin)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
+			compile_openadk "$DEFAULT"
+			;;
 		m68k)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k"
 			compile_openadk $DEFAULT
