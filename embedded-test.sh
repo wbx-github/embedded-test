@@ -25,10 +25,10 @@
 #  mips64n32/mips64eln32 produces segfaults on boot for uClibc/uClibc-ng
 #  sheb network card get no ip
 
-adk_arch_list_uclibcng="arm armhf bfin m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-adk_arch_list_uclibc="arm armhf bfin m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
-adk_arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
-adk_arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
+arch_list_uclibcng="arc arcbe arm armhf bfin m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibc="arc arcbe arm armhf bfin m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
+arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
 topdir=$(pwd)
 
@@ -153,16 +153,16 @@ esac
 if [ -z "$archlist" ];then
 	case $libc in
 		uclibc-ng)
-			archlist=$adk_arch_list_uclibcng
+			archlist=$arch_list_uclibcng
 			;;
 		uclibc)
-			archlist=$adk_arch_list_uclibc
+			archlist=$arch_list_uclibc
 			;;
 		glibc)
-			archlist=$adk_arch_list_glibc
+			archlist=$arch_list_glibc
 			;;
 		musl)
-			archlist=$adk_arch_list_musl
+			archlist=$arch_list_musl
 			;;
 	esac
 fi
@@ -493,10 +493,7 @@ build() {
 	# always trigger regeneration of kernel config
 	rm build_*_${libc}_${arch}*/linux/.config 2>/dev/null
 	make package=$libc clean >/dev/null 2>&1
-	# start with a clean dir
-	if [ $clean -eq 1 ];then
-		make cleandir
-	fi
+
 	DEFAULT="ADK_TARGET_LIBC=$libc ADK_TARGET_FS=initramfsarchive ADK_TARGET_COLLECTION=test"
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT VERBOSE=1"
@@ -637,6 +634,10 @@ build() {
 echo "Compiling base system and toolchain"
 
 for arch in ${archlist}; do
+	# start with a clean dir
+	if [ $clean -eq 1 ];then
+		(cd openadk && make cleandir)
+	fi
 	build $arch notest
 	if [ ! -z "$tests" ];then
 		for test in ${tests}; do
