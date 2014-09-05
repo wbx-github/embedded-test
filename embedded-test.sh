@@ -30,11 +30,6 @@ adk_arch_list_uclibc="arm armhf bfin m68k m68k-nommu mips mipsel mips64 mips64el
 adk_arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
 adk_arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
-br_arch_list_uclibcng="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
-br_arch_list_uclibc="arcle arcbe bfin arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64 xtensa"
-br_arch_list_musl="arm mips mipsel ppc sh x86 x86_64"
-br_arch_list_glibc="aarch64 arm mips mipsel mips64 mips64el ppc sh sparc x86 x86_64"
-
 topdir=$(pwd)
 
 tools='make git wget xz cpio tar awk sed'
@@ -49,20 +44,20 @@ if [ $f -eq 1 ];then exit 1; fi
 
 help() {
 	cat >&2 <<EOF
-Syntax: $0 -v <vendor> -l <libc> -s <source> -a <arch> -t <tests>
+Syntax: $0 -l <libc> -a <arch> -t <tests>
 
 Explanation:
-	-v: vendor for buildsystem (openadk|buildroot)
 	-l: c library to use (uclibc-ng|musl|glibc|uclibc)
-	-g: use latest git version
-	-a: architecture to check
-	-u: update vendor source via git pull
+	-g: use latest git version of C library
+	-a: architecture to check (otherwise all supported)
+	-u: update openadk source via git pull, before building
 	-s: use directory with source for C library
-	-d: enable debug
-	-c: clean build directory before build
+	-d: enable debug output from OpenADK
+	-c: clean OpenADK build directory before build
 	-n: set NTP server for test run
 	-t: run tests (boot|libc|ltp|native)
-	-p: add extra packages
+	-p: add extra packages to build
+	-m: start a shell in Qemu system for manual testing
 	-h: help text
 EOF
 
@@ -76,7 +71,7 @@ git=0
 
 ntp=time.fu-berlin.de
 
-while getopts "hgumdcn:a:v:s:l:t:p:" ch; do
+while getopts "hgumdcn:a:s:l:t:p:" ch; do
         case $ch in
                 m)
                         shell=1
@@ -111,9 +106,6 @@ while getopts "hgumdcn:a:v:s:l:t:p:" ch; do
                 t)
                         tests=$OPTARG
                         ;;
-                v)
-                        vendor=$OPTARG
-                        ;;
 		h)
 			help
 			exit 1
@@ -121,12 +113,6 @@ while getopts "hgumdcn:a:v:s:l:t:p:" ch; do
         esac
 done
 shift $((OPTIND - 1))
-
-if [ -z $vendor ];then
-	echo "You need to provide a vendor/buildsystem"
-	echo "Either openadk or buildroot is supported."
-	exit 1
-fi
 
 if [ -z $libc ];then
 	echo "You need to provide a C library"
@@ -165,76 +151,36 @@ case $libc in
 esac
 
 if [ -z "$archlist" ];then
-	if [ $vendor = "openadk" ];then
-		case $libc in
-			uclibc-ng)
-				archlist=$adk_arch_list_uclibcng
-				;;
-			uclibc)
-				archlist=$adk_arch_list_uclibc
-				;;
-			glibc)
-				archlist=$adk_arch_list_glibc
-				;;
-			musl)
-				archlist=$adk_arch_list_musl
-				;;
-			*)
-				exit 1
-				;;
-		esac
-	fi
-	if [ $vendor = "buildroot" ];then
-		case $libc in
-			uclibc-ng)
-				archlist=$br_arch_list_uclibcng
-				;;
-			uclibc)
-				archlist=$br_arch_list_uclibc
-				;;
-			glibc)
-				archlist=$br_arch_list_glibc
-				;;
-			musl)
-				archlist=$br_arch_list_musl
-				;;
-			*)
-				exit 1
-				;;
-		esac
-	fi
+	case $libc in
+		uclibc-ng)
+			archlist=$adk_arch_list_uclibcng
+			;;
+		uclibc)
+			archlist=$adk_arch_list_uclibc
+			;;
+		glibc)
+			archlist=$adk_arch_list_glibc
+			;;
+		musl)
+			archlist=$adk_arch_list_musl
+			;;
+	esac
 fi
 
-case $vendor in
-	openadk)
-		echo "Using OpenADK to check $libc on $archlist"
-		vendor_git=http://git.openadk.org/openadk.git
-		;;
-	buildroot)
-		echo "Using buildroot to check $libc on $archlist"
-		vendor_git=http://git.buildroot.net/git/buildroot.git
-		;;
-	*)
-		echo "Vendor $vendor not supported."
-		exit 1
-		;;
-esac
+echo "Using OpenADK (http://www.openadk.org) to check $libc on $archlist"
+openadk_git=http://git.openadk.org/openadk.git
 
-if [ ! -d $vendor ];then
-	git clone $vendor_git
+if [ ! -d openadk ];then
+	git clone $openadk_git
 	if [ $? -ne 0 ];then
-		echo "Cloning from $vendor_git failed."
+		echo "Cloning from $openadk_git failed."
 		exit 1
-	fi
-	if [ "$vendor" = "buildroot" ];then
-		wget http://downloads.uclibc-ng.org/buildroot-uClibc-ng.patch
-		(cd buildroot && patch -p1 <../buildroot-uClibc-ng.patch)
 	fi
 else
 	if [ $update -eq 1 ];then
-		(cd $vendor && git pull)
+		(cd openadk && git pull)
 		if [ $? -ne 0 ];then
-			echo "Updating from $vendor_git failed."
+			echo "Updating from $openadk_git failed."
 			exit 1
 		fi
 	fi
@@ -247,11 +193,11 @@ if [ ! -z $source ];then
 	fi
 	git=1
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating source tarball $vendor/dl/${libver}.tar.xz"
+	echo "Creating source tarball openadk/dl/${libver}.tar.xz"
 	cp -a $source $usrc/$libver
-	mkdir -p $topdir/$vendor/dl 2>/dev/null
-	rm $topdir/$vendor/dl/${libver}.tar.xz 2>/dev/null
-	(cd $usrc && tar cJf $topdir/$vendor/dl/${libver}.tar.xz ${libver} )
+	mkdir -p $topdir/openadk/dl 2>/dev/null
+	rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
+	(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
 fi
 
 runtest() {
@@ -534,129 +480,14 @@ EOF
 	fi
 }
 
-create_buildroot_defconfig_arcle() {
-	cat > configs/arcle_defconfig << EOD
-BR2_arcle=y
-
-BR2_TOOLCHAIN_BUILDROOT_UCLIBC_NG=y
-BR2_KERNEL_HEADERS_3_15=y
-BR2_DEFAULT_KERNEL_HEADERS="3.15.6"
-BR2_BINUTILS_VERSION_2_24=y
-BR2_GCC_VERSION_4_8_X=y
-BR2_TOOLCHAIN_HAS_THREADS=y
-EOD
-}
-
-create_buildroot_defconfig_arcbe() {
-	cat > configs/arcbe_defconfig << EOD
-BR2_arcle=y
-
-BR2_TOOLCHAIN_BUILDROOT_UCLIBC_NG=y
-BR2_KERNEL_HEADERS_3_15=y
-BR2_DEFAULT_KERNEL_HEADERS="3.15.6"
-BR2_BINUTILS_VERSION_2_24=y
-BR2_GCC_VERSION_4_8_X=y
-BR2_TOOLCHAIN_HAS_THREADS=y
-EOD
-}
-
-create_buildroot_defconfig_bfin() {
-	cat > configs/bfin_defconfig << EOD
-BR2_bfin=y
-BR2_BINFMT_FDPIC=y
-BR2_bf609=y
-
-BR2_TOOLCHAIN_BUILDROOT_UCLIBC_NG=y
-BR2_KERNEL_HEADERS_3_15=y
-BR2_DEFAULT_KERNEL_HEADERS="3.15.6"
-BR2_BINUTILS_VERSION_2_22=y
-BR2_GCC_VERSION_4_5_X=y
-BR2_TOOLCHAIN_HAS_THREADS=y
-EOD
-}
-
-build_buildroot() {
-	cd buildroot
-	case $1 in
-		arcle)
-			create_buildroot_defconfig_arcle
-			make arcle_defconfig
-			make clean all
-			;;
-		arcbe)
-			create_buildroot_defconfig_arcbe
-			make arcbe_defconfig
-			make clean all
-			;;
-		arm)
-			make qemu_arm_vexpress_defconfig
-			make clean all
-			;;
-		bfin)
-			create_buildroot_defconfig_bfin
-			make bfin_defconfig
-			make clean all
-			;;
-		mips)
-			make qemu_mips_malta_defconfig
-			make clean all
-			;;
-		mipsel)
-			make qemu_mipsel_malta_defconfig
-			make clean all
-			;;
-		mips64)
-			make qemu_mips64_malta_defconfig
-			make clean all
-			;;
-		mips64el)
-			make qemu_mips64el_malta_defconfig
-			make clean all
-			;;
-		ppc)
-			make qemu_ppc_mpc8544ds_defconfig
-			make clean all
-			;;
-		sh)
-			make qemu_sh4_r2d_defconfig
-			make clean all
-			;;
-		sparc)
-			make qemu_sparc_ss10_defconfig
-			make clean all
-			;;
-		x86)
-			make qemu_x86_defconfig
-			make clean all
-			;;
-		x86_64)
-			make qemu_x86_64_defconfig
-			make clean all
-			;;
-		xtensa)
-			make qemu_xtensa_lx60_defconfig
-			make clean all
-			;;
-		*)
-			echo "architecture not supported in buildroot"
-			exit 1
-			;;
-	esac
-	if [ $? -ne 0 ];then
-		echo "build failed"
-		exit 1
-	fi
-	cd ..
-}
-
-compile_openadk() {
+compile() {
 	rm .config*
 	make $1 defconfig
 	for pkg in $pkgs; do p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config;done
 	make $1 all
 }
 
-build_openadk() {
+build() {
 	cd openadk
 	make prereq
 	# always trigger regeneration of kernel config
@@ -725,75 +556,75 @@ build_openadk() {
 	case $1 in
 		aarch64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		arm)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=little"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		armhf)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little" 
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		bfin)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		m68k)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		m68k-nommu)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mips)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mipsel)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mips64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mips64n32)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mips64n64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mips64el)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mips64eln32)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		mips64eln64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		ppc-nofpu)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		sh)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		sheb)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 		*)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=$1 ADK_TARGET_SYSTEM=qemu-$1"
-			compile_openadk "$DEFAULT"
+			compile "$DEFAULT"
 			;;
 	esac
 	if [ $? -ne 0 ];then
@@ -805,35 +636,27 @@ build_openadk() {
 
 echo "Compiling base system and toolchain"
 
-if [ "$vendor" = "buildroot" ];then
-	for arch in ${archlist}; do
-		build_buildroot $arch notest
-	done
-fi
-
-if [ "$vendor" = "openadk" ];then
-	for arch in ${archlist}; do
-		build_openadk $arch notest
-		if [ ! -z "$tests" ];then
-			for test in ${tests}; do
-				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
-					case $arch in
-						bfin|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
-						echo "runtime tests disabled for $arch."
-						;;
-					*)
-						build_openadk $arch $test
-						runtest $arch $test
-						;;
-					esac
-				else
-					echo "Test $test is not valid. Allowed tests: boot libc ltp native"
-					exit 1
-				fi
-			done
-		fi
-	done
-fi
+for arch in ${archlist}; do
+	build $arch notest
+	if [ ! -z "$tests" ];then
+		for test in ${tests}; do
+			if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
+				case $arch in
+					bfin|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
+					echo "runtime tests disabled for $arch."
+					;;
+				*)
+					build $arch $test
+					runtest $arch $test
+					;;
+				esac
+			else
+				echo "Test $test is not valid. Allowed tests: boot libc ltp native"
+				exit 1
+			fi
+		done
+	fi
+done
 
 echo "All tests finished."
 exit 0
