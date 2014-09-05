@@ -10,15 +10,15 @@ http://www.openwall.com/lists/musl/2013/12/03/26
 After that I implemented musl-test-framework which is no longer
 online available. It was just to test musl. The next incarnation
 was adk-test-framework, which tries to be more flexible regarding
-what project should be tested. 
+what project should be tested (offline). 
 
 Both solutions required binary kernel and initramfs for the Qemu
 runtime tests and toolchains for the compiling.
 
-The third incarnation now uses either OpenADK or buildroot to
-build a toolchain, the base system and the C library.
-Then it runs either a libc test suite, the ltp project or
-a native compile of a toolchain. More tests can be impemented
-later.
+The third incarnation now uses OpenADK to build a toolchain, 
+the base system and the C library.  Then it runs either a 
+libc test suite, the ltp project or a native compile of a toolchain. 
+More tests can be impemented later.
 
 Have fun
+ Waldemar
