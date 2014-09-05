@@ -481,7 +481,7 @@ EOF
 }
 
 compile() {
-	rm .config*
+	rm .config* .defconfig 2>/dev/null
 	make $1 defconfig
 	for pkg in $pkgs; do p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config;done
 	make $1 all
@@ -553,6 +553,14 @@ build() {
 	case $1 in
 		aarch64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
+			compile "$DEFAULT"
+			;;
+		arc)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=little"
+			compile "$DEFAULT"
+			;;
+		arcbe)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		arm)
@@ -643,7 +651,7 @@ for arch in ${archlist}; do
 		for test in ${tests}; do
 			if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
 				case $arch in
-					bfin|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
+					arc|arcbe|bfin|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 					echo "runtime tests disabled for $arch."
 					;;
 				*)
