@@ -24,9 +24,10 @@
 # architecture specific notes:
 #  mips64n32/mips64eln32 produces segfaults on boot for uClibc/uClibc-ng
 #  sheb network card get no ip
+#  testsuite compile issues for arc and m68k
 
-arch_list_uclibcng="arc arcbe arm armhf bfin m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-arch_list_uclibc="arc arcbe arm armhf bfin m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+arch_list_uclibcng="arm armhf bfin m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibc="arm armhf bfin m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
 arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
