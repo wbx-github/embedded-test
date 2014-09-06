@@ -392,11 +392,11 @@ runtest() {
 			prefix=$libc
 			;;
 	esac
-	cross=${cpu_arch}-${vendor}-linux-${prefix}${suffix}
+	cross=${cpu_arch}-openadk-linux-${prefix}${suffix}
 	if [ -z $psuffix ];then
-		TCPATH=${topdir}/${vendor}/toolchain_qemu-${march}_${libc}_${cpu_arch}
+		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${libc}_${cpu_arch}
 	else
-		TCPATH=${topdir}/${vendor}/toolchain_qemu-${march}_${libc}_${cpu_arch}_${psuffix}
+		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${libc}_${cpu_arch}_${psuffix}
 	fi
 	export PATH="${TCPATH}/usr/bin:$PATH"
 
