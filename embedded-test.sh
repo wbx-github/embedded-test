@@ -341,7 +341,7 @@ runtest() {
 		sparc64) 
 			cpu_arch=sparc64
 			qemu_machine=sun4u
-			qemu_args="${qemu_args}"
+			qemu_args="${qemu_args} -device ne2k_pci,netdev=adk0 -netdev user,id=adk0"
 			;;
 		x86) 
 			cpu_arch=i486
