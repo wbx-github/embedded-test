@@ -341,7 +341,7 @@ runtest() {
 		sparc64) 
 			cpu_arch=sparc64
 			qemu_machine=sun4u
-			qemu_args="${qemu_args} -net nic,model=virtio -net user"
+			qemu_args="${qemu_args}"
 			;;
 		x86) 
 			cpu_arch=i486
