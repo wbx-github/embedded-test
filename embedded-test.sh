@@ -24,7 +24,7 @@
 # architecture specific notes:
 #  mips64n32/mips64eln32 produces segfaults on boot for uClibc/uClibc-ng
 #  sheb network card get no ip
-#  testsuite compile issues for arc and m68k
+#  testsuite compile issues for m68k
 
 arch_list_uclibcng="arm armhf bfin m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_uclibc="arm armhf arc arcbe avr32 bfin m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
@@ -32,6 +32,7 @@ arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
 arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
 topdir=$(pwd)
+openadk_git=http://git.openadk.org/openadk.git
 
 tools='make git wget xz cpio tar awk sed'
 f=0
@@ -45,7 +46,7 @@ if [ $f -eq 1 ];then exit 1; fi
 
 help() {
 	cat >&2 <<EOF
-Syntax: $0 -l <libc> -a <arch> -t <tests>
+Syntax: $0 [ -l <libc> -a <arch> -t <tests> ]
 
 Explanation:
 	-l: c library to use (uclibc-ng|musl|glibc|uclibc)
@@ -58,6 +59,7 @@ Explanation:
 	-n: set NTP server for test run
 	-t: run tests (boot|libc|ltp|native)
 	-p: add extra packages to build
+	-r: rebuild C library
 	-m: start a shell in Qemu system for manual testing
 	-h: help text
 EOF
@@ -69,10 +71,11 @@ shell=0
 update=0
 debug=0
 git=0
+rebuild=0
 
 ntp=time.fu-berlin.de
 
-while getopts "hgumdcn:a:s:l:t:p:" ch; do
+while getopts "hgrumdcn:a:s:l:t:p:" ch; do
         case $ch in
                 m)
                         shell=1
@@ -88,6 +91,9 @@ while getopts "hgumdcn:a:s:l:t:p:" ch; do
                         ;;
                 u)
                         update=1
+                        ;;
+                r)
+                        rebuild=1
                         ;;
                 s)
                         source=$OPTARG
@@ -115,61 +121,9 @@ while getopts "hgumdcn:a:s:l:t:p:" ch; do
 done
 shift $((OPTIND - 1))
 
-if [ -z $libc ];then
-	echo "You need to provide a C library"
-	echo "Either uclibc-ng, musl, glibc or uclibc is supported."
-	exit 1
+if [ -z "$libc" ];then
+	libc="uclibc-ng uclibc musl glibc"
 fi
-
-case $libc in
-	uclibc-ng)
-		version=1.0.0rc1
-		gitversion=1.0.0
-		libver=uClibc-ng-${gitversion}
-		libdir=uClibc-ng
-		;;
-	uclibc)
-		version=0.9.33.2
-		gitversion=0.9.34-git
-		libver=uClibc-${gitversion}
-		libdir=uClibc
-		;;
-	glibc)
-		version=2.19
-		gitversion=2.19.90
-		libver=glibc-${gitversion}
-		libdir=glibc
-		;;
-	musl)
-		version=1.1.4
-		gitversion=git
-		libver=musl-${gitversion}
-		libdir=musl
-		;;
-	*)
-		echo "c library not supported"
-		exit 1
-esac
-
-if [ -z "$archlist" ];then
-	case $libc in
-		uclibc-ng)
-			archlist=$arch_list_uclibcng
-			;;
-		uclibc)
-			archlist=$arch_list_uclibc
-			;;
-		glibc)
-			archlist=$arch_list_glibc
-			;;
-		musl)
-			archlist=$arch_list_musl
-			;;
-	esac
-fi
-
-echo "Using OpenADK (http://www.openadk.org) to check $libc on $archlist"
-openadk_git=http://git.openadk.org/openadk.git
 
 if [ ! -d openadk ];then
 	git clone $openadk_git
@@ -187,23 +141,12 @@ else
 	fi
 fi
 
-if [ ! -z $source ];then
-	if [ ! -d $source ];then
-		echo "Not a directory."
-		exit 1
-	fi
-	git=1
-	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating source tarball openadk/dl/${libver}.tar.xz"
-	cp -a $source $usrc/$libver
-	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
-	(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
-fi
-
 runtest() {
 
-	arch=$1
+	lib=$1
+	arch=$2
+	test=$3
+
 	qemu=qemu-system-${arch}
 	qemu_args=
 	qemu_append="ntp_server=$ntp"
@@ -381,7 +324,7 @@ runtest() {
 		exit 1
 	fi
 
-	case $libc in
+	case $lib in
 		uclibc-ng)
 			prefix=uclibc
 			;;
@@ -394,9 +337,9 @@ runtest() {
 	esac
 	cross=${cpu_arch}-openadk-linux-${prefix}${suffix}
 	if [ -z $psuffix ];then
-		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${libc}_${cpu_arch}
+		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${lib}_${cpu_arch}
 	else
-		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${libc}_${cpu_arch}_${psuffix}
+		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${lib}_${cpu_arch}_${psuffix}
 	fi
 	export PATH="${TCPATH}/usr/bin:$PATH"
 
@@ -405,16 +348,16 @@ runtest() {
 		exit 1
 	fi
 
-	echo "Starting test for ${arch}"
+	echo "Starting test for $lib and ${arch}"
 	echo "Generating root filesystem for test run"
 	root=$(mktemp -d /tmp/XXXX)
-	if [ ! -f openadk/firmware/qemu-${march}_${libc}/qemu-${march}-${libc}-initramfsarchive.tar.gz ];then
+	if [ ! -f openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.gz ];then
 		echo "No root filesystem available for architecture ${arch}"
 		exit 1
 	fi
-	tar -xf openadk/firmware/qemu-${march}_${libc}/qemu-${march}-${libc}-initramfsarchive.tar.gz -C $root
+	tar -xf openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.gz -C $root
 
-	if [ $2 = "boot" ];then
+	if [ $test = "boot" ];then
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
@@ -426,7 +369,7 @@ done
 exit
 EOF
 	fi
-	if [ $2 = "ltp" ];then
+	if [ $test = "ltp" ];then
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
@@ -435,9 +378,9 @@ rdate -n \$ntp_server
 exit
 EOF
 	fi
-	if [ $2 = "libc" ];then
+	if [ $test = "libc" ];then
 
-		case $libc in
+		case $lib in
 			uclibc-ng|uclibc)
 cat > ${root}/run.sh << EOF
 #!/bin/sh
@@ -463,20 +406,20 @@ EOF
 	fi
 	chmod u+x ${root}/run.sh
 
-	kernel=openadk/firmware/qemu-${march}_${libc}/qemu-${march}-initramfsarchive-kernel
+	kernel=openadk/firmware/qemu-${march}_${lib}/qemu-${march}-initramfsarchive-kernel
 
 	echo "Creating initramfs filesystem"
 	(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
 	rm -rf $root
 
-	echo "Now running the tests in qemu for architecture ${arch}"
+	echo "Now running the tests in qemu for architecture ${arch} and ${lib}"
 	echo "${qemu} -M ${qemu_machine} ${qemu_args} -append ${qemu_append} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
-	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${libc}.$2
+	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${lib}.${test}.${version}
 	if [ $? -eq 0 ];then
-		echo "Test for ${arch} finished. See REPORT.${arch}.${libc}.$2"
+		echo "Test for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${version}"
 		echo 
 	else
-		echo "Test $2 failed for ${arch} with ${libc}."
+		echo "Test ${test} failed for ${arch} with ${lib} ${version}."
 		echo 
 	fi
 }
@@ -489,13 +432,23 @@ compile() {
 }
 
 build() {
+
+	lib=$1
+	arch=$2
+	test=$3
+
 	cd openadk
 	make prereq
-	# always trigger regeneration of kernel config
-	rm build_*_${libc}_${arch}*/linux/.config 2>/dev/null
-	make package=$libc clean >/dev/null 2>&1
 
-	DEFAULT="ADK_TARGET_LIBC=$libc ADK_TARGET_FS=initramfsarchive ADK_TARGET_COLLECTION=test"
+	# always trigger regeneration of kernel config
+	rm build_*_${lib}_${arch}*/linux/.config 2>/dev/null
+	if [ $rebuild -eq 1 ];then
+		rm dl/$lib*
+		make package=$lib clean
+	fi
+
+	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive ADK_TARGET_COLLECTION=test"
+
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT VERBOSE=1"
 	fi
@@ -505,14 +458,14 @@ build() {
 	if [ ! -z $source ];then
 		DEFAULT="$DEFAULT ADK_NO_CHECKSUM=y"
 	fi
-	if [ $2 = "boot" ];then
+	if [ $test = "boot" ];then
 		DEFAULT="$DEFAULT ADK_TEST_BASE=y"
 	fi
-	if [ $2 = "ltp" ];then
+	if [ $test = "ltp" ];then
 		DEFAULT="$DEFAULT ADK_TEST_LTP=y"
 	fi
-	if [ $2 = "libc" ];then
-		case $libc in
+	if [ $test = "libc" ];then
+		case $lib in
 			uclibc-ng)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_TESTSUITE=y"
 				;;
@@ -525,14 +478,10 @@ build() {
 			musl)
 				DEFAULT="$DEFAULT ADK_TEST_MUSL_TESTSUITE=y"
 				;;
-			*)
-				echo "test suite not available"
-				exit 1
-				;;
 		esac
 	fi
-	if [ $2 = "native" ];then
-		case $libc in
+	if [ $test = "native" ];then
+		case $lib in
 			uclibc-ng)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_NATIVE=y"
 				;;
@@ -545,13 +494,9 @@ build() {
 			glibc)
 				DEFAULT="$DEFAULT ADK_TEST_GLIBC_NATIVE=y"
 				;;
-			*)
-				echo "native build not available"
-				exit 1
-				;;
 		esac
 	fi
-	case $1 in
+	case $arch in
 		aarch64)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
 			compile "$DEFAULT"
@@ -640,32 +585,85 @@ build() {
 	cd ..
 }	
 
-echo "Compiling base system and toolchain"
-
-for arch in ${archlist}; do
-	# start with a clean dir
-	if [ $clean -eq 1 ];then
-		(cd openadk && make cleandir)
-	fi
-	build $arch notest
-	if [ ! -z "$tests" ];then
-		for test in ${tests}; do
-			if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
-				case $arch in
-					arc|arcbe|avr32|bfin|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
-					echo "runtime tests disabled for $arch."
-					;;
-				*)
-					build $arch $test
-					runtest $arch $test
-					;;
-				esac
-			else
-				echo "Test $test is not valid. Allowed tests: boot libc ltp native"
-				exit 1
+for lib in ${libc}; do
+	case $lib in
+		uclibc-ng)
+			if [ -z "$archlist" ];then
+				archlist=$arch_list_uclibcng
 			fi
-		done
+			version=1.0.0
+			gitversion=1.0.0-git
+			libver=uClibc-ng-${gitversion}
+			libdir=uClibc-ng
+			;;
+		uclibc)
+			if [ -z "$archlist" ];then
+				archlist=$arch_list_uclibc
+			fi
+			version=0.9.33.2
+			gitversion=0.9.34-git
+			libver=uClibc-${gitversion}
+			libdir=uClibc
+			;;
+		glibc)
+			if [ -z "$archlist" ];then
+				archlist=$arch_list_glibc
+			fi
+			version=2.20
+			gitversion=2.19.90
+			libver=glibc-${gitversion}
+			libdir=glibc
+			;;
+		musl)
+			if [ -z "$archlist" ];then
+				archlist=$arch_list_musl
+			fi
+			version=1.1.4
+			gitversion=git
+			libver=musl-${gitversion}
+			libdir=musl
+			;;
+	esac
+	if [ ! -z $source ];then
+		if [ ! -d $source ];then
+			echo "Not a directory."
+			exit 1
+		fi
+		git=1
+		usrc=$(mktemp -d /tmp/XXXX)
+		echo "Creating source tarball openadk/dl/${libver}.tar.xz"
+		cp -a $source $usrc/$libver
+		mkdir -p $topdir/openadk/dl 2>/dev/null
+		rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
+		(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
 	fi
+
+	for arch in ${archlist}; do
+		# start with a clean dir
+		if [ $clean -eq 1 ];then
+			(cd openadk && make cleandir)
+		fi
+		echo "Compiling base system and toolchain for $lib and $arch"
+		build $lib $arch notest
+		if [ ! -z "$tests" ];then
+			for test in ${tests}; do
+				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
+					case $arch in
+						arc|arcbe|avr32|bfin|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
+							echo "runtime tests disabled for $arch."
+							;;
+						*)
+							build $lib $arch $test
+							runtest $lib $arch $test
+							;;
+					esac
+				else
+					echo "Test $test is not valid. Allowed tests: boot libc ltp native"
+					exit 1
+				fi
+			done
+		fi
+	done
 done
 
 echo "All tests finished."
