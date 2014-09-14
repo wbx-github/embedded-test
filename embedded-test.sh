@@ -574,7 +574,7 @@ build() {
 			compile "$DEFAULT"
 			;;
 		*)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=$1 ADK_TARGET_SYSTEM=qemu-$1"
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=qemu-$arch"
 			compile "$DEFAULT"
 			;;
 	esac
