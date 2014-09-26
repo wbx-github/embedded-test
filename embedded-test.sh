@@ -26,7 +26,7 @@
 #  sheb network card get no ip
 #  testsuite compile issues for m68k
 
-arch_list_uclibcng="arm armhf arc arcbe bfin m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf arc arcbe avr32 bfin cris m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_uclibc="arm armhf arc arcbe avr32 bfin m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
 arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
@@ -517,8 +517,16 @@ build() {
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little" 
 			compile "$DEFAULT"
 			;;
+		avr32)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=toolchain-avr32" 
+			compile "$DEFAULT"
+			;;
 		bfin)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
+			compile "$DEFAULT"
+			;;
+		cris)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris"
 			compile "$DEFAULT"
 			;;
 		m68k)
@@ -649,7 +657,7 @@ for lib in ${libc}; do
 			for test in ${tests}; do
 				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
 					case $arch in
-						arc|arcbe|avr32|bfin|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
+						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
