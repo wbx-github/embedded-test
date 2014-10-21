@@ -26,8 +26,8 @@
 #  sheb network card get no ip
 #  testsuite compile issues for m68k
 
-arch_list_uclibcng="arm armhf arc arcbe avr32 bfin cris m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-arch_list_uclibc="arm armhf arc arcbe bfin m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf arc arcbe avr32 bfin cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibc="arm armhf arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
 arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
 arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 x86 x86_64"
 
@@ -105,7 +105,7 @@ while getopts "hgrumdcn:a:s:l:t:p:" ch; do
                         ntp=$OPTARG
                         ;;
                 a)
-                        archlist=$OPTARG
+                        archtotest=$OPTARG
                         ;;
                 p)
                         pkgs=$OPTARG
@@ -596,42 +596,37 @@ build() {
 for lib in ${libc}; do
 	case $lib in
 		uclibc-ng)
-			if [ -z "$archlist" ];then
-				archlist=$arch_list_uclibcng
-			fi
+			archlist=$arch_list_uclibcng
 			version=1.0.0
 			gitversion=1.0.0
 			libver=uClibc-ng-${gitversion}
 			libdir=uClibc-ng
 			;;
 		uclibc)
-			if [ -z "$archlist" ];then
-				archlist=$arch_list_uclibc
-			fi
+			archlist=$arch_list_uclibc
 			version=0.9.33.2
 			gitversion=0.9.34-git
 			libver=uClibc-${gitversion}
 			libdir=uClibc
 			;;
 		glibc)
-			if [ -z "$archlist" ];then
-				archlist=$arch_list_glibc
-			fi
+			archlist=$arch_list_glibc
 			version=2.20
 			gitversion=2.19.90
 			libver=glibc-${gitversion}
 			libdir=glibc
 			;;
 		musl)
-			if [ -z "$archlist" ];then
-				archlist=$arch_list_musl
-			fi
-			version=1.1.4
+			archlist=$arch_list_musl
+			version=1.1.5
 			gitversion=git
 			libver=musl-${gitversion}
 			libdir=musl
 			;;
 	esac
+	if [ ! -z $archtolist ];then
+		archlist="$archtolist"
+	fi
 	if [ ! -z $source ];then
 		if [ ! -d $source ];then
 			echo "Not a directory."
@@ -646,6 +641,7 @@ for lib in ${libc}; do
 		(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
 	fi
 
+	echo "Architectures to test: $archlist"
 	for arch in ${archlist}; do
 		# start with a clean dir
 		if [ $clean -eq 1 ];then

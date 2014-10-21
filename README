@@ -18,7 +18,9 @@ runtime tests and toolchains for the compiling.
 The third incarnation now uses OpenADK to build a toolchain, 
 the base system and the C library.  Then it runs either a 
 libc test suite, the ltp project or a native compile of a toolchain. 
-More tests can be impemented later.
+More tests can be implemented later.
+
+A full build without any options needs 500 GB of disk space.
 
 Have fun
  Waldemar
