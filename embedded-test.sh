@@ -307,7 +307,7 @@ runtest() {
 			cpu_arch=xtensa
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=lx60
-			qemu_args="${qemu_args} -cpu dc232b"
+			qemu_args="${qemu_args} -cpu dc233c"
 			;;
 		*) 
 			echo "architecture ${arch} not supported"; exit 1;;
