@@ -323,30 +323,6 @@ runtest() {
 		exit 1
 	fi
 
-	case $lib in
-		uclibc-ng)
-			prefix=uclibc
-			;;
-		glibc)
-			prefix=gnu
-			;;
-		*)
-			prefix=$libc
-			;;
-	esac
-	cross=${cpu_arch}-openadk-linux-${prefix}${suffix}
-	if [ -z $psuffix ];then
-		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${lib}_${cpu_arch}
-	else
-		TCPATH=${topdir}/openadk/toolchain_qemu-${march}_${lib}_${cpu_arch}_${psuffix}
-	fi
-	export PATH="${TCPATH}/usr/bin:$PATH"
-
-	if ! which ${cross}-gcc >/dev/null; then
-		echo "Checking if ${cross}-gcc is installed... failed"
-		exit 1
-	fi
-
 	echo "Starting test for $lib and ${arch}"
 	echo "Generating root filesystem for test run"
 	root=$(mktemp -d /tmp/XXXX)
