@@ -24,6 +24,8 @@
 # architecture specific notes:
 #  mips64n32/mips64eln32 produces segfaults on boot for uClibc/uClibc-ng
 #  sheb network card get no ip
+#  sparc64 network card does not work right
+#  ppc/ppc-nofpu problem with busybox sort, broken startup order
 
 arch_list_uclibcng="arm armhf arc arcbe avr32 bfin cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_uclibc="arm armhf arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
@@ -361,7 +363,7 @@ cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
 rdate -n \$ntp_server
-cd /opt/$libc/test
+cd /opt/*/test
 CROSS_COMPILE=": ||" make UCLIBC_ONLY=y -k run
 exit
 EOF
@@ -387,11 +389,11 @@ EOF
 	(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
 	rm -rf $root
 
-	echo "Now running the tests in qemu for architecture ${arch} and ${lib}"
+	echo "Now running the test ${test} in qemu for architecture ${arch} and ${lib}"
 	echo "${qemu} -M ${qemu_machine} ${qemu_args} -append ${qemu_append} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
 	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${lib}.${test}.${version}
 	if [ $? -eq 0 ];then
-		echo "Test for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${version}"
+		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${version}"
 		echo 
 	else
 		echo "Test ${test} failed for ${arch} with ${lib} ${version}."
@@ -416,11 +418,12 @@ build() {
 	make prereq
 
 	# always trigger regeneration of kernel config
-	rm build_*_${lib}_${arch}*/linux/.config 2>/dev/null
+	rm build_*_${lib}_${arch}*/linux/.config &> /dev/null
 	if [ $rebuild -eq 1 ];then
 		rm dl/$lib*
-		make package=$lib clean
 	fi
+	# always rebuild C library package
+	make package=$lib clean
 
 	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive ADK_TARGET_COLLECTION=test"
 
@@ -632,7 +635,7 @@ for lib in ${libc}; do
 			for test in ${tests}; do
 				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
 					case $arch in
-						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32|tile)
+						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
