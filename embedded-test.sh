@@ -634,7 +634,31 @@ for lib in ${libc}; do
 		if [ ! -z "$tests" ];then
 			for test in ${tests}; do
 				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
-					case $arch in
+					case $lib in 
+					uclibc-ng)
+						case $arch in
+						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
+							echo "runtime tests disabled for $arch."
+							;;
+						*)
+							build $lib $arch $test
+							runtest $lib $arch $test
+							;;
+						esac
+						;;
+					uclibc)
+						case $arch in
+						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
+							echo "runtime tests disabled for $arch."
+							;;
+						*)
+							build $lib $arch $test
+							runtest $lib $arch $test
+							;;
+						esac
+						;;
+					musl)
+						case $arch in
 						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
 							echo "runtime tests disabled for $arch."
 							;;
@@ -642,6 +666,19 @@ for lib in ${libc}; do
 							build $lib $arch $test
 							runtest $lib $arch $test
 							;;
+						esac
+						;;
+					glibc)
+						case $arch in
+						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
+							echo "runtime tests disabled for $arch."
+							;;
+						*)
+							build $lib $arch $test
+							runtest $lib $arch $test
+							;;
+						esac
+						;;
 					esac
 				else
 					echo "Test $test is not valid. Allowed tests: boot libc ltp native"
