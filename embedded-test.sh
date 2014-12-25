@@ -27,10 +27,10 @@
 #  sparc64 network card does not work right
 #  ppc/ppc-nofpu problem with busybox sort, broken startup order
 
-arch_list_uclibcng="arm armhf arc arcbe avr32 bfin cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-arch_list_uclibc="arm armhf arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
-arch_list_musl="arm armhf mips mipsel ppc-nofpu sh sheb x86 x86_64"
-arch_list_glibc="aarch64 arm armhf m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibc="arm armhf armeb arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+arch_list_musl="arm armhf armeb mips mipsel ppc-nofpu sh sheb x86 x86_64"
+arch_list_glibc="aarch64 arm armhf armeb m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 openadk_git=http://git.openadk.org/openadk.git
@@ -491,6 +491,10 @@ build() {
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
+		armeb)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=big"
+			compile "$DEFAULT"
+			;;
 		armhf)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little" 
 			compile "$DEFAULT"
@@ -637,7 +641,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
+						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -648,7 +652,7 @@ for lib in ${libc}; do
 						;;
 					uclibc)
 						case $arch in
-						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
+						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -659,7 +663,7 @@ for lib in ${libc}; do
 						;;
 					musl)
 						case $arch in
-						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
+						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -670,7 +674,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						arc|arcbe|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
+						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
