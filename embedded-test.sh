@@ -328,11 +328,11 @@ runtest() {
 	echo "Starting test for $lib and ${arch}"
 	echo "Generating root filesystem for test run"
 	root=$(mktemp -d /tmp/XXXX)
-	if [ ! -f openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.gz ];then
+	if [ ! -f openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.xz ];then
 		echo "No root filesystem available for architecture ${arch}"
 		exit 1
 	fi
-	tar -xf openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.gz -C $root
+	tar -xf openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.xz -C $root
 
 	if [ $test = "boot" ];then
 cat > ${root}/run.sh << EOF
@@ -418,17 +418,17 @@ build() {
 	make prereq
 
 	# always trigger regeneration of kernel config
-	rm build_*_${lib}_${arch}*/linux/.config &> /dev/null
+	rm build_*_${lib}_${arch}*/linux/.config > /dev/null 2>&1
 	if [ $rebuild -eq 1 ];then
 		rm dl/$lib*
 	fi
 	# always rebuild C library package
-	make package=$lib clean
+	make package=$lib clean > /dev/null 2>&1
 
-	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive ADK_TARGET_COLLECTION=test"
+	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive ADK_APPLIANCE=test"
 
 	if [ $debug -eq 1 ];then
-		DEFAULT="$DEFAULT VERBOSE=1"
+		DEFAULT="$DEFAULT ADK_VERBOSE=1"
 	fi
 	if [ $git -eq 1 ];then
 		DEFAULT="$DEFAULT ADK_LIBC_GIT=y"
