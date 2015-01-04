@@ -27,7 +27,7 @@
 #  sparc64 network card does not work right
 #  ppc/ppc-nofpu problem with busybox sort, broken startup order
 
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_uclibc="arm armhf armeb arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
 arch_list_musl="arm armhf armeb mips mipsel ppc-nofpu sh sheb x86 x86_64"
 arch_list_glibc="aarch64 arm armhf armeb m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
@@ -507,6 +507,10 @@ build() {
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
 			compile "$DEFAULT"
 			;;
+		c6x)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=c6x ADK_TARGET_SYSTEM=toolchain-c6x"
+			compile "$DEFAULT"
+			;;
 		cris)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris"
 			compile "$DEFAULT"
@@ -625,6 +629,7 @@ for lib in ${libc}; do
 		mkdir -p $topdir/openadk/dl 2>/dev/null
 		rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
 		(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
+		touch $topdir/openadk/dl/${libver}.tar.xz.nohash
 	fi
 
 	echo "Architectures to test: $archlist"
@@ -641,7 +646,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
+						arc|arcbe|armeb|avr32|bfin|c6x|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
