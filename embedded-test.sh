@@ -25,7 +25,7 @@
 #  mips64n32/mips64eln32 produces segfaults on boot for uClibc/uClibc-ng
 #  sheb network card get no ip
 #  sparc64 network card does not work right
-#  ppc/ppc-nofpu problem with busybox sort, broken startup order
+#  ppc-nofpu problem with busybox sort, broken startup order for glibc
 
 arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_uclibc="arm armhf armeb arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
@@ -646,7 +646,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
+						arc|arcbe|armeb|avr32|bfin|c6x|cris|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -657,7 +657,7 @@ for lib in ${libc}; do
 						;;
 					uclibc)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32|tile)
+						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
