@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright © 2014
+# Copyright © 2014-2015
 #	Waldemar Brodkorb <wbx@openadk.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -27,10 +27,10 @@
 #  sparc64 network card does not work right
 #  ppc-nofpu problem with busybox sort, broken startup order for glibc
 
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu microblazeel microblazebe mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
 arch_list_uclibc="arm armhf armeb arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
-arch_list_musl="arm armhf armeb mips mipsel ppc-nofpu sh sheb x86 x86_64"
-arch_list_glibc="aarch64 arm armhf armeb m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
+arch_list_musl="arm armhf armeb microblazeel microblazebe mips mipsel ppc-nofpu sh sheb x86 x86_64"
+arch_list_glibc="aarch64 arm armhf armeb m68k microblazeel microblazebe mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 openadk_git=http://git.openadk.org/openadk.git
@@ -183,6 +183,17 @@ runtest() {
 			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118"
 			suffix=eabihf
 			psuffix=$suffix
+			;;
+		microblazeel)
+			cpu_arch=microblazeel
+			march=microblaze
+			qemu_machine=petalogix-s3adsp1800
+			;;
+		microblazebe)
+			cpu_arch=microblazebe
+			march=microblaze
+			qemu=qemu-system-${march}
+			qemu_machine=petalogix-s3adsp1800
 			;;
 		mips) 
 			cpu_arch=mips
@@ -523,6 +534,14 @@ build() {
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k"
 			compile "$DEFAULT"
 			;;
+		microblazebe)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=big"
+			compile "$DEFAULT"
+			;;
+		microblazeel)
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=little"
+			compile "$DEFAULT"
+			;;
 		mips)
 			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
@@ -646,7 +665,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|cris|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|ppc|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
