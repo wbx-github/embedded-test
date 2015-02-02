@@ -28,7 +28,7 @@
 #  ppc-nofpu problem with busybox sort, broken startup order for glibc
 
 arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu microblazeel microblazebe mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
-arch_list_uclibc="arm armhf armeb arc arcbe bfin m68k mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
+arch_list_uclibc="arm armhf armeb arc arcbe bfin mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64"
 arch_list_musl="arm armhf armeb microblazeel microblazebe mips mipsel ppc-nofpu sh sheb x86 x86_64"
 arch_list_glibc="aarch64 arm armhf armeb m68k microblazeel microblazebe mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
@@ -607,7 +607,7 @@ for lib in ${libc}; do
 		uclibc-ng)
 			archlist=$arch_list_uclibcng
 			version=1.0.0
-			gitversion=1.0.0
+			gitversion=1.0.0-git
 			libver=uClibc-ng-${gitversion}
 			libdir=uClibc-ng
 			;;
