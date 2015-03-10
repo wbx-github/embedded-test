@@ -499,15 +499,15 @@ build() {
 			compile "$DEFAULT"
 			;;
 		arm)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		armeb)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_ABI=eabi ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		armhf)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_ABI=eabihf ADK_TARGET_ENDIAN=little" 
+			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=hard ADK_TARGET_ENDIAN=little" 
 			compile "$DEFAULT"
 			;;
 		avr32)
@@ -610,7 +610,7 @@ for lib in ${libc}; do
 	case $lib in
 		uclibc-ng)
 			archlist=$arch_list_uclibcng
-			version=1.0.0
+			version=1.0.1
 			gitversion=1.0.0-git
 			libver=uClibc-ng-${gitversion}
 			libdir=uClibc-ng
@@ -691,7 +691,7 @@ for lib in ${libc}; do
 						;;
 					musl)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
+						armeb|ppc|ppc-nofpu|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -702,7 +702,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|nios2|ppc|ppc-nofpu|sheb|sparc64|mips64eln32|mips64n32|tile)
+						armeb|m68k|nios2|ppc|ppc-nofpu|sheb|sparc64|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
