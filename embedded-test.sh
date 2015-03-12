@@ -624,14 +624,14 @@ for lib in ${libc}; do
 			;;
 		glibc)
 			archlist=$arch_list_glibc
-			version=2.20
-			gitversion=2.19.90
+			version=2.21
+			gitversion=2.21.90
 			libver=glibc-${gitversion}
 			libdir=glibc
 			;;
 		musl)
 			archlist=$arch_list_musl
-			version=1.1.5
+			version=1.1.6
 			gitversion=git
 			libver=musl-${gitversion}
 			libdir=musl
