@@ -436,16 +436,13 @@ build() {
 	# always rebuild C library package
 	make package=$lib clean > /dev/null 2>&1
 
-	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive ADK_APPLIANCE=test"
+	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive"
 
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT ADK_VERBOSE=1"
 	fi
 	if [ $git -eq 1 ];then
 		DEFAULT="$DEFAULT ADK_LIBC_GIT=y"
-	fi
-	if [ ! -z $source ];then
-		DEFAULT="$DEFAULT ADK_NO_CHECKSUM=y"
 	fi
 	if [ $test = "boot" ];then
 		DEFAULT="$DEFAULT ADK_TEST_BASE=y"
@@ -487,115 +484,115 @@ build() {
 	fi
 	case $arch in
 		aarch64)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
 			compile "$DEFAULT"
 			;;
 		arc)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		arcbe)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		arm)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		armeb)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		armhf)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=hard ADK_TARGET_ENDIAN=little" 
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=hard ADK_TARGET_ENDIAN=little" 
 			compile "$DEFAULT"
 			;;
 		avr32)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=toolchain-avr32" 
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=toolchain-avr32" 
 			compile "$DEFAULT"
 			;;
 		bfin)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
 			compile "$DEFAULT"
 			;;
 		c6x)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=c6x ADK_TARGET_SYSTEM=toolchain-c6x"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=c6x ADK_TARGET_SYSTEM=toolchain-c6x"
 			compile "$DEFAULT"
 			;;
 		cris)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris"
 			compile "$DEFAULT"
 			;;
 		m68k)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=aranym-m68k"
 			compile "$DEFAULT"
 			;;
 		m68k-nommu)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k"
 			compile "$DEFAULT"
 			;;
 		microblazebe)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		microblazeel)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		mips)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		mipsel)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		mips64)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
 			compile "$DEFAULT"
 			;;
 		mips64n32)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
 			compile "$DEFAULT"
 			;;
 		mips64n64)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
 			compile "$DEFAULT"
 			;;
 		mips64el)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
 			compile "$DEFAULT"
 			;;
 		mips64eln32)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
 			compile "$DEFAULT"
 			;;
 		mips64eln64)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
 			compile "$DEFAULT"
 			;;
 		nios2)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=toolchain-nios2"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=toolchain-nios2"
 			compile "$DEFAULT"
 			;;
 		ppc-nofpu)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc"
 			compile "$DEFAULT"
 			;;
 		sh)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		sheb)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		tile)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=tile ADK_TARGET_SYSTEM=toolchain-tile"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=tile ADK_TARGET_SYSTEM=toolchain-tile"
 			compile "$DEFAULT"
 			;;
 		*)
-			DEFAULT="$DEFAULT ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=qemu-$arch"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=qemu-$arch"
 			compile "$DEFAULT"
 			;;
 	esac
@@ -611,29 +608,45 @@ for lib in ${libc}; do
 		uclibc-ng)
 			archlist=$arch_list_uclibcng
 			version=1.0.1
-			gitversion=1.0.0-git
-			libver=uClibc-ng-${gitversion}
+			gitversion=git
+			if [ $git -eq 1 ]; then
+				libver=uClibc-ng-${gitversion}
+			else
+				libver=uClibc-ng-${version}
+			fi
 			libdir=uClibc-ng
 			;;
 		uclibc)
 			archlist=$arch_list_uclibc
 			version=0.9.33.2
 			gitversion=0.9.34-git
-			libver=uClibc-${gitversion}
+			if [ $git -eq 1 ]; then
+				libver=uClibc-${gitversion}
+			else
+				libver=uClibc-${version}
+			fi
 			libdir=uClibc
 			;;
 		glibc)
 			archlist=$arch_list_glibc
 			version=2.21
 			gitversion=2.21.90
-			libver=glibc-${gitversion}
+			if [ $git -eq 1 ]; then
+				libver=glibc-${gitversion}
+			else
+				libver=glibc-${version}
+			fi
 			libdir=glibc
 			;;
 		musl)
 			archlist=$arch_list_musl
 			version=1.1.6
 			gitversion=git
-			libver=musl-${gitversion}
+			if [ $git -eq 1 ]; then
+				libver=musl-${gitversion}
+			else
+				libver=musl-${version}
+			fi
 			libdir=musl
 			;;
 	esac
@@ -645,7 +658,6 @@ for lib in ${libc}; do
 			echo "Not a directory."
 			exit 1
 		fi
-		git=1
 		usrc=$(mktemp -d /tmp/XXXX)
 		echo "Creating source tarball openadk/dl/${libver}.tar.xz"
 		cp -a $source $usrc/$libver
