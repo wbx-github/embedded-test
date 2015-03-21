@@ -640,7 +640,7 @@ for lib in ${libc}; do
 			;;
 		musl)
 			archlist=$arch_list_musl
-			version=1.1.6
+			version=1.1.7
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=musl-${gitversion}
