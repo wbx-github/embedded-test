@@ -22,7 +22,6 @@
 # ware Foundation.
 
 # architecture specific notes:
-#  mips64n32/mips64eln32 produces segfaults on boot for uClibc/uClibc-ng
 #  sheb network card get no ip
 #  sparc64 network card does not work right
 #  ppc-nofpu problem with busybox sort, broken startup order for glibc
@@ -681,7 +680,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb|mips64eln32|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
