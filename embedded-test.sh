@@ -54,12 +54,12 @@ Explanation:
 	-a: architecture to check (otherwise all supported)
 	-u: update openadk source via git pull, before building
 	-s: use directory with source for C library
+	-f: enable fast compile, after a failure no rebuild
 	-d: enable debug output from OpenADK
 	-c: clean OpenADK build directory before build
 	-n: set NTP server for test run
 	-t: run tests (boot|libc|ltp|native)
 	-p: add extra packages to build
-	-r: rebuild C library
 	-m: start a shell in Qemu system for manual testing
 	-h: help text
 EOF
@@ -71,11 +71,11 @@ shell=0
 update=0
 debug=0
 git=0
-rebuild=0
+fast=0
 
 ntp=time.fu-berlin.de
 
-while getopts "hgrumdcn:a:s:l:t:p:" ch; do
+while getopts "hfgumdcn:a:s:l:t:p:" ch; do
         case $ch in
                 m)
                         shell=1
@@ -89,11 +89,11 @@ while getopts "hgrumdcn:a:s:l:t:p:" ch; do
                 d)
                         debug=1
                         ;;
+                f)
+                        fast=1
+                        ;;
                 u)
                         update=1
-                        ;;
-                r)
-                        rebuild=1
                         ;;
                 s)
                         source=$OPTARG
@@ -428,12 +428,13 @@ build() {
 	make prereq
 
 	# always trigger regeneration of kernel config
-	rm build_*_${lib}_${arch}*/linux/.config > /dev/null 2>&1
-	if [ $rebuild -eq 1 ];then
+	#rm build_*_${lib}_${arch}*/linux/.config > /dev/null 2>&1
+
+	# download and rebuild C library package
+	if [ $fast -eq 0 ];then
 		rm dl/$lib*
+		make package=$lib clean > /dev/null 2>&1
 	fi
-	# always rebuild C library package
-	make package=$lib clean > /dev/null 2>&1
 
 	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive"
 
@@ -657,13 +658,15 @@ for lib in ${libc}; do
 			echo "Not a directory."
 			exit 1
 		fi
-		usrc=$(mktemp -d /tmp/XXXX)
-		echo "Creating source tarball openadk/dl/${libver}.tar.xz"
-		cp -a $source $usrc/$libver
-		mkdir -p $topdir/openadk/dl 2>/dev/null
-		rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
-		(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
-		touch $topdir/openadk/dl/${libver}.tar.xz.nohash
+		if [ $fast -eq 0 ];then
+			usrc=$(mktemp -d /tmp/XXXX)
+			echo "Creating source tarball openadk/dl/${libver}.tar.xz"
+			cp -a $source $usrc/$libver
+			mkdir -p $topdir/openadk/dl 2>/dev/null
+			rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
+			(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
+			touch $topdir/openadk/dl/${libver}.tar.xz.nohash
+		fi
 	fi
 
 	echo "Architectures to test: $archlist"
