@@ -428,7 +428,7 @@ build() {
 	make prereq
 
 	# always trigger regeneration of kernel config
-	#rm build_*_${lib}_${arch}*/linux/.config > /dev/null 2>&1
+	rm build_*_${lib}_${arch}*/linux/.config > /dev/null 2>&1
 
 	# download and rebuild C library package
 	if [ $fast -eq 0 ];then
