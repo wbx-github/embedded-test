@@ -26,9 +26,20 @@
 #  sparc64 network card does not work right
 #  ppc-nofpu problem with busybox sort, broken startup order for glibc
 
+# uClibc-ng
+arch_list_uclibcng_quick="arm arc avr32 bfin c6x cris m68k m68k-nommu mipsel mips64el ppc-nofpu sh sparc x86 x86_64 xtensa"
 arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+
+# uClibc
+arch_list_uclibc_quick="arm arc bfin mipsel ppc-nofpu sh sparc x86 x86_64"
 arch_list_uclibc="arm armhf armeb arc arcbe bfin mips mipsel ppc-nofpu sh sheb sparc x86 x86_64"
+
+# musl
+arch_list_musl_quick="arm microblazeel mipsel ppc-nofpu sh x86 x86_64"
 arch_list_musl="arm armhf armeb microblazeel microblazebe mips mipsel ppc-nofpu sh sheb x86 x86_64"
+
+# glibc
+arch_list_glibc_quick="aarch64 arm m68k microblazeel mipsel mips64eln64 nios2 ppc-nofpu ppc64 sh sparc sparc64 tile x86 x86_64"
 arch_list_glibc="aarch64 arm armhf armeb m68k microblazeel microblazebe mips mipsel mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
@@ -57,10 +68,11 @@ Explanation:
 	-f: enable fast compile, after a failure no rebuild
 	-d: enable debug output from OpenADK
 	-c: clean OpenADK build directory before build
-	-n: set NTP server for test run
-	-t: run tests (boot|libc|ltp|native)
-	-p: add extra packages to build
 	-m: start a shell in Qemu system for manual testing
+	-n: set NTP server for test run
+	-p: add extra packages to build
+	-q: use quick mode (no endian|abi|float combinations)
+	-t: run tests (boot|libc|ltp|native)
 	-h: help text
 EOF
 
@@ -72,10 +84,11 @@ update=0
 debug=0
 git=0
 fast=0
+quick=0
 
 ntp=time.fu-berlin.de
 
-while getopts "hfgumdcn:a:s:l:t:p:" ch; do
+while getopts "hfgumdqcn:a:s:l:t:p:" ch; do
         case $ch in
                 m)
                         shell=1
@@ -91,6 +104,9 @@ while getopts "hfgumdcn:a:s:l:t:p:" ch; do
                         ;;
                 f)
                         fast=1
+                        ;;
+                q)
+                        quick=1
                         ;;
                 u)
                         update=1
@@ -432,7 +448,6 @@ build() {
 
 	# download and rebuild C library package
 	if [ $fast -eq 0 ];then
-		rm dl/$lib*
 		make package=$lib clean > /dev/null 2>&1
 	fi
 
@@ -540,11 +555,19 @@ build() {
 			compile "$DEFAULT"
 			;;
 		mips)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
+			compile "$DEFAULT"
+			;;
+		mipssf)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft" 
 			compile "$DEFAULT"
 			;;
 		mipsel)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
+			compile "$DEFAULT"
+			;;
+		mipselsf)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft"
 			compile "$DEFAULT"
 			;;
 		mips64)
@@ -606,7 +629,11 @@ build() {
 for lib in ${libc}; do
 	case $lib in
 		uclibc-ng)
-			archlist=$arch_list_uclibcng
+			if [ $quick -eq 1 ]; then
+				archlist=$arch_list_uclibcng_quick
+			else
+				archlist=$arch_list_uclibcng
+			fi
 			version=1.0.1
 			gitversion=git
 			if [ $git -eq 1 ]; then
@@ -617,7 +644,11 @@ for lib in ${libc}; do
 			libdir=uClibc-ng
 			;;
 		uclibc)
-			archlist=$arch_list_uclibc
+			if [ $quick -eq 1 ]; then
+				archlist=$arch_list_uclibc_quick
+			else
+				archlist=$arch_list_uclibc
+			fi
 			version=0.9.33.2
 			gitversion=0.9.34-git
 			if [ $git -eq 1 ]; then
@@ -628,7 +659,11 @@ for lib in ${libc}; do
 			libdir=uClibc
 			;;
 		glibc)
-			archlist=$arch_list_glibc
+			if [ $quick -eq 1 ]; then
+				archlist=$arch_list_glibc_quick
+			else
+				archlist=$arch_list_glibc
+			fi
 			version=2.21
 			gitversion=2.21.90
 			if [ $git -eq 1 ]; then
@@ -639,7 +674,11 @@ for lib in ${libc}; do
 			libdir=glibc
 			;;
 		musl)
-			archlist=$arch_list_musl
+			if [ $quick -eq 1 ]; then
+				archlist=$arch_list_musl_quick
+			else
+				archlist=$arch_list_musl
+			fi
 			version=1.1.7
 			gitversion=git
 			if [ $git -eq 1 ]; then
@@ -683,7 +722,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb)
+						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
