@@ -27,20 +27,20 @@
 #  ppc-nofpu problem with busybox sort, broken startup order for glibc
 
 # uClibc-ng
-arch_list_uclibcng_quick="arm arc avr32 bfin c6x cris m68k m68k-nommu mipsel mips64el ppc-nofpu sh sparc x86 x86_64 xtensa"
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc-nofpu sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng_quick="arm arc avr32 bfin c6x cris m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # uClibc
-arch_list_uclibc_quick="arm arc bfin mipsel ppc-nofpu sh sparc x86 x86_64"
-arch_list_uclibc="arm armhf armeb arc arcbe bfin mips mipssf mipsel mipselsf ppc-nofpu sh sheb sparc x86 x86_64"
+arch_list_uclibc_quick="arm arc bfin mipsel ppcsf sh sparc x86 x86_64"
+arch_list_uclibc="arm armhf armeb arc arcbe bfin mips mipssf mipsel mipselsf ppc ppcsf sh sheb sparc x86 x86_64"
 
 # musl
-arch_list_musl_quick="aarch64 arm microblazeel mipsel ppc-nofpu sh x86 x86_64"
-arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc-nofpu sh sheb x86 x86_64"
+arch_list_musl_quick="aarch64 arm microblazeel mipsel ppcsf sh x86 x86_64"
+arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc ppcsf sh sheb x86 x86_64"
 
 # glibc
-arch_list_glibc_quick="aarch64 arm m68k microblazeel mipsel mips64eln64 nios2 ppc-nofpu ppc64 sh sparc sparc64 tile x86 x86_64"
-arch_list_glibc="aarch64 arm armhf armeb m68k microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc-nofpu ppc64 sh sheb sparc sparc64 tile x86 x86_64"
+arch_list_glibc_quick="aarch64 arm m68k microblazeel mipsel mips64eln64 nios2 ppcsf ppc64 sh sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 arm armhf armeb m68k microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 openadk_git=http://git.openadk.org/openadk.git
@@ -272,7 +272,7 @@ runtest() {
 			suffix=abi64
 			psuffix=n64
 			;;
-		ppc-nofpu)
+		ppcsf)
 			cpu_arch=ppc
 			march=ppc
 			qemu=qemu-system-${cpu_arch}
@@ -598,8 +598,12 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=toolchain-nios2"
 			compile "$DEFAULT"
 			;;
-		ppc-nofpu)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc"
+		ppc)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc ADK_TARGET_FLOAT=hard"
+			compile "$DEFAULT"
+			;;
+		ppcsf)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc ADK_TARGET_FLOAT=soft"
 			compile "$DEFAULT"
 			;;
 		sh)
@@ -722,7 +726,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb|mips64eln32|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -733,7 +737,7 @@ for lib in ${libc}; do
 						;;
 					uclibc)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|ppc|ppc-nofpu|sheb|sparc|sparc64|mips64eln32|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|sheb|sparc|sparc64|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -744,7 +748,7 @@ for lib in ${libc}; do
 						;;
 					musl)
 						case $arch in
-						armeb|ppc|ppc-nofpu|sheb)
+						armeb|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -755,7 +759,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						armeb|m68k|nios2|ppc|ppc-nofpu|sheb|sparc64|tile)
+						armeb|m68k|nios2|sheb|sparc64|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
