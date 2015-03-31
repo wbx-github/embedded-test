@@ -35,8 +35,8 @@ arch_list_uclibc_quick="arm arc bfin mipsel ppc-nofpu sh sparc x86 x86_64"
 arch_list_uclibc="arm armhf armeb arc arcbe bfin mips mipssf mipsel mipselsf ppc-nofpu sh sheb sparc x86 x86_64"
 
 # musl
-arch_list_musl_quick="arm microblazeel mipsel ppc-nofpu sh x86 x86_64"
-arch_list_musl="arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc-nofpu sh sheb x86 x86_64"
+arch_list_musl_quick="aarch64 arm microblazeel mipsel ppc-nofpu sh x86 x86_64"
+arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc-nofpu sh sheb x86 x86_64"
 
 # glibc
 arch_list_glibc_quick="aarch64 arm m68k microblazeel mipsel mips64eln64 nios2 ppc-nofpu ppc64 sh sparc sparc64 tile x86 x86_64"
@@ -679,7 +679,7 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_musl
 			fi
-			version=1.1.7
+			version=1.1.8
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=musl-${gitversion}
