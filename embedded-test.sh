@@ -24,15 +24,11 @@
 # architecture specific notes:
 #  sheb network card get no ip
 #  sparc64 network card does not work right
-#  ppc-nofpu problem with busybox sort, broken startup order for glibc
+#  ppcsf problem with busybox sort, broken startup order for glibc
 
 # uClibc-ng
 arch_list_uclibcng_quick="arm arc avr32 bfin c6x cris m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
 arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
-
-# uClibc
-arch_list_uclibc_quick="arm arc bfin mipsel ppcsf sh sparc x86 x86_64"
-arch_list_uclibc="arm armhf armeb arc arcbe bfin mips mipssf mipsel mipselsf ppc ppcsf sh sheb sparc x86 x86_64"
 
 # musl
 arch_list_musl_quick="aarch64 arm microblazeel mipsel ppcsf sh x86 x86_64"
@@ -60,7 +56,7 @@ help() {
 Syntax: $0 [ -l <libc> -a <arch> -t <tests> ]
 
 Explanation:
-	-l: c library to use (uclibc-ng|musl|glibc|uclibc)
+	-l: c library to use (uclibc-ng|musl|glibc)
 	-g: use latest git version of C library
 	-a: architecture to check (otherwise all supported)
 	-u: update openadk source via git pull, before building
@@ -138,7 +134,7 @@ done
 shift $((OPTIND - 1))
 
 if [ -z "$libc" ];then
-	libc="uclibc-ng uclibc musl glibc"
+	libc="uclibc-ng musl glibc"
 fi
 
 if [ ! -d openadk ];then
@@ -384,7 +380,7 @@ EOF
 	if [ $test = "libc" ];then
 
 		case $lib in
-			uclibc-ng|uclibc)
+			uclibc-ng)
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
@@ -470,9 +466,6 @@ build() {
 			uclibc-ng)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_TESTSUITE=y"
 				;;
-			uclibc)
-				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_TESTSUITE=y"
-				;;
 			glibc)
 				DEFAULT="$DEFAULT ADK_TEST_GLIBC_TESTSUITE=y"
 				;;
@@ -485,9 +478,6 @@ build() {
 		case $lib in
 			uclibc-ng)
 				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_NATIVE=y"
-				;;
-			uclibc)
-				DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NATIVE=y"
 				;;
 			musl)
 				DEFAULT="$DEFAULT ADK_TEST_MUSL_NATIVE=y"
@@ -647,21 +637,6 @@ for lib in ${libc}; do
 			fi
 			libdir=uClibc-ng
 			;;
-		uclibc)
-			if [ $quick -eq 1 ]; then
-				archlist=$arch_list_uclibc_quick
-			else
-				archlist=$arch_list_uclibc
-			fi
-			version=0.9.33.2
-			gitversion=0.9.34-git
-			if [ $git -eq 1 ]; then
-				libver=uClibc-${gitversion}
-			else
-				libver=uClibc-${version}
-			fi
-			libdir=uClibc
-			;;
 		glibc)
 			if [ $quick -eq 1 ]; then
 				archlist=$arch_list_glibc_quick
@@ -727,17 +702,6 @@ for lib in ${libc}; do
 					uclibc-ng)
 						case $arch in
 						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|sheb|mips64eln32|mips64n32)
-							echo "runtime tests disabled for $arch."
-							;;
-						*)
-							build $lib $arch $test
-							runtest $lib $arch $test
-							;;
-						esac
-						;;
-					uclibc)
-						case $arch in
-						arc|arcbe|armeb|avr32|bfin|cris|m68k|m68k-nommu|sheb|sparc|sparc64|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
