@@ -355,11 +355,11 @@ runtest() {
 	echo "Generating root filesystem for test run"
 	root=$(mktemp -d /tmp/XXXX)
 	if [ ! -z $suffix ]; then
-		archive=openadk/firmware/qemu-${march}_${lib}_${march}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-		kernel=openadk/firmware/qemu-${march}_${lib}_${march}_${suffix}/qemu-${march}-initramfsarchive-kernel
+		archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+		kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-initramfsarchive-kernel
 	else
-		archive=openadk/firmware/qemu-${march}_${lib}_${march}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-		kernel=openadk/firmware/qemu-${march}_${lib}_${march}/qemu-${march}-initramfsarchive-kernel
+		archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+		kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-initramfsarchive-kernel
 	fi
 
 	if [ ! -f $archive ];then
