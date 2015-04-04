@@ -169,7 +169,6 @@ runtest() {
 		qemu_append="$qemu_append shell"
 	fi
 	suffix=
-	psuffix=
 	libdir=lib
 	march=${arch}
 
@@ -183,8 +182,7 @@ runtest() {
 			cpu_arch=arm
 			qemu_machine=vexpress-a9
 			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118"
-			suffix=eabi
-			psuffix=$suffix
+			suffix=soft_eabi
 			;;
 		armhf) 
 			cpu_arch=arm
@@ -192,8 +190,7 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=vexpress-a9
 			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118"
-			suffix=eabihf
-			psuffix=$suffix
+			suffix=hard_eabihf
 			;;
 		microblazeel)
 			cpu_arch=microblazeel
@@ -208,21 +205,39 @@ runtest() {
 			;;
 		mips) 
 			cpu_arch=mips
+			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=hard
+			;;
+		mipssf) 
+			cpu_arch=mips
+			march=mips
+			qemu=qemu-system-${cpu_arch}
+			qemu_machine=malta
+			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=soft
 			;;
 		mipsel) 
 			cpu_arch=mipsel
 			march=mips
+			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=hard
+			;;
+		mipselsf) 
+			cpu_arch=mipsel
+			march=mips
+			qemu=qemu-system-${cpu_arch}
+			qemu_machine=malta
+			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=soft
 			;;
 		mips64) 
 			cpu_arch=mips64
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-			suffix=abi32
-			psuffix=o32
 			;;
 		mips64n32) 
 			cpu_arch=mips64
@@ -230,8 +245,6 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-			suffix=abin32
-			psuffix=n32
 			;;
 		mips64n64) 
 			cpu_arch=mips64
@@ -239,16 +252,12 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-			suffix=abi64
-			psuffix=n64
 			;;
 		mips64el) 
 			cpu_arch=mips64el
 			march=mips64
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-			suffix=abi32
-			psuffix=o32
 			;;
 		mips64eln32) 
 			cpu_arch=mips64el
@@ -256,8 +265,6 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-			suffix=abin32
-			psuffix=n32
 			;;
 		mips64eln64) 
 			cpu_arch=mips64el
@@ -265,8 +272,6 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-			suffix=abi64
-			psuffix=n64
 			;;
 		ppcsf)
 			cpu_arch=ppc
@@ -325,7 +330,6 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=pc
 			libdir=libx32
-			suffix=x32
 			;;
 		xtensa) 
 			cpu_arch=xtensa
@@ -347,14 +351,22 @@ runtest() {
 		exit 1
 	fi
 
-	echo "Starting test for $lib and ${arch}"
+	echo "Starting test for $lib and $arch"
 	echo "Generating root filesystem for test run"
 	root=$(mktemp -d /tmp/XXXX)
-	if [ ! -f openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.xz ];then
-		echo "No root filesystem available for architecture ${arch}"
+	if [ ! -z $suffix ]; then
+		archive=openadk/firmware/qemu-${march}_${lib}_${march}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+		kernel=openadk/firmware/qemu-${march}_${lib}_${march}_${suffix}/qemu-${march}-initramfsarchive-kernel
+	else
+		archive=openadk/firmware/qemu-${march}_${lib}_${march}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+		kernel=openadk/firmware/qemu-${march}_${lib}_${march}/qemu-${march}-initramfsarchive-kernel
+	fi
+
+	if [ ! -f $archive ];then
+		echo "No root filesystem available for architecture ${arch} tried $archive"
 		exit 1
 	fi
-	tar -xf openadk/firmware/qemu-${march}_${lib}/qemu-${march}-${lib}-initramfsarchive.tar.xz -C $root
+	tar -xf $archive -C $root
 
 	if [ $test = "boot" ];then
 cat > ${root}/run.sh << EOF
@@ -405,7 +417,6 @@ EOF
 	fi
 	chmod u+x ${root}/run.sh
 
-	kernel=openadk/firmware/qemu-${march}_${lib}/qemu-${march}-initramfsarchive-kernel
 
 	echo "Creating initramfs filesystem"
 	(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
