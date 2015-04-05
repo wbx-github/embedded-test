@@ -238,6 +238,7 @@ runtest() {
 			cpu_arch=mips64
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=o32
 			;;
 		mips64n32) 
 			cpu_arch=mips64
@@ -245,6 +246,7 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=n32
 			;;
 		mips64n64) 
 			cpu_arch=mips64
@@ -252,12 +254,14 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=n64
 			;;
 		mips64el) 
 			cpu_arch=mips64el
 			march=mips64
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=o32
 			;;
 		mips64eln32) 
 			cpu_arch=mips64el
@@ -265,6 +269,7 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=n32
 			;;
 		mips64eln64) 
 			cpu_arch=mips64el
@@ -272,6 +277,7 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=malta
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+			suffix=n64
 			;;
 		ppcsf)
 			cpu_arch=ppc
