@@ -285,6 +285,7 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
 			qemu_machine=bamboo
+			suffix=soft
 			;;
 		ppc)
 			cpu_arch=ppc
@@ -292,6 +293,7 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
 			qemu_machine=mac99
+			suffix=hard
 			;;
 		powerpc64|ppc64) 
 			cpu_arch=ppc64
