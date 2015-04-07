@@ -25,6 +25,7 @@
 #  sheb network card get no ip
 #  sparc64 network card does not work right
 #  ppcsf problem with busybox sort, broken startup order for glibc
+#  ppc qemu startup has problems. unclear why. 
 
 # uClibc-ng
 arch_list_uclibcng_quick="arm arc avr32 bfin c6x cris m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
@@ -74,6 +75,7 @@ EOF
 
 }
 
+break=0
 clean=0
 shell=0
 update=0
@@ -84,13 +86,16 @@ quick=0
 
 ntp=time.fu-berlin.de
 
-while getopts "hfgumdqcn:a:s:l:t:p:" ch; do
+while getopts "bhfgumdqcn:a:s:l:t:p:" ch; do
         case $ch in
                 m)
                         shell=1
                         ;;
                 g)
                         git=1
+                        ;;
+                b)
+                        break=1
                         ;;
                 c)
                         clean=1
@@ -424,8 +429,6 @@ EOF
 
 	fi
 	chmod u+x ${root}/run.sh
-
-
 	echo "Creating initramfs filesystem"
 	(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
 	rm -rf $root
@@ -687,15 +690,15 @@ for lib in ${libc}; do
 			libdir=musl
 			;;
 	esac
-	if [ ! -z $archtolist ];then
+	if [ ! -z $archtolist ]; then
 		archlist="$archtolist"
 	fi
-	if [ ! -z $source ];then
-		if [ ! -d $source ];then
+	if [ ! -z $source ]; then
+		if [ ! -d $source ]; then
 			echo "Not a directory."
 			exit 1
 		fi
-		if [ $fast -eq 0 ];then
+		if [ $fast -eq 0 ]; then
 			usrc=$(mktemp -d /tmp/XXXX)
 			echo "Creating source tarball openadk/dl/${libver}.tar.xz"
 			cp -a $source $usrc/$libver
@@ -709,8 +712,12 @@ for lib in ${libc}; do
 	echo "Architectures to test: $archlist"
 	for arch in ${archlist}; do
 		# start with a clean dir
-		if [ $clean -eq 1 ];then
+		if [ $clean -eq 1 ]; then
 			(cd openadk && make cleandir)
+		fi
+		if [ $break -eq 1 -a -f "REPORT.${arch}.${lib}.${tests}.${version}" ]; then
+			echo "Skipping this test after last build break"
+			continue
 		fi
 		echo "Compiling base system and toolchain for $lib and $arch"
 		build $lib $arch notest
@@ -720,7 +727,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|sheb|mips64eln32|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -731,7 +738,7 @@ for lib in ${libc}; do
 						;;
 					musl)
 						case $arch in
-						armeb|sheb)
+						armeb|ppc|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -742,7 +749,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						armeb|m68k|nios2|sheb|sparc64|tile)
+						armeb|m68k|nios2|ppc|sheb|sparc64|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
