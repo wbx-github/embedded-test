@@ -328,7 +328,7 @@ runtest() {
 			qemu_args="${qemu_args} -device ne2k_pci,netdev=adk0 -netdev user,id=adk0"
 			;;
 		x86) 
-			cpu_arch=i486
+			cpu_arch=i686
 			qemu=qemu-system-i386
 			qemu_machine=pc
 			qemu_args="${qemu_args}"
