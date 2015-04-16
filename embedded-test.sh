@@ -435,7 +435,7 @@ EOF
 
 	echo "Now running the test ${test} in qemu for architecture ${arch} and ${lib}"
 	echo "${qemu} -M ${qemu_machine} ${qemu_args} -append ${qemu_append} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
-	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${lib}.${test}.${version}
+	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${test}.${libver}
 	if [ $? -eq 0 ];then
 		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${version}"
 		echo 
