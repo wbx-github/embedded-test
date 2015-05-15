@@ -203,7 +203,7 @@ runtest() {
 			qemu_machine=petalogix-s3adsp1800
 			;;
 		microblazebe)
-			cpu_arch=microblazebe
+			cpu_arch=microblaze
 			march=microblaze
 			qemu=qemu-system-${march}
 			qemu_machine=petalogix-s3adsp1800
@@ -680,7 +680,7 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_musl
 			fi
-			version=1.1.8
+			version=1.1.9
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=musl-${gitversion}
