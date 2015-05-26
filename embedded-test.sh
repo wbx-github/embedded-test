@@ -32,8 +32,8 @@ arch_list_uclibcng_quick="arm arc avr32 bfin c6x cris m68k m68k-nommu mipsel mip
 arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
-arch_list_musl_quick="aarch64 arm microblazeel mipsel ppcsf sh x86 x86_64"
-arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc ppcsf sh sheb x86 x86_64"
+arch_list_musl_quick="aarch64 arm microblazeel mipsel ppc sh x86 x86_64"
+arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc sh sheb x86 x86_64"
 
 # glibc
 arch_list_glibc_quick="aarch64 arm m68k microblazeel mipsel mips64eln64 nios2 ppcsf ppc64 sh sparc sparc64 tile x86 x86_64"
@@ -186,16 +186,18 @@ runtest() {
 		arm) 
 			cpu_arch=arm
 			qemu_machine=vexpress-a9
-			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118"
 			suffix=soft_eabi
+			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
+			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
 			;;
 		armhf) 
 			cpu_arch=arm
 			march=arm
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=vexpress-a9
-			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118"
 			suffix=hard_eabihf
+			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
+			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
 			;;
 		microblazeel)
 			cpu_arch=microblazeel
