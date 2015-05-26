@@ -28,8 +28,8 @@
 #  ppc qemu startup has problems. unclear why. 
 
 # uClibc-ng
-arch_list_uclibcng_quick="arm arc avr32 bfin c6x cris m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x cris m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng_quick="arm arc avr32 bfin c6x crisv10 m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl_quick="aarch64 arm microblazeel mipsel ppc sh x86 x86_64"
@@ -548,8 +548,12 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=c6x ADK_TARGET_SYSTEM=toolchain-c6x"
 			compile "$DEFAULT"
 			;;
-		cris)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris"
+		crisv10)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv10"
+			compile "$DEFAULT"
+			;;
+		crisv32)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv32"
 			compile "$DEFAULT"
 			;;
 		m68k)
@@ -729,7 +733,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|cris|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb|mips64eln32|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
