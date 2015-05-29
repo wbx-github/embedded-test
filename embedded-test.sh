@@ -26,6 +26,7 @@
 #  sparc64 network card does not work right
 #  ppcsf problem with busybox sort, broken startup order for glibc
 #  ppc qemu startup has problems. unclear why. 
+#  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
 arch_list_uclibcng_quick="arm arc avr32 bfin crisv10 m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
@@ -36,8 +37,8 @@ arch_list_musl_quick="aarch64 arm microblazeel mipsel ppc sh x86 x86_64"
 arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc sh sheb x86 x86_64"
 
 # glibc
-arch_list_glibc_quick="aarch64 arm m68k microblazeel mipsel mips64eln64 nios2 ppcsf ppc64 sh sparc sparc64 tile x86 x86_64"
-arch_list_glibc="aarch64 arm armhf armeb m68k microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
+arch_list_glibc_quick="aarch64 arm microblazeel mipsel mips64eln64 nios2 ppcsf ppc64 sh sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 openadk_git=http://git.openadk.org/openadk.git
