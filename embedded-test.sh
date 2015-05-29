@@ -28,8 +28,8 @@
 #  ppc qemu startup has problems. unclear why. 
 
 # uClibc-ng
-arch_list_uclibcng_quick="arm arc avr32 bfin c6x crisv10 m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng_quick="arm arc avr32 bfin crisv10 m68k m68k-nommu mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin crisv10 crisv32 m68k m68k-nommu mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl_quick="aarch64 arm microblazeel mipsel ppc sh x86 x86_64"
@@ -413,7 +413,7 @@ cat > ${root}/run.sh << EOF
 uname -a
 rdate -n \$ntp_server
 cd /opt/*/test
-CROSS_COMPILE=": ||" make UCLIBC_ONLY=y -k run
+sh ./uclibcng-testrunner.sh
 exit
 EOF
 			;;
