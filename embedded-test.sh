@@ -25,7 +25,6 @@
 #  sheb network card get no ip
 #  sparc64 network card does not work right
 #  ppcsf problem with busybox sort, broken startup order for glibc
-#  ppc qemu startup has problems. unclear why. 
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
@@ -174,6 +173,7 @@ runtest() {
 	if [ $shell -eq 1 ];then
 		qemu_append="$qemu_append shell"
 	fi
+	noappend=0
 	suffix=
 	libdir=lib
 	march=${arch}
@@ -302,6 +302,7 @@ runtest() {
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
 			qemu_machine=mac99
 			suffix=hard
+			noappend=1
 			;;
 		powerpc64|ppc64) 
 			cpu_arch=ppc64
@@ -384,23 +385,28 @@ runtest() {
 	fi
 	tar -xf $archive -C $root
 
-	if [ $test = "boot" ];then
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
-rdate -n \$ntp_server
+if [[ \$ntpserver ]]; then
+	rdate \$ntp_server
+else
+	rdate time.fu-berlin.de
+fi
 file /bin/busybox
+EOF
+
+	if [ $test = "boot" ];then
+cat >> ${root}/run.sh << EOF
 for i in \$(ls /lib/*.so|grep -v libgcc);do
+	size /bin/busybox
 	size \$i
 done
 exit
 EOF
 	fi
 	if [ $test = "ltp" ];then
-cat > ${root}/run.sh << EOF
-#!/bin/sh
-uname -a
-rdate -n \$ntp_server
+cat >> ${root}/run.sh << EOF
 /opt/ltp/runltp
 exit
 EOF
@@ -409,20 +415,14 @@ EOF
 
 		case $lib in
 			uclibc-ng)
-cat > ${root}/run.sh << EOF
-#!/bin/sh
-uname -a
-rdate -n \$ntp_server
-cd /opt/*/test
+cat >> ${root}/run.sh << EOF
+cd /opt/uclibc-ng/test
 sh ./uclibcng-testrunner.sh
 exit
 EOF
 			;;
 			musl|glibc)
-cat > ${root}/run.sh << EOF
-#!/bin/sh
-uname -a
-rdate -n \$ntp_server
+cat >> ${root}/run.sh << EOF
 cd /opt/libc-test
 make run
 exit
@@ -436,9 +436,14 @@ EOF
 	(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
 	rm -rf $root
 
+	# qemu-ppc overwrites existing commandline
+	if [ $noappend -eq 0 ]; then
+		qemu_args="$qemu_args -append ${qemu_append}"
+	fi
+
 	echo "Now running the test ${test} in qemu for architecture ${arch} and ${lib}"
-	echo "${qemu} -M ${qemu_machine} ${qemu_args} -append ${qemu_append} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
-	${qemu} -M ${qemu_machine} ${qemu_args} -append "${qemu_append}" -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${test}.${libver}
+	echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
+	${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${test}.${libver}
 	if [ $? -eq 0 ];then
 		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${version}"
 		echo 
@@ -734,7 +739,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|ppc|sheb|mips64eln32|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|sheb|mips64eln32|mips64n32)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -745,7 +750,7 @@ for lib in ${libc}; do
 						;;
 					musl)
 						case $arch in
-						armeb|ppc|sheb)
+						armeb|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -756,7 +761,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						armeb|m68k|nios2|ppc|sheb|sparc64|tile)
+						armeb|m68k|nios2|sheb|sparc64|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
