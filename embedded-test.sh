@@ -83,8 +83,7 @@ debug=0
 git=0
 fast=0
 quick=0
-
-ntp=time.fu-berlin.de
+ntp=
 
 while getopts "bhfgumdqcn:a:s:l:t:p:" ch; do
         case $ch in
@@ -166,12 +165,11 @@ runtest() {
 
 	qemu=qemu-system-${arch}
 	qemu_args=
-	qemu_append="ntp_server=$ntp"
-	if [ $debug -eq 0 ];then
-		qemu_append="$qemu_append quiet"
+	if [[ $ntp ]]; then
+		qemu_append="-append ntpserver=$ntp"
 	fi
-	if [ $shell -eq 1 ];then
-		qemu_append="$qemu_append shell"
+	if [ $shell -eq 1 ]; then
+		qemu_append="-append shell"
 	fi
 	noappend=0
 	suffix=
@@ -389,7 +387,7 @@ cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
 if [[ \$ntpserver ]]; then
-	rdate \$ntp_server
+	rdate \$ntpserver
 else
 	rdate time.fu-berlin.de
 fi
@@ -438,7 +436,7 @@ EOF
 
 	# qemu-ppc overwrites existing commandline
 	if [ $noappend -eq 0 ]; then
-		qemu_args="$qemu_args -append ${qemu_append}"
+		qemu_args="$qemu_args ${qemu_append}"
 	fi
 
 	echo "Now running the test ${test} in qemu for architecture ${arch} and ${lib}"
