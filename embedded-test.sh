@@ -165,7 +165,7 @@ runtest() {
 
 	qemu=qemu-system-${arch}
 	qemu_args=
-	if [[ $ntp ]]; then
+	if [ $ntp ]; then
 		qemu_append="-append ntpserver=$ntp"
 	fi
 	if [ $shell -eq 1 ]; then
@@ -386,18 +386,18 @@ runtest() {
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
-if [[ \$ntpserver ]]; then
+if [ \$ntpserver ]; then
 	rdate \$ntpserver
 else
 	rdate time.fu-berlin.de
 fi
-file /bin/busybox
 EOF
 
 	if [ $test = "boot" ];then
 cat >> ${root}/run.sh << EOF
+file /bin/busybox
+size /bin/busybox
 for i in \$(ls /lib/*.so|grep -v libgcc);do
-	size /bin/busybox
 	size \$i
 done
 exit
@@ -422,7 +422,7 @@ EOF
 			musl|glibc)
 cat >> ${root}/run.sh << EOF
 cd /opt/libc-test
-make run
+CC=: make run
 exit
 EOF
 			;;
