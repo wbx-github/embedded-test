@@ -660,7 +660,7 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_uclibcng
 			fi
-			version=1.0.2
+			version=1.0.3
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=uClibc-ng-${gitversion}
@@ -690,7 +690,7 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_musl
 			fi
-			version=1.1.9
+			version=1.1.10
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=musl-${gitversion}
