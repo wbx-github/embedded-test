@@ -443,10 +443,10 @@ EOF
 	echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
 	${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${test}.${libver}
 	if [ $? -eq 0 ];then
-		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${version}"
+		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${libver}"
 		echo 
 	else
-		echo "Test ${test} failed for ${arch} with ${lib} ${version}."
+		echo "Test ${test} failed for ${arch} with ${lib} ${libver}."
 		echo 
 	fi
 }
@@ -660,7 +660,7 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_uclibcng
 			fi
-			version=1.0.3
+			version=1.0.4
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=uClibc-ng-${gitversion}
@@ -737,7 +737,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|sheb|mips64n32)
+						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
