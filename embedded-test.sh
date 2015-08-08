@@ -675,8 +675,8 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_glibc
 			fi
-			version=2.21
-			gitversion=2.21.90
+			version=2.22
+			gitversion=2.22.90
 			if [ $git -eq 1 ]; then
 				libver=glibc-${gitversion}
 			else
