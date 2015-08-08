@@ -28,12 +28,12 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng_quick="arm arc avr32 bfin c6x crisv10 m68k m68k-nommu microblazeel mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng_quick="arm arc avr32 bfin c6x crisv10 m68k m68k-nommu metag microblazeel mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
-arch_list_musl_quick="aarch64 arm microblazeel mipsel ppc sh x86 x86_64"
-arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf ppc sh sheb x86 x86_64"
+arch_list_musl_quick="aarch64 arm microblazeel mipsel or1k ppc sh x86 x86_64"
+arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
 
 # glibc
 arch_list_glibc_quick="aarch64 arm microblazeel mipsel mips64eln64 nios2 ppcsf ppc64 sh sparc sparc64 tile x86 x86_64"
@@ -568,6 +568,10 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k ADK_TARGET_QEMU=mcf5208"
 			compile "$DEFAULT"
 			;;
+		metag)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=metag ADK_TARGET_SYSTEM=toolchain-metag"
+			compile "$DEFAULT"
+			;;
 		microblazebe)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
@@ -618,6 +622,10 @@ build() {
 			;;
 		nios2)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=toolchain-nios2"
+			compile "$DEFAULT"
+			;;
+		or1k)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=or1k ADK_TARGET_SYSTEM=toolchain-or1k"
 			compile "$DEFAULT"
 			;;
 		ppc)
