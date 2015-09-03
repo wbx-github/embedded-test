@@ -28,8 +28,8 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng_quick="arm arc avr32 bfin c6x crisv10 m68k m68k-nommu metag microblazeel mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng_quick="arm arc avr32 bfin c6x crisv10 m68k m68k-nommu microblazeel mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl_quick="aarch64 arm microblazeel mipsel or1k ppc sh x86 x86_64"
@@ -529,7 +529,7 @@ build() {
 			compile "$DEFAULT"
 			;;
 		arm)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		armeb)
@@ -537,7 +537,7 @@ build() {
 			compile "$DEFAULT"
 			;;
 		armhf)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm ADK_TARGET_FLOAT=hard ADK_TARGET_ENDIAN=little" 
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_FLOAT=hard ADK_TARGET_ENDIAN=little" 
 			compile "$DEFAULT"
 			;;
 		avr32)
@@ -561,11 +561,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		m68k)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k ADK_TARGET_QEMU=q800"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-q800 ADK_TARGET_QEMU=q800"
 			compile "$DEFAULT"
 			;;
 		m68k-nommu)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k ADK_TARGET_QEMU=mcf5208"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-mcf5208 ADK_TARGET_QEMU=mcf5208"
 			compile "$DEFAULT"
 			;;
 		metag)
@@ -573,11 +573,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		microblazebe)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		microblazeel)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		mips)
@@ -629,11 +629,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		ppc)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc ADK_TARGET_QEMU=macppc ADK_TARGET_FLOAT=hard"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc-macppc ADK_TARGET_FLOAT=hard"
 			compile "$DEFAULT"
 			;;
 		ppcsf)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc ADK_TARGET_QEMU=bamboo ADK_TARGET_FLOAT=soft"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc-bamboo ADK_TARGET_FLOAT=soft"
 			compile "$DEFAULT"
 			;;
 		sh)
@@ -668,7 +668,7 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_uclibcng
 			fi
-			version=1.0.5
+			version=1.0.6
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=uClibc-ng-${gitversion}
@@ -698,7 +698,7 @@ for lib in ${libc}; do
 			else
 				archlist=$arch_list_musl
 			fi
-			version=1.1.10
+			version=1.1.11
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=musl-${gitversion}
