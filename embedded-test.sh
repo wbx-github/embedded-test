@@ -756,7 +756,7 @@ for lib in ${libc}; do
 						;;
 					musl)
 						case $arch in
-						armeb|sheb)
+						armeb|or1k|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
