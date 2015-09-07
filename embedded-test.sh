@@ -184,14 +184,15 @@ runtest() {
 			;;
 		arm) 
 			cpu_arch=arm
-			qemu_machine=vexpress-a9
+			march=arm-versatilepb
+			qemu_machine=versatilepb
 			suffix=soft_eabi
 			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
-			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
+			qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111"
 			;;
 		armhf) 
 			cpu_arch=arm
-			march=arm
+			march=arm-vexpress-a9
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=vexpress-a9
 			suffix=hard_eabihf
@@ -287,7 +288,7 @@ runtest() {
 			;;
 		ppcsf)
 			cpu_arch=ppc
-			march=ppc
+			march=ppc-bamboo
 			qemu=qemu-system-${cpu_arch}
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
 			qemu_machine=bamboo
@@ -295,7 +296,7 @@ runtest() {
 			;;
 		ppc)
 			cpu_arch=ppc
-			march=ppc
+			march=ppc-macppc
 			qemu=qemu-system-${cpu_arch}
 			qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
 			qemu_machine=mac99
@@ -529,7 +530,7 @@ build() {
 			compile "$DEFAULT"
 			;;
 		arm)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-versatilepb"
 			compile "$DEFAULT"
 			;;
 		armeb)
@@ -537,7 +538,7 @@ build() {
 			compile "$DEFAULT"
 			;;
 		armhf)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_FLOAT=hard ADK_TARGET_ENDIAN=little" 
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9" 
 			compile "$DEFAULT"
 			;;
 		avr32)
