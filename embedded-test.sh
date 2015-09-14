@@ -28,8 +28,8 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng_quick="arm arc avr32 bfin c6x crisv10 m68k m68k-nommu microblazeel mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng_quick="arm arc avr32 bfin crisv10 m68k m68k-nommu microblazeel mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl_quick="aarch64 arm microblazeel mipsel or1k ppc sh x86 x86_64"
@@ -201,13 +201,13 @@ runtest() {
 			;;
 		microblazeel)
 			cpu_arch=microblazeel
-			march=microblaze
+			march=microblaze-ml605
 			qemu_machine=petalogix-s3adsp1800
 			;;
 		microblazebe)
 			cpu_arch=microblaze
-			march=microblaze
-			qemu=qemu-system-${march}
+			march=microblaze-ml605
+			qemu=qemu-system-${cpu_arch}
 			qemu_machine=petalogix-s3adsp1800
 			;;
 		mips) 
