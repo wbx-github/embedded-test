@@ -28,15 +28,12 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng_quick="arm arc avr32 bfin crisv10 m68k m68k-nommu microblazeel mipsel mips64el ppcsf sh sparc x86 x86_64 xtensa"
 arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
-arch_list_musl_quick="aarch64 arm microblazeel mipsel or1k ppc sh x86 x86_64"
 arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
 
 # glibc
-arch_list_glibc_quick="aarch64 arm microblazeel mipsel mips64eln64 nios2 ppcsf ppc64 sh sparc sparc64 tile x86 x86_64"
 arch_list_glibc="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
@@ -68,7 +65,6 @@ Explanation:
 	-m: start a shell in Qemu system for manual testing
 	-n: set NTP server for test run
 	-p: add extra packages to build
-	-q: use quick mode (no endian|abi|float combinations)
 	-t: run tests (boot|libc|ltp|native)
 	-h: help text
 EOF
@@ -82,7 +78,6 @@ update=0
 debug=0
 git=0
 fast=0
-quick=0
 ntp=
 
 while getopts "bhfgumdqcn:a:s:l:t:p:" ch; do
@@ -104,9 +99,6 @@ while getopts "bhfgumdqcn:a:s:l:t:p:" ch; do
                         ;;
                 f)
                         fast=1
-                        ;;
-                q)
-                        quick=1
                         ;;
                 u)
                         update=1
@@ -668,11 +660,7 @@ build() {
 for lib in ${libc}; do
 	case $lib in
 		uclibc-ng)
-			if [ $quick -eq 1 ]; then
-				archlist=$arch_list_uclibcng_quick
-			else
-				archlist=$arch_list_uclibcng
-			fi
+			archlist=$arch_list_uclibcng
 			version=1.0.6
 			gitversion=git
 			if [ $git -eq 1 ]; then
@@ -683,11 +671,7 @@ for lib in ${libc}; do
 			libdir=uClibc-ng
 			;;
 		glibc)
-			if [ $quick -eq 1 ]; then
-				archlist=$arch_list_glibc_quick
-			else
-				archlist=$arch_list_glibc
-			fi
+			archlist=$arch_list_glibc
 			version=2.22
 			gitversion=2.22.90
 			if [ $git -eq 1 ]; then
@@ -698,11 +682,7 @@ for lib in ${libc}; do
 			libdir=glibc
 			;;
 		musl)
-			if [ $quick -eq 1 ]; then
-				archlist=$arch_list_musl_quick
-			else
-				archlist=$arch_list_musl
-			fi
+			archlist=$arch_list_musl
 			version=1.1.11
 			gitversion=git
 			if [ $git -eq 1 ]; then
