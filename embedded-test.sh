@@ -661,7 +661,7 @@ for lib in ${libc}; do
 	case $lib in
 		uclibc-ng)
 			archlist=$arch_list_uclibcng
-			version=1.0.6
+			version=1.0.7
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=uClibc-ng-${gitversion}
@@ -730,7 +730,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|sheb)
+						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
