@@ -28,7 +28,7 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
@@ -712,12 +712,12 @@ for lib in ${libc}; do
 		fi
 	fi
 
+	# start with a clean dir
+	if [ $clean -eq 1 ]; then
+		(cd openadk && make cleandir)
+	fi
 	echo "Architectures to test: $archlist"
 	for arch in ${archlist}; do
-		# start with a clean dir
-		if [ $clean -eq 1 ]; then
-			(cd openadk && make cleandir)
-		fi
 		if [ $break -eq 1 -a -f "REPORT.${arch}.${lib}.${tests}.${version}" ]; then
 			echo "Skipping this test after last build break"
 			continue
