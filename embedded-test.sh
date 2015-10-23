@@ -28,7 +28,7 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng="armv5 armv7 armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
@@ -512,12 +512,20 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
 			compile "$DEFAULT"
 			;;
-		arc)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=little"
+		arcv1)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
-		arcbe)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=big"
+		arcv2)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=little"
+			compile "$DEFAULT"
+			;;
+		arcv1-be)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=big"
+			compile "$DEFAULT"
+			;;
+		arcv2-be)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		armv5)
@@ -729,7 +737,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arc|arcbe|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
+						arcv1|arcv2|arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
