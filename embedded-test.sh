@@ -463,10 +463,9 @@ build() {
 	# always trigger regeneration of kernel config
 	rm build_*_${lib}_${arch}*/linux/.config > /dev/null 2>&1
 
-	# download and rebuild C library package
-	if [ $fast -eq 0 ];then
-		make package=$lib clean > /dev/null 2>&1
-	fi
+	# rebuild C library package
+	rm -rf toolchain_build_*_${lib}_${arch}*/w-${libdir}/
+	make package=$lib clean > /dev/null 2>&1
 
 	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive"
 
