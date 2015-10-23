@@ -28,13 +28,13 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng="arm armhf armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="armv5 armv7 armeb arc arcbe avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
-arch_list_musl="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
+arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 arm armhf armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 openadk_git=http://git.openadk.org/openadk.git
@@ -174,7 +174,7 @@ runtest() {
 			qemu_machine=virt
 			qemu_args="${qemu_args} -cpu cortex-a57 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
 			;;
-		arm) 
+		armv5)
 			cpu_arch=arm
 			march=arm-versatilepb
 			qemu_machine=versatilepb
@@ -182,7 +182,7 @@ runtest() {
 			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
 			qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111"
 			;;
-		armhf) 
+		armv7)
 			cpu_arch=arm
 			march=arm-vexpress-a9
 			qemu=qemu-system-${cpu_arch}
@@ -520,7 +520,7 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=toolchain-arc ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
-		arm)
+		armv5)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-versatilepb"
 			compile "$DEFAULT"
 			;;
@@ -528,7 +528,7 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
-		armhf)
+		armv7)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9" 
 			compile "$DEFAULT"
 			;;
