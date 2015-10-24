@@ -28,7 +28,7 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 lm32 h8300 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
@@ -177,6 +177,7 @@ runtest() {
 		armv5)
 			cpu_arch=arm
 			march=arm-versatilepb
+			qemu=qemu-system-${cpu_arch}
 			qemu_machine=versatilepb
 			suffix=soft_eabi
 			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
@@ -190,6 +191,12 @@ runtest() {
 			suffix=hard_eabihf
 			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
 			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
+			;;
+		crisv32)
+			cpu_arch=crisv32
+			march=cris
+			qemu=qemu-system-${march}
+			qemu_machine=axis-dev88
 			;;
 		microblazeel)
 			cpu_arch=microblazeel
@@ -557,15 +564,15 @@ build() {
 			compile "$DEFAULT"
 			;;
 		crisv32)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=qemu-cris"
 			compile "$DEFAULT"
 			;;
 		m68k)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-q800 ADK_TARGET_QEMU=q800"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-q800"
 			compile "$DEFAULT"
 			;;
 		m68k-nommu)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-mcf5208 ADK_TARGET_QEMU=mcf5208"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-mcf5208"
 			compile "$DEFAULT"
 			;;
 		metag)
@@ -668,7 +675,7 @@ for lib in ${libc}; do
 	case $lib in
 		uclibc-ng)
 			archlist=$arch_list_uclibcng
-			version=1.0.7
+			version=1.0.8
 			gitversion=git
 			if [ $git -eq 1 ]; then
 				libver=uClibc-ng-${gitversion}
@@ -737,7 +744,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arcv1|arcv2|arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|crisv32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
+						arcv1|arcv2|arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|crisv32|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
