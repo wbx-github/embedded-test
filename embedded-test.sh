@@ -24,7 +24,6 @@
 # architecture specific notes:
 #  sheb network card get no ip
 #  sparc64 network card does not work right
-#  ppcsf problem with busybox sort, broken startup order for glibc
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
