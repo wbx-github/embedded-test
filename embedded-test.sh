@@ -77,6 +77,7 @@ update=0
 debug=0
 git=0
 fast=0
+piggyback=0
 ntp=
 
 while getopts "bhfgumdqcn:a:s:l:t:p:" ch; do
@@ -196,6 +197,7 @@ runtest() {
 			march=cris
 			qemu=qemu-system-${march}
 			qemu_machine=axis-dev88
+			piggyback=1
 			;;
 		microblazeel)
 			cpu_arch=microblazeel
@@ -366,22 +368,36 @@ runtest() {
 	fi
 
 	echo "Starting test for $lib and $arch"
-	echo "Generating root filesystem for test run"
-	root=$(mktemp -d /tmp/XXXX)
-	if [ ! -z $suffix ]; then
-		archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-		kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-initramfsarchive-kernel
+	# check if initramfs or piggyback is used
+	if [ $piggyback -eq 1 ]; then
+		echo "Using extra directory for test image creation"
+		root=openadk/extra
+		rm -rf openadk/extra 2>/dev/null
+		mkdir openadk/extra 2>/dev/null
+		if [ ! -z $suffix ]; then
+			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-initramfspiggyback-kernel
+		else
+			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-initramfspiggyback-kernel
+		fi
 	else
-		archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-		kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-initramfsarchive-kernel
+		echo "Generating root filesystem for test run"
+		root=$(mktemp -d /tmp/XXXX)
+		if [ ! -z $suffix ]; then
+			archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-initramfsarchive-kernel
+		else
+			archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-initramfsarchive-kernel
+		fi
+
+		if [ ! -f $archive ];then
+			echo "No root filesystem available for architecture ${arch} tried $archive"
+			exit 1
+		fi
+		tar -xf $archive -C $root
 	fi
 
-	if [ ! -f $archive ];then
-		echo "No root filesystem available for architecture ${arch} tried $archive"
-		exit 1
-	fi
-	tar -xf $archive -C $root
-
+	# creating test script to be run on boot
 cat > ${root}/run.sh << EOF
 #!/bin/sh
 uname -a
@@ -429,9 +445,15 @@ EOF
 
 	fi
 	chmod u+x ${root}/run.sh
-	echo "Creating initramfs filesystem"
-	(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
-	rm -rf $root
+
+	if [ $piggyback -eq 1 ]; then
+		(cd openadk && make v)
+	else
+		echo "Creating initramfs filesystem"
+		(cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
+		rm -rf $root
+		qemu_args="$qemu_args -initrd initramfs.${arch}"
+	fi
 
 	# qemu-ppc overwrites existing commandline
 	if [ $noappend -eq 0 ]; then
@@ -439,8 +461,8 @@ EOF
 	fi
 
 	echo "Now running the test ${test} in qemu for architecture ${arch} and ${lib}"
-	echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch}"
-	${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic -initrd initramfs.${arch} | tee REPORT.${arch}.${test}.${libver}
+	echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic"
+	${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic | tee REPORT.${arch}.${test}.${libver}
 	if [ $? -eq 0 ];then
 		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${libver}"
 		echo 
@@ -473,8 +495,7 @@ build() {
 	rm -rf toolchain_build_*_${lib}_${arch}*/w-${libdir}/
 	make package=$lib clean > /dev/null 2>&1
 
-	DEFAULT="ADK_TARGET_LIBC=$lib ADK_TARGET_FS=initramfsarchive"
-
+	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT ADK_VERBOSE=1"
 	fi
@@ -513,153 +534,154 @@ build() {
 				;;
 		esac
 	fi
+	echo "Using $DEFAULT"
 	case $arch in
 		aarch64)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=qemu-aarch64"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
 			compile "$DEFAULT"
 			;;
 		arcv1)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		arcv2)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		arcv1-be)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		arcv2-be)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		armv5)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-versatilepb"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-versatilepb"
 			compile "$DEFAULT"
 			;;
 		armeb)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		armv7)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9" 
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9" 
 			compile "$DEFAULT"
 			;;
 		avr32)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=toolchain-avr32" 
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=avr32 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-avr32" 
 			compile "$DEFAULT"
 			;;
 		bfin)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-bfin"
 			compile "$DEFAULT"
 			;;
 		c6x)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=c6x ADK_TARGET_SYSTEM=toolchain-c6x"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=c6x ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-c6x"
 			compile "$DEFAULT"
 			;;
 		crisv10)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv10"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv10"
 			compile "$DEFAULT"
 			;;
 		crisv32)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=qemu-cris"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
 			compile "$DEFAULT"
 			;;
 		m68k)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-q800"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800"
 			compile "$DEFAULT"
 			;;
 		m68k-nommu)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=qemu-m68k-mcf5208"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208"
 			compile "$DEFAULT"
 			;;
 		metag)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=metag ADK_TARGET_SYSTEM=toolchain-metag"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=metag ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-metag"
 			compile "$DEFAULT"
 			;;
 		microblazebe)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		microblazeel)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		mips)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
 			compile "$DEFAULT"
 			;;
 		mipssf)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft" 
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft" 
 			compile "$DEFAULT"
 			;;
 		mipsel)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
 			compile "$DEFAULT"
 			;;
 		mipselsf)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft"
 			compile "$DEFAULT"
 			;;
 		mips64)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
 			compile "$DEFAULT"
 			;;
 		mips64n32)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
 			compile "$DEFAULT"
 			;;
 		mips64n64)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
 			compile "$DEFAULT"
 			;;
 		mips64el)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
 			compile "$DEFAULT"
 			;;
 		mips64eln32)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
 			compile "$DEFAULT"
 			;;
 		mips64eln64)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
 			compile "$DEFAULT"
 			;;
 		nios2)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=toolchain-nios2"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=nios2 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-nios2"
 			compile "$DEFAULT"
 			;;
 		or1k)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=or1k ADK_TARGET_SYSTEM=toolchain-or1k"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
 			compile "$DEFAULT"
 			;;
 		ppc)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc-macppc ADK_TARGET_FLOAT=hard"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc-macppc ADK_TARGET_FLOAT=hard"
 			compile "$DEFAULT"
 			;;
 		ppcsf)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=qemu-ppc-bamboo ADK_TARGET_FLOAT=soft"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc-bamboo ADK_TARGET_FLOAT=soft"
 			compile "$DEFAULT"
 			;;
 		ppc64)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc64 ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		sh)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		sheb)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		tile)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=tile ADK_TARGET_SYSTEM=toolchain-tile"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=tile ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-tile"
 			compile "$DEFAULT"
 			;;
 		*)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=qemu-$arch"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-$arch"
 			compile "$DEFAULT"
 			;;
 	esac
@@ -743,7 +765,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arcv1|arcv2|arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|crisv32|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
+						arcv1|arcv2|arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
