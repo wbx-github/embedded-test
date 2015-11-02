@@ -155,6 +155,7 @@ runtest() {
 	arch=$2
 	test=$3
 
+	emulator=qemu
 	qemu=qemu-system-${arch}
 	qemu_args=
 	if [ $ntp ]; then
@@ -191,6 +192,16 @@ runtest() {
 			suffix=hard_eabihf
 			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
 			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
+			;;
+		arcv1)
+			emulator=nsim
+			cpu_arch=arc
+			piggyback=1
+			;;
+		arcv2)
+			emulator=nsim
+			cpu_arch=arc
+			piggyback=1
 			;;
 		crisv32)
 			cpu_arch=crisv32
@@ -357,16 +368,29 @@ runtest() {
 			echo "architecture ${arch} not supported"; exit 1;;
 	esac
 
-	if ! which $qemu >/dev/null; then
-		echo "Checking if $qemu is installed... failed"
-		exit 1
-	fi
-	qemuver=$(${qemu} -version|awk '{ print $4 }')
-	if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 210 ];then
-		echo "Your qemu version is too old. Please update to 2.1 or greater"
-		exit 1
-	fi
-
+	case $emulator in
+		qemu) 
+			echo "Using QEMU as emulator"
+			if ! which $qemu >/dev/null; then
+				echo "Checking if $qemu is installed... failed"
+				exit 1
+			fi
+			qemuver=$(${qemu} -version|awk '{ print $4 }')
+			if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 210 ];then
+				echo "Your qemu version is too old. Please update to 2.1 or greater"
+				exit 1
+			fi
+			;;
+		nsim)
+			echo "Using Synopsys NSIM as simulator"
+			if ! which nsimdrv >/dev/null; then
+				echo "Checking if $emulator is installed... failed"
+				exit 1
+			fi
+			;;
+		*)
+			echo "emulator/simulator not supported"; exit 1;;
+	esac
 	echo "Starting test for $lib and $arch"
 	# check if initramfs or piggyback is used
 	if [ $piggyback -eq 1 ]; then
@@ -375,19 +399,19 @@ runtest() {
 		rm -rf openadk/extra 2>/dev/null
 		mkdir openadk/extra 2>/dev/null
 		if [ ! -z $suffix ]; then
-			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-initramfspiggyback-kernel
+			kernel=openadk/firmware/${emulator}-${march}_${lib}_${cpu_arch}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
 		else
-			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-initramfspiggyback-kernel
+			kernel=openadk/firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-initramfspiggyback-kernel
 		fi
 	else
 		echo "Generating root filesystem for test run"
 		root=$(mktemp -d /tmp/XXXX)
 		if [ ! -z $suffix ]; then
-			archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-initramfsarchive-kernel
+			archive=openadk/firmware/${emulator}-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+			kernel=openadk/firmware/${emulator}-${march}_${lib}_${cpu_arch}_${suffix}/qemu-${march}-initramfsarchive-kernel
 		else
-			archive=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-			kernel=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}/qemu-${march}-initramfsarchive-kernel
+			archive=openadk/firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${lib}-initramfsarchive.tar.xz
+			kernel=openadk/firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-initramfsarchive-kernel
 		fi
 
 		if [ ! -f $archive ];then
@@ -460,9 +484,17 @@ EOF
 		qemu_args="$qemu_args ${qemu_append}"
 	fi
 
-	echo "Now running the test ${test} in qemu for architecture ${arch} and ${lib}"
-	echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic"
-	${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic | tee REPORT.${arch}.${test}.${libver}
+	echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
+	case $emulator in
+		qemu)
+			echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic"
+			${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic | tee REPORT.${arch}.${test}.${libver}
+			;;
+		nsim)
+			echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
+			./openadk/scripts/nsim.sh ${arch} ${kernel}
+			;;
+	esac
 	if [ $? -eq 0 ];then
 		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${libver}"
 		echo 
@@ -534,26 +566,25 @@ build() {
 				;;
 		esac
 	fi
-	echo "Using $DEFAULT"
 	case $arch in
 		aarch64)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
 			compile "$DEFAULT"
 			;;
 		arcv1)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		arcv2)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=little"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
 		arcv1-be)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		arcv2-be)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=big"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=nsim-arcv2 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
 		armv5)
@@ -765,7 +796,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arcv1|arcv2|arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
+						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
