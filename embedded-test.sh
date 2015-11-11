@@ -520,6 +520,8 @@ build() {
 	cd openadk
 	make prereq
 
+	make package=$lib clean > /dev/null 2>&1
+
 	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT ADK_VERBOSE=1"
