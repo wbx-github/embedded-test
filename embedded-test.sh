@@ -492,11 +492,11 @@ EOF
 			;;
 		nsim)
 			echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
-			./openadk/scripts/nsim.sh ${arch} ${kernel}
+			./openadk/scripts/nsim.sh ${arch} ${kernel} | tee REPORT.${arch}.${test}.${libver}
 			;;
 	esac
 	if [ $? -eq 0 ];then
-		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${lib}.${test}.${libver}"
+		echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${test}.${libver}"
 		echo 
 	else
 		echo "Test ${test} failed for ${arch} with ${lib} ${libver}."
@@ -519,13 +519,6 @@ build() {
 
 	cd openadk
 	make prereq
-
-	# always trigger regeneration of kernel config
-	rm build_*_${lib}_${arch}*/linux/.config > /dev/null 2>&1
-
-	# rebuild C library package
-	rm -rf toolchain_build_*_${lib}_${arch}*/w-${libdir}/
-	make package=$lib clean > /dev/null 2>&1
 
 	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
@@ -617,6 +610,10 @@ build() {
 			;;
 		crisv32)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
+			compile "$DEFAULT"
+			;;
+		h8300)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=h8300 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-h8300"
 			compile "$DEFAULT"
 			;;
 		m68k)
@@ -784,7 +781,7 @@ for lib in ${libc}; do
 	fi
 	echo "Architectures to test: $archlist"
 	for arch in ${archlist}; do
-		if [ $break -eq 1 -a -f "REPORT.${arch}.${lib}.${tests}.${version}" ]; then
+		if [ $break -eq 1 -a -f "REPORT.${arch}.${tests}.${libver}" ]; then
 			echo "Skipping this test after last build break"
 			continue
 		fi
