@@ -24,7 +24,6 @@
 
 # architecture specific notes:
 #  sheb network card get no ip
-#  sparc64 network card does not work right
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
@@ -306,7 +305,7 @@ runtest() {
 		sparc64) 
 			cpu_arch=sparc64
 			qemu_machine=sun4u
-			qemu_args="${qemu_args} -device ne2k_pci,netdev=adk0 -netdev user,id=adk0"
+			qemu_args="${qemu_args} -net nic,model=e1000 -net user"
 			;;
 		x86) 
 			cpu_arch=i686
@@ -786,7 +785,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						armeb|m68k|nios2|sheb|sparc64|tile)
+						armeb|m68k|nios2|sheb|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
