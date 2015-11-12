@@ -165,6 +165,7 @@ runtest() {
 		qemu_append="-append shell"
 	fi
 	noappend=0
+	piggyback=0
 	suffix=
 	libdir=lib
 	march=${arch}
