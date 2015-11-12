@@ -449,6 +449,12 @@ cat >> ${root}/run.sh << EOF
 exit
 EOF
 	fi
+	if [ $test = "mksh" ];then
+cat >> ${root}/run.sh << EOF
+mksh /opt/mksh/test.sh
+exit
+EOF
+	fi
 	if [ $test = "libc" ];then
 
 		case $lib in
@@ -535,6 +541,9 @@ build() {
 	fi
 	if [ $test = "ltp" ];then
 		DEFAULT="$DEFAULT ADK_TEST_LTP=y"
+	fi
+	if [ $test = "mksh" ];then
+		DEFAULT="$DEFAULT ADK_TEST_MKSH=y"
 	fi
 	if [ $test = "libc" ];then
 		case $lib in
@@ -792,7 +801,7 @@ for lib in ${libc}; do
 		build $lib $arch notest
 		if [ ! -z "$tests" ];then
 			for test in ${tests}; do
-				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" ];then
+				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" -o $test = "mksh" ];then
 					case $lib in 
 					uclibc-ng)
 						case $arch in
