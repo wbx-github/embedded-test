@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env mksh
+#
 # Copyright © 2014-2015
-#	Waldemar Brodkorb <wbx@openadk.org>
+#	Waldemar Brodkorb <wbx@embedded-test.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
 # are retained or reproduced in an accompanying document, permission
@@ -36,7 +37,9 @@ arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf 
 arch_list_glibc="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
-openadk_git=http://git.openadk.org/openadk.git
+giturl=http://git.openadk.org/openadk.git
+valid_libc="uclibc-ng musl glibc"
+valid_tests="boot libc ltp mksh native"
 
 tools='make git wget xz cpio tar awk sed'
 f=0
@@ -50,24 +53,22 @@ if [ $f -eq 1 ];then exit 1; fi
 
 help() {
 	cat >&2 <<EOF
-Syntax: $0 [ -l <libc> -a <arch> -t <tests> ]
+Syntax: $0 [ --libc=<libc> --arch=<arch> --tests=<tests> ]
 
 Explanation:
-	-l: c library to use (uclibc-ng|musl|glibc)
-	-g: use latest git version of C library
-	-a: architecture to check (otherwise all supported)
-	-u: update openadk source via git pull, before building
-	-s: use directory with source for C library
-	-f: enable fast compile, after a failure no rebuild
-	-d: enable debug output from OpenADK
-	-c: clean OpenADK build directory before build
-	-m: start a shell in Qemu system for manual testing
-	-n: set NTP server for test run
-	-p: add extra packages to build
-	-t: run tests (boot|libc|ltp|native)
-	-h: help text
+	--libc=<libc>             c library to use (${valid_libc})
+	--arch=<arch>             architecture to check (otherwise all supported)
+	--tests=<tests>           run tests (${valid_tests})
+	--source=<dir>            use directory with source for C library
+	--ntp=<ntpserver>         set NTP server for test run
+	--packages=<packagelist>  add extra packages to the build
+	--update                  update OpenADK source via git pull, before building
+	--clean                   clean OpenADK build directory before build
+	--debug                   enable debug output from OpenADK
+	--shell                   start a shell instead auf autorun of test
+	--help                    this help text
 EOF
-
+	exit 1
 }
 
 break=0
@@ -75,75 +76,40 @@ clean=0
 shell=0
 update=0
 debug=0
-git=0
-fast=0
 piggyback=0
-ntp=
+ntp=""
+libc=""
 
-while getopts "bhfgumdqcn:a:s:l:t:p:" ch; do
-        case $ch in
-                m)
-                        shell=1
-                        ;;
-                g)
-                        git=1
-                        ;;
-                b)
-                        break=1
-                        ;;
-                c)
-                        clean=1
-                        ;;
-                d)
-                        debug=1
-                        ;;
-                f)
-                        fast=1
-                        ;;
-                u)
-                        update=1
-                        ;;
-                s)
-                        source=$OPTARG
-                        ;;
-                l)
-                        libc=$OPTARG
-                        ;;
-                n)
-                        ntp=$OPTARG
-                        ;;
-                a)
-                        archtolist=$OPTARG
-                        ;;
-                p)
-                        pkgs=$OPTARG
-                        ;;
-                t)
-                        tests=$OPTARG
-                        ;;
-		h)
-			help
-			exit 1
-			;;
-        esac
-done
-shift $((OPTIND - 1))
+while [[ $1 != -- && $1 = -* ]]; do case $1 { 
+  (--clean) clean=1; shift ;;
+  (--debug) debug=1; shift ;;
+  (--update) update=1; shift ;;
+  (--shell) shell=1 shift ;;
+  (--libc=*) libc=${1#*=}; shift ;;
+  (--arch=*) archs=${1#*=}; shift ;;
+  (--tests=*) tests=${1#*=}; shift ;;
+  (--source=*) source=${1#*=}; shift ;;
+  (--ntp=*) ntp=${1#*=}; shift ;;
+  (--help) help; shift ;;
+  (--*) echo "unknown option $1"; exit 1 ;; 
+  (-*) help ;;
+}; done
 
 if [ -z "$libc" ];then
 	libc="uclibc-ng musl glibc"
 fi
 
 if [ ! -d openadk ];then
-	git clone $openadk_git
+	git clone $giturl
 	if [ $? -ne 0 ];then
-		echo "Cloning from $openadk_git failed."
+		echo "Cloning from $giturl failed."
 		exit 1
 	fi
 else
 	if [ $update -eq 1 ];then
 		(cd openadk && git pull)
 		if [ $? -ne 0 ];then
-			echo "Updating from $openadk_git failed."
+			echo "Updating from $giturl failed."
 			exit 1
 		fi
 	fi
@@ -533,9 +499,6 @@ build() {
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT ADK_VERBOSE=1"
 	fi
-	if [ $git -eq 1 ];then
-		DEFAULT="$DEFAULT ADK_LIBC_GIT=y"
-	fi
 	if [ $test = "boot" ];then
 		DEFAULT="$DEFAULT ADK_TEST_BASE=y"
 	fi
@@ -737,39 +700,28 @@ for lib in ${libc}; do
 		uclibc-ng)
 			archlist=$arch_list_uclibcng
 			version=1.0.8
-			gitversion=git
-			if [ $git -eq 1 ]; then
-				libver=uClibc-ng-${gitversion}
-			else
-				libver=uClibc-ng-${version}
-			fi
+			libver=uClibc-ng-${version}
 			libdir=uClibc-ng
 			;;
 		glibc)
 			archlist=$arch_list_glibc
 			version=2.22
-			gitversion=2.22.90
-			if [ $git -eq 1 ]; then
-				libver=glibc-${gitversion}
-			else
-				libver=glibc-${version}
-			fi
+			libver=glibc-${version}
 			libdir=glibc
 			;;
 		musl)
 			archlist=$arch_list_musl
 			version=1.1.11
-			gitversion=git
-			if [ $git -eq 1 ]; then
-				libver=musl-${gitversion}
-			else
-				libver=musl-${version}
-			fi
+			libver=musl-${version}
 			libdir=musl
 			;;
+		*)
+			echo "$lib not supported"
+			exit 1
+			;;
 	esac
-	if [ ! -z $archtolist ]; then
-		archlist="$archtolist"
+	if [ ! -z $archs ]; then
+		archlist="$archs"
 	fi
 	if [ ! -z $source ]; then
 		if [ ! -d $source ]; then
@@ -789,9 +741,16 @@ for lib in ${libc}; do
 
 	# start with a clean dir
 	if [ $clean -eq 1 ]; then
+		echo "cleaning openadk build directory"
 		(cd openadk && make cleandir)
 	fi
-	echo "Architectures to test: $archlist"
+	if [ ! -z "$tests" ];then
+		testinfo="$tests testing"
+	else
+		testinfo="toolchain testing"
+	fi
+	echo "Summary: testing $archlist with C library $lib and $testinfo"
+	sleep 2
 	for arch in ${archlist}; do
 		if [ $break -eq 1 -a -f "REPORT.${arch}.${tests}.${libver}" ]; then
 			echo "Skipping this test after last build break"
@@ -838,7 +797,7 @@ for lib in ${libc}; do
 						;;
 					esac
 				else
-					echo "Test $test is not valid. Allowed tests: boot libc ltp native"
+					echo "Test $test is not valid. Allowed tests: $valid_tests"
 					exit 1
 				fi
 			done
