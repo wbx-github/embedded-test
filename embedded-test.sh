@@ -760,8 +760,8 @@ for lib in ${libc}; do
 	echo "Summary: testing $archlist with C library $lib and $testinfo"
 	sleep 2
 	for arch in ${archlist}; do
-		if [ $continue -eq 1 -a -f "REPORT.${arch}.${tests}.${libver}" ]; then
-			echo "Skipping this test after last build break"
+		if [ $continue -eq 1 -a -f "REPORT.${arch}.${tests}.${libver}" -o -f "REPORT.${arch}.toolchain.${libver}" ]; then
+			echo "Skipping already run test for $arch"
 			continue
 		fi
 		if [ "$arch" = "$skiparchs" ];then
@@ -770,6 +770,7 @@ for lib in ${libc}; do
 		fi
 		echo "Compiling base system and toolchain for $lib and $arch"
 		build $lib $arch notest
+		echo "$arch with $lib successfully build" > REPORT.${arch}.toolchain.${libver}
 		if [ ! -z "$tests" ];then
 			for test in ${tests}; do
 				if [ $test = "boot" -o $test = "libc" -o $test = "ltp" -o $test = "native" -o $test = "mksh" ];then
