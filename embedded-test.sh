@@ -27,13 +27,13 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 h8300 m68k m68k-nommu microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh sheb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 h8300 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh4 sh4eb sparc x86 x86_64 xtensa"
 
 # musl
-arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh sheb x86 x86_64"
+arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh sheb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -57,6 +57,7 @@ Syntax: $0 [ --libc=<libc> --arch=<arch> --tests=<tests> ]
 Explanation:
 	--libc=<libc>             c library to use (${valid_libc})
 	--arch=<arch>             architecture to check (otherwise all supported)
+	--skiparch=<arch>         architectures to skip when all choosen
 	--tests=<tests>           run tests (${valid_tests})
 	--source=<dir>            use directory with source for C library
 	--ntp=<ntpserver>         set NTP server for test run
@@ -88,6 +89,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
+  (--skiparch=*) skiparchs=${1#*=}; shift ;;
   (--tests=*) tests=${1#*=}; shift ;;
   (--source=*) source=${1#*=}; shift ;;
   (--ntp=*) ntp=${1#*=}; shift ;;
@@ -294,13 +296,13 @@ runtest() {
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=pseries
 			;;
-		sh) 
+		sh4) 
 			cpu_arch=sh4
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=r2d
 			qemu_args="${qemu_args} -monitor null -serial null -serial stdio"
 			;;
-		sheb) 
+		sh4eb) 
 			cpu_arch=sh4eb
 			march=sh
 			qemu=qemu-system-${cpu_arch}
@@ -679,11 +681,11 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
-		sh)
+		sh4)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
 			compile "$DEFAULT"
 			;;
-		sheb)
+		sh4eb)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
@@ -762,6 +764,10 @@ for lib in ${libc}; do
 			echo "Skipping this test after last build break"
 			continue
 		fi
+		if [ "$arch" = "$skiparchs" ];then
+			echo "Skipping $skiparchs"
+			continue
+		fi
 		echo "Compiling base system and toolchain for $lib and $arch"
 		build $lib $arch notest
 		if [ ! -z "$tests" ];then
@@ -770,7 +776,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sheb)
+						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh4eb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -781,7 +787,7 @@ for lib in ${libc}; do
 						;;
 					musl)
 						case $arch in
-						armeb|or1k|sheb)
+						armeb|or1k|sh4eb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -792,7 +798,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						armeb|m68k|nios2|sheb|tile)
+						armeb|m68k|nios2|sh4eb|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
