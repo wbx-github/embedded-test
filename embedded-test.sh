@@ -62,6 +62,7 @@ Explanation:
 	--ntp=<ntpserver>         set NTP server for test run
 	--packages=<packagelist>  add extra packages to the build
 	--update                  update OpenADK source via git pull, before building
+	--continue                continue on a broken build
 	--clean                   clean OpenADK build directory before build
 	--debug                   enable debug output from OpenADK
 	--shell                   start a shell instead auf autorun of test
@@ -70,7 +71,7 @@ EOF
 	exit 1
 }
 
-break=0
+continue=0
 clean=0
 shell=0
 update=0
@@ -83,6 +84,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--clean) clean=1; shift ;;
   (--debug) debug=1; shift ;;
   (--update) update=1; shift ;;
+  (--continue) continue=1; shift ;;
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
@@ -174,6 +176,13 @@ runtest() {
 			march=cris
 			qemu=qemu-system-${march}
 			qemu_machine=axis-dev88
+			piggyback=1
+			;;
+		metag)
+			cpu_arch=metag
+			march=meta
+			qemu=qemu-system-${march}
+			qemu_args="${qemu_args} -display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
 			piggyback=1
 			;;
 		microblazeel)
@@ -599,7 +608,7 @@ build() {
 			compile "$DEFAULT"
 			;;
 		metag)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=metag ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-metag"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=metag ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-metag"
 			compile "$DEFAULT"
 			;;
 		microblazebe)
@@ -698,7 +707,7 @@ for lib in ${libc}; do
 	case $lib in
 		uclibc-ng)
 			archlist=$arch_list_uclibcng
-			version=1.0.8
+			version=1.0.9
 			libver=uClibc-ng-${version}
 			libdir=uClibc-ng
 			;;
@@ -727,15 +736,13 @@ for lib in ${libc}; do
 			echo "Not a directory."
 			exit 1
 		fi
-		if [ $fast -eq 0 ]; then
-			usrc=$(mktemp -d /tmp/XXXX)
-			echo "Creating source tarball openadk/dl/${libver}.tar.xz"
-			cp -a $source $usrc/$libver
-			mkdir -p $topdir/openadk/dl 2>/dev/null
-			rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
-			(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
-			touch $topdir/openadk/dl/${libver}.tar.xz.nohash
-		fi
+		usrc=$(mktemp -d /tmp/XXXX)
+		echo "Creating source tarball openadk/dl/${libver}.tar.xz"
+		cp -a $source $usrc/$libver
+		mkdir -p $topdir/openadk/dl 2>/dev/null
+		rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
+		(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
+		touch $topdir/openadk/dl/${libver}.tar.xz.nohash
 	fi
 
 	# start with a clean dir
@@ -751,7 +758,7 @@ for lib in ${libc}; do
 	echo "Summary: testing $archlist with C library $lib and $testinfo"
 	sleep 2
 	for arch in ${archlist}; do
-		if [ $break -eq 1 -a -f "REPORT.${arch}.${tests}.${libver}" ]; then
+		if [ $continue -eq 1 -a -f "REPORT.${arch}.${tests}.${libver}" ]; then
 			echo "Skipping this test after last build break"
 			continue
 		fi
