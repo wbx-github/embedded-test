@@ -27,7 +27,7 @@
 #  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 h8300 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh4 sh4eb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 h8300 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
@@ -298,6 +298,7 @@ runtest() {
 			;;
 		sh4) 
 			cpu_arch=sh4
+			march=sh
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=r2d
 			qemu_args="${qemu_args} -monitor null -serial null -serial stdio"
@@ -679,6 +680,14 @@ build() {
 			;;
 		ppc64)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
+			compile "$DEFAULT"
+			;;
+		sh2)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh2"
+			compile "$DEFAULT"
+			;;
+		sh3)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh3"
 			compile "$DEFAULT"
 			;;
 		sh4)
