@@ -33,7 +33,7 @@ arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -606,6 +606,10 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
 			compile "$DEFAULT"
 			;;
+		ia64)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=toolchain-ia64"
+			compile "$DEFAULT"
+			;;
 		h8300)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=h8300 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-h8300"
 			compile "$DEFAULT"
@@ -800,7 +804,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh2|sh3|sh4eb)
+						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|ia64|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh2|sh3|sh4eb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
@@ -822,7 +826,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						armeb|m68k|nios2|s390|sh4eb|tile)
+						armeb|ia64|m68k|nios2|s390|sh4eb|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
