@@ -185,6 +185,7 @@ runtest() {
 			march=meta
 			qemu=qemu-system-${march}
 			qemu_args="${qemu_args} -display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
+			qemu_machine=01sp
 			piggyback=1
 			;;
 		microblazeel)
@@ -354,9 +355,11 @@ runtest() {
 				exit 1
 			fi
 			qemuver=$(${qemu} -version|awk '{ print $4 }')
-			if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 210 ];then
+			if [ "$arch" != "metag" ]; then
+			  if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 210 ];then
 				echo "Your qemu version is too old. Please update to 2.1 or greater"
 				exit 1
+			  fi
 			fi
 			;;
 		nsim)
@@ -683,11 +686,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		sh2)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh2"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh2"
 			compile "$DEFAULT"
 			;;
 		sh3)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh3"
+			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh3"
 			compile "$DEFAULT"
 			;;
 		sh4)
@@ -769,9 +772,11 @@ for lib in ${libc}; do
 	echo "Summary: testing $archlist with C library $lib and $testinfo"
 	sleep 2
 	for arch in ${archlist}; do
-		if [ $continue -eq 1 -a -f "REPORT.${arch}.${tests}.${libver}" -o -f "REPORT.${arch}.toolchain.${libver}" ]; then
+		if [ $continue -eq 1 ]; then
+		  if [ -f "REPORT.${arch}.${tests}.${libver}" -o -f "REPORT.${arch}.toolchain.${libver}" ]; then
 			echo "Skipping already run test for $arch"
 			continue
+		  fi
 		fi
 		if [ "$arch" = "$skiparchs" ];then
 			echo "Skipping $skiparchs"
@@ -786,7 +791,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh4eb)
+						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh2|sh3|sh4eb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
