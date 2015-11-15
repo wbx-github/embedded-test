@@ -33,7 +33,7 @@ arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 sh4 sh4eb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -292,10 +292,15 @@ runtest() {
 			suffix=hard
 			noappend=1
 			;;
-		powerpc64|ppc64) 
+		ppc64)
 			cpu_arch=ppc64
 			qemu=qemu-system-${cpu_arch}
 			qemu_machine=pseries
+			;;
+		s390)
+			cpu_arch=s390x
+			qemu=qemu-system-${cpu_arch}
+			qemu_machine=s390-ccw-virtio-2.4
 			;;
 		sh4) 
 			cpu_arch=sh4
@@ -685,6 +690,10 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
+		s390)
+			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=s390 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-s390"
+			compile "$DEFAULT"
+			;;
 		sh2)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh2"
 			compile "$DEFAULT"
@@ -813,7 +822,7 @@ for lib in ${libc}; do
 						;;
 					glibc)
 						case $arch in
-						armeb|m68k|nios2|sh4eb|tile)
+						armeb|m68k|nios2|s390|sh4eb|tile)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
