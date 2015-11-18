@@ -64,7 +64,8 @@ Explanation:
 	--packages=<packagelist>  add extra packages to the build
 	--update                  update OpenADK source via git pull, before building
 	--continue                continue on a broken build
-	--clean                   clean OpenADK build directory before build
+	--cleandir                clean OpenADK build directories before build
+	--clean                   clean OpenADK build directory for single arch
 	--debug                   enable debug output from OpenADK
 	--shell                   start a shell instead auf autorun of test
 	--help                    this help text
@@ -72,8 +73,9 @@ EOF
 	exit 1
 }
 
-continue=0
+cont=0
 clean=0
+cleandir=0
 shell=0
 update=0
 debug=0
@@ -82,10 +84,11 @@ ntp=""
 libc=""
 
 while [[ $1 != -- && $1 = -* ]]; do case $1 { 
+  (--cleandir) cleandir=1; shift ;;
   (--clean) clean=1; shift ;;
   (--debug) debug=1; shift ;;
   (--update) update=1; shift ;;
-  (--continue) continue=1; shift ;;
+  (--continue) cont=1; shift ;;
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
@@ -512,8 +515,6 @@ build() {
 	cd openadk
 	make prereq
 
-	make package=$lib clean > /dev/null 2>&1
-
 	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
 		DEFAULT="$DEFAULT ADK_VERBOSE=1"
@@ -773,8 +774,8 @@ for lib in ${libc}; do
 	fi
 
 	# start with a clean dir
-	if [ $clean -eq 1 ]; then
-		echo "cleaning openadk build directory"
+	if [ $cleandir -eq 1 ]; then
+		echo "completely cleaning openadk build directory"
 		(cd openadk && make cleandir)
 	fi
 	if [ ! -z "$tests" ];then
@@ -785,7 +786,7 @@ for lib in ${libc}; do
 	echo "Summary: testing $archlist with C library $lib and $testinfo"
 	sleep 2
 	for arch in ${archlist}; do
-		if [ $continue -eq 1 ]; then
+		if [ $cont -eq 1 ]; then
 		  if [ -f "REPORT.${arch}.${tests}.${libver}" -o -f "REPORT.${arch}.toolchain.${libver}" ]; then
 			echo "Skipping already run test for $arch"
 			continue
@@ -794,6 +795,10 @@ for lib in ${libc}; do
 		if [ "$arch" = "$skiparchs" ];then
 			echo "Skipping $skiparchs"
 			continue
+		fi
+		if [ $clean -eq 1 ]; then
+			echo "cleaning openadk build directory"
+			(cd openadk && make cleansystem)
 		fi
 		echo "Compiling base system and toolchain for $lib and $arch"
 		build $lib $arch notest
