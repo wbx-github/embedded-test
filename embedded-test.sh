@@ -514,6 +514,7 @@ build() {
 
 	cd openadk
 	make prereq
+	make package=$lib clean
 
 	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
