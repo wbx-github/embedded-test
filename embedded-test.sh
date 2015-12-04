@@ -24,10 +24,9 @@
 
 # architecture specific notes:
 #  sheb network card get no ip
-#  m68k glibc toolchain building is broken at the moment 
 
 # uClibc-ng
-arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 h8300 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
@@ -35,9 +34,12 @@ arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf 
 # glibc
 arch_list_glibc="aarch64 armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
+# newlib
+arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv m68k mips mipsel ppc sparc x86"
+
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
-valid_libc="uclibc-ng musl glibc"
+valid_libc="uclibc-ng musl glibc newlib"
 valid_tests="boot libc ltp mksh native"
 
 tools='make git wget xz cpio tar awk sed'
@@ -102,7 +104,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
 }; done
 
 if [ -z "$libc" ];then
-	libc="uclibc-ng musl glibc"
+	libc="uclibc-ng musl glibc newlib"
 fi
 
 if [ ! -d openadk ];then
@@ -514,7 +516,6 @@ build() {
 
 	cd openadk
 	make prereq
-	make package=$lib clean
 
 	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
@@ -577,11 +578,19 @@ build() {
 			compile "$DEFAULT"
 			;;
 		armv5)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-versatilepb"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=arm ADK_TARGET_ENDIAN=little ADK_TARGET_SYSTEM=toolchain-arm"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-versatilepb"
+			fi
 			compile "$DEFAULT"
 			;;
 		armeb)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=arm ADK_TARGET_ENDIAN=big ADK_TARGET_SYSTEM=toolchain-arm"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
+			fi
 			compile "$DEFAULT"
 			;;
 		armv7)
@@ -593,7 +602,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		bfin)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-bfin"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-bfin"
+			fi
 			compile "$DEFAULT"
 			;;
 		c6x)
@@ -605,7 +618,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		crisv32)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_ENDIAN=little ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv32"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
+			fi
 			compile "$DEFAULT"
 			;;
 		ia64)
@@ -617,7 +634,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		m68k)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=toolchain-m68k"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800"
+			fi
 			compile "$DEFAULT"
 			;;
 		m68k-nommu)
@@ -637,7 +658,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		mips)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=toolchain-mips ADK_TARGET_ENDIAN=big"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
+			fi
 			compile "$DEFAULT"
 			;;
 		mipssf)
@@ -645,7 +670,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		mipsel)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=mips ADK_TARGET_SYSTEM=toolchain-mips ADK_TARGET_ENDIAN=little"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
+			fi
 			compile "$DEFAULT"
 			;;
 		mipselsf)
@@ -685,7 +714,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		ppc)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc-macppc ADK_TARGET_FLOAT=hard"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=ppc ADK_TARGET_SYSTEM=toolchain-ppc"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc-macppc ADK_TARGET_FLOAT=hard"
+			fi
 			compile "$DEFAULT"
 			;;
 		ppcsf)
@@ -716,8 +749,24 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
 			compile "$DEFAULT"
 			;;
+		sparc|sparc64)
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=toolchain-$arch"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-$arch"
+			fi
+			compile "$DEFAULT"
+			;;
 		tile)
 			DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=tile ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-tile"
+			compile "$DEFAULT"
+			;;
+		x86|x86_64)
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=toolchain-$arch"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-$arch"
+			fi
 			compile "$DEFAULT"
 			;;
 		*)
@@ -751,6 +800,12 @@ for lib in ${libc}; do
 			version=1.1.12
 			libver=musl-${version}
 			libdir=musl
+			;;
+		newlib)
+			archlist=$arch_list_newlib
+			version=2.2.0
+			libver=newlib-${version}
+			libdir=newlib
 			;;
 		*)
 			echo "$lib not supported"
@@ -840,6 +895,9 @@ for lib in ${libc}; do
 							runtest $lib $arch $test
 							;;
 						esac
+						;;
+					newlib)
+						echo "runtime tests disabled for newlib."
 						;;
 					esac
 				else
