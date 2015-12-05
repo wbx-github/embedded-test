@@ -131,7 +131,7 @@ runtest() {
 
 	emulator=qemu
 	qemu=qemu-system-${arch}
-	qemu_args=
+	qemu_args=-nographic
 	if [ $ntp ]; then
 		qemu_append="-append ntpserver=$ntp"
 	fi
@@ -194,9 +194,8 @@ runtest() {
 			;;
 		metag)
 			cpu_arch=metag
-			march=meta
-			qemu=qemu-system-${march}
-			qemu_args="${qemu_args} -display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
+			qemu=qemu-system-meta
+			qemu_args="-display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
 			qemu_machine=01sp
 			piggyback=1
 			;;
@@ -491,8 +490,8 @@ EOF
 	echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
 	case $emulator in
 		qemu)
-			echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic"
-			${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot -nographic | tee REPORT.${arch}.${test}.${libver}
+			echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+			${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee REPORT.${arch}.${test}.${libver}
 			;;
 		nsim)
 			echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
