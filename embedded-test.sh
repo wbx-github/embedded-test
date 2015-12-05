@@ -35,7 +35,7 @@ arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf 
 arch_list_glibc="aarch64 armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
 # newlib
-arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv m68k mips mipsel ppc sparc x86"
+arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -168,14 +168,21 @@ runtest() {
 			dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
 			qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
 			;;
-		arcv1)
+		arcv1|arcv2)
 			emulator=nsim
 			cpu_arch=arc
 			piggyback=1
 			;;
-		arcv2)
+		arcv1-be)
 			emulator=nsim
-			cpu_arch=arc
+			cpu_arch=arceb
+			march=arcv1
+			piggyback=1
+			;;
+		arcv2-be)
+			emulator=nsim
+			cpu_arch=arceb
+			march=arcv2
 			piggyback=1
 			;;
 		crisv32)
@@ -516,6 +523,10 @@ build() {
 
 	cd openadk
 	make prereq
+	# rebuild uClibc-ng package to get test-suite
+	if [ "$lib" = "uclibc-ng" ]; then
+		make package=$lib clean
+	fi
 
 	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
@@ -633,6 +644,14 @@ build() {
 			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=h8300 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-h8300"
 			compile "$DEFAULT"
 			;;
+		lm32)
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=toolchain-$arch"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-$arch"
+			fi
+			compile "$DEFAULT"
+			;;
 		m68k)
 			if [ "$lib" = "newlib" ]; then
 				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=toolchain-m68k"
@@ -654,7 +673,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		microblazeel)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=toolchain-microblaze ADK_TARGET_ENDIAN=little"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
+			fi
 			compile "$DEFAULT"
 			;;
 		mips)
@@ -710,7 +733,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		or1k)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=toolchain-$arch"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
+			fi
 			compile "$DEFAULT"
 			;;
 		ppc)
@@ -742,7 +769,11 @@ build() {
 			compile "$DEFAULT"
 			;;
 		sh4)
-			DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+			if [ "$lib" = "newlib" ]; then
+				DEFAULT="$DEFAULT ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh4"
+			else
+				DEFAULT="$DEFAULT ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+			fi
 			compile "$DEFAULT"
 			;;
 		sh4eb)
@@ -865,7 +896,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						arcv1-be|arcv2-be|armeb|avr32|bfin|c6x|crisv10|h8300|ia64|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh2|sh3|sh4eb)
+						armeb|avr32|bfin|c6x|crisv10|h8300|ia64|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh2|sh3|sh4eb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
