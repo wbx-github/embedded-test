@@ -22,9 +22,6 @@
 # General Public License, any version as published by the Free Soft‐
 # ware Foundation.
 
-# architecture specific notes:
-#  sheb network card get no ip
-
 # uClibc-ng
 arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
 
@@ -511,6 +508,10 @@ compile() {
 	rm .config* .defconfig 2>/dev/null
 	make $1 defconfig
 	for pkg in $pkgs; do p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config;done
+	# rebuild uClibc-ng package to get test-suite
+	if [ "$lib" = "uclibc-ng" ]; then
+		make package=$lib clean
+	fi
 	make $1 all
 }
 
@@ -522,10 +523,6 @@ build() {
 
 	cd openadk
 	make prereq
-	# rebuild uClibc-ng package to get test-suite
-	if [ "$lib" = "uclibc-ng" ]; then
-		make package=$lib clean
-	fi
 
 	DEFAULT="ADK_TARGET_LIBC=$lib"
 	if [ $debug -eq 1 ];then
@@ -895,7 +892,7 @@ for lib in ${libc}; do
 					case $lib in 
 					uclibc-ng)
 						case $arch in
-						armeb|avr32|bfin|c6x|crisv10|h8300|ia64|lm32|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh2|sh3|sh4eb)
+						armeb|avr32|bfin|c6x|crisv10|h8300|ia64|lm32|metag|microblazeel|microblazebe|m68k|m68k-nommu|nios2|or1k|sh2|sh3|sh4eb)
 							echo "runtime tests disabled for $arch."
 							;;
 						*)
