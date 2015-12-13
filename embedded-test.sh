@@ -94,6 +94,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--skiparch=*) skiparchs=${1#*=}; shift ;;
   (--tests=*) tests=${1#*=}; shift ;;
   (--source=*) source=${1#*=}; shift ;;
+  (--packages=*) packages=${1#*=}; shift ;;
   (--ntp=*) ntp=${1#*=}; shift ;;
   (--help) help; shift ;;
   (--*) echo "unknown option $1"; exit 1 ;; 
@@ -507,7 +508,10 @@ EOF
 compile() {
 	rm .config* .defconfig 2>/dev/null
 	make $1 defconfig
-	for pkg in $pkgs; do p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config;done
+	for pkg in $packages; do
+	  p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
+	  yes|make oldconfig
+        done
 	# rebuild uClibc-ng package to get test-suite
 	if [ "$lib" = "uclibc-ng" ]; then
 		make package=$lib clean
