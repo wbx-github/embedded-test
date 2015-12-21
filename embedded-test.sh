@@ -185,6 +185,7 @@ get_arch_info() {
       ;;
     armeb)
       allowed_libc="uclibc-ng musl glibc"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
@@ -226,19 +227,23 @@ get_arch_info() {
       ;;
     avr32)
       allowed_libc="uclibc-ng"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=avr32 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-avr32"
       ;;
     bfin)
       allowed_libc="uclibc-ng"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-bfin"
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=toolchain-bfin"
       ;;
     c6x)
       allowed_libc="uclibc-ng"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=c6x ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-c6x"
       ;;
     crisv10)
       allowed_libc="uclibc-ng newlib"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv10"
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv10"
       ;;
@@ -255,27 +260,33 @@ get_arch_info() {
       ;;
     frv)
       allowed_libc="newlib"
+      runtime_test=""
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=frv ADK_TARGET_SYSTEM=toolchain-frv"
       ;;
     ia64)
       allowed_libc="glibc"
+      runtime_test=""
       default_glibbc="ADK_APPLIANCE=new ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=toolchain-ia64"
       ;;
     h8300)
       allowed_libc="uclibc-ng"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=h8300 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-h8300"
       ;;
     lm32)
       allowed_libc="uclibc-ng newlib"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=lm32 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-lm32"
       ;;
     m68k)
       allowed_libc="uclibc-ng newlib"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800"
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=toolchain-m68k"
       ;;
     m68k-nommu)
       allowed_libc="uclibc-ng"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208"
       ;;
     metag)
@@ -451,10 +462,12 @@ get_arch_info() {
       ;;
     nios2)
       allowed_libc="glibc"
+      runtime_test=""
       default_glibc="ADK_APPLIANCE=new ADK_TARGET_ARCH=nios2 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-nios2"
       ;;
     or1k)
       allowed_libc="uclibc-ng musl newlib"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=or1k ADK_TARGET_SYSTEM=toolchain-or1k"
@@ -492,11 +505,13 @@ get_arch_info() {
       ;;
     sh2)
       allowed_libc="uclibc-ng"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh2"
       cpu_arch=sh2
       ;;
     sh3)
       allowed_libc="uclibc-ng"
+      runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=toolchain-sh ADK_TARGET_CPU=sh3"
       cpu_arch=sh3
       ;;
@@ -515,6 +530,7 @@ get_arch_info() {
       ;;
     sh4eb)
       allowed_libc="uclibc-ng musl glibc"
+      runtime_test=""
       cpu_arch=sh4eb
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
@@ -543,6 +559,7 @@ get_arch_info() {
       ;;
     tile)
       allowed_libc="glibc"
+      runtime_test=""
       default_glibc="ADK_APPLIANCE=new ADK_TARGET_ARCH=tile ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-tile"
       ;;
     x86)
@@ -569,6 +586,7 @@ get_arch_info() {
       ;;
     x86_64_x32)
       allowed_libc="musl glibc"
+      runtime_test=""
       cpu_arch=x86_64
       qemu=qemu-system-${cpu_arch}
       qemu_machine=pc
