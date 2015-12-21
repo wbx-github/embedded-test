@@ -775,20 +775,6 @@ EOF
   fi
 }
 
-compile() {
-  rm .config* .defconfig 2>/dev/null
-  make $1 defconfig
-  for pkg in $packages; do
-    p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
-    yes|make oldconfig
-  done
-  if [ $clean -eq 1 ]; then
-    echo "cleaning openadk build directory"
-    make cleansystem
-  fi
-  make $1 all
-}
-
 build() {
   lib=$1
   arch=$2
@@ -809,11 +795,13 @@ build() {
   fi
   if [ $test = "mksh" ]; then
     DEFAULT="$DEFAULT ADK_TEST_MKSH=y"
+    REBUILD=.rebuild.mksh
   fi
   if [ $test = "libc" ]; then
     case $lib in
       uclibc-ng)
         DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_TESTSUITE=y"
+        REBUILD=.rebuild.uclibc-ng
         ;;
       glibc)
         DEFAULT="$DEFAULT ADK_TEST_GLIBC_TESTSUITE=y"
@@ -851,7 +839,20 @@ build() {
       ;;
   esac
 
-  compile "$DEFAULT"
+  rm .config* .defconfig 2>/dev/null
+  make $DEFAULT defconfig
+  for pkg in $packages; do
+    p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
+    yes|make oldconfig
+  done
+  if [ $clean -eq 1 ]; then
+    echo "cleaning openadk build directory"
+    make cleansystem
+  fi
+  if [ ! -z $REBUILD ]; then
+    touch $REBUILD
+  fi
+  make $DEFAULT all
   if [ $? -ne 0 ];then
     echo "build failed"
     exit 1
