@@ -58,7 +58,10 @@ Explanation:
 	--arch=<arch>             architecture to check (otherwise all supported)
 	--skiparch=<arch>         architectures to skip when all choosen
 	--test=<test>             run test (${valid_tests}), default toolchain
-	--source=<dir>            use directory with source for C library
+	--libc-source=<dir>       use directory with source for C library
+	--gcc-source=<dir>        use directory with source for gcc
+	--binutils-source=<dir>   use directory with source for binutils
+	--gdb-source=<dir>        use directory with source for gdb
 	--ntp=<ntpserver>         set NTP server for test run
 	--packages=<packagelist>  add extra packages to the build
 	--update                  update OpenADK source via git pull, before building
@@ -94,7 +97,10 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--arch=*) archs=${1#*=}; shift ;;
   (--skiparch=*) skiparchs=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
-  (--source=*) source=${1#*=}; shift ;;
+  (--libc-source=*) libcsource=${1#*=}; shift ;;
+  (--gcc-source=*) gccsource=${1#*=}; shift ;;
+  (--binutils-source=*) binutilssource=${1#*=}; shift ;;
+  (--gdb-source=*) gdbsource=${1#*=}; shift ;;
   (--packages=*) packages=${1#*=}; shift ;;
   (--ntp=*) ntp=${1#*=}; shift ;;
   (--help) help; shift ;;
@@ -758,6 +764,10 @@ compile() {
     p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
     yes|make oldconfig
   done
+  if [ $clean -eq 1 ]; then
+    echo "cleaning openadk build directory"
+    make cleansystem
+  fi
   make $1 all
 }
 
@@ -773,16 +783,16 @@ build() {
   if [ $debug -eq 1 ]; then
     DEFAULT="$DEFAULT ADK_VERBOSE=1"
   fi
-  if [ $test = "boot" ];then
+  if [ $test = "boot" ]; then
     DEFAULT="$DEFAULT ADK_TEST_BASE=y"
   fi
-  if [ $test = "ltp" ];then
+  if [ $test = "ltp" ]; then
     DEFAULT="$DEFAULT ADK_TEST_LTP=y"
   fi
-  if [ $test = "mksh" ];then
+  if [ $test = "mksh" ]; then
     DEFAULT="$DEFAULT ADK_TEST_MKSH=y"
   fi
-  if [ $test = "libc" ];then
+  if [ $test = "libc" ]; then
     case $lib in
       uclibc-ng)
         DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_TESTSUITE=y"
@@ -795,7 +805,7 @@ build() {
         ;;
     esac
   fi
-  if [ $test = "native" ];then
+  if [ $test = "native" ]; then
     case $lib in
       uclibc-ng)
         DEFAULT="$DEFAULT ADK_TEST_UCLIBC_NG_NATIVE=y"
@@ -865,18 +875,21 @@ for lib in ${libc}; do
   if [ ! -z $archs ]; then
     archlist="$archs"
   fi
-  if [ ! -z $source ]; then
-    if [ ! -d $source ]; then
+  # libc source used?
+  if [ ! -z $libcsource ]; then
+    if [ ! -d $libcsource ]; then
       echo "Not a directory."
       exit 1
     fi
     usrc=$(mktemp -d /tmp/XXXX)
-    echo "Creating source tarball openadk/dl/${libver}.tar.xz"
-    cp -a $source $usrc/$libver
+    echo "Creating C library source tarball openadk/dl/${libver}.tar.xz"
+    cp -a $libcsource $usrc/$libver
     mkdir -p $topdir/openadk/dl 2>/dev/null
     rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
     (cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
     touch $topdir/openadk/dl/${libver}.tar.xz.nohash
+    # we need to clean system, when external source is used
+    clean=1
   fi
 
   # start with a clean dir
@@ -895,10 +908,6 @@ for lib in ${libc}; do
     if [ "$arch" = "$skiparchs" ]; then
       echo "Skipping $skiparchs"
       continue
-    fi
-    if [ $clean -eq 1 ]; then
-      echo "cleaning openadk build directory"
-      (cd openadk && make cleansystem)
     fi
     if [[ "$allowed_libc" = *${lib}* ]]; then
       echo "Compiling for $lib and $arch testing $test"
