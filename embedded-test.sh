@@ -282,7 +282,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng newlib"
       runtime_test=""
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800"
-      default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=toolchain-m68k"
+      default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=m68k ADK_TARGET_SYSTEM=toolchain-m68k ADK_TARGET_CPU=68040"
       ;;
     m68k-nommu)
       allowed_libc="uclibc-ng"
