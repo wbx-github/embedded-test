@@ -239,7 +239,7 @@ get_arch_info() {
     c6x)
       allowed_libc="uclibc-ng"
       runtime_test=""
-      default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=c6x ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-c6x"
+      default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=c6x ADK_TARGET_SYSTEM=toolchain-c6x"
       ;;
     crisv10)
       allowed_libc="uclibc-ng newlib"
