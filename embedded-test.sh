@@ -312,10 +312,10 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot"
-      default_uclibc-ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=metag ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-metag"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=metag ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-metag"
       cpu_arch=metag
       qemu=qemu-system-meta
-      qemu_args="-display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
+      qemu_args="-nographic -display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
       qemu_machine=01sp
       piggyback=1
       ;;
@@ -913,7 +913,7 @@ for lib in ${libc}; do
   case $lib in
     uclibc-ng)
       archlist=$arch_list_uclibcng
-      version=1.0.9
+      version=1.0.10
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
       ;;
