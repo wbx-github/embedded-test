@@ -644,10 +644,10 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=xtensa"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa"
       cpu_arch=xtensa
       qemu=qemu-system-${cpu_arch}
-      qemu_machine=lx60
+      qemu_machine=ml605
       qemu_args="${qemu_args} -cpu dc233c"
       ;;
     *)
