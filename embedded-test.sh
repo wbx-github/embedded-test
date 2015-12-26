@@ -47,7 +47,9 @@ for tool in $tools; do
     f=1
   fi
 done
-if [ $f -eq 1 ];then exit 1; fi
+if [ $f -eq 1 ]; then 
+  exit 1
+fi
 
 help() {
 	cat >&2 <<EOF
@@ -117,7 +119,12 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
 }; done
 
 if [ -z "$libc" ]; then
-  libc="uclibc-ng musl glibc newlib"
+  if [[ $libcversion ]]; then
+    echo "You can not use a specific C library version without setting the C library"
+    exit 1
+  else
+    libc="uclibc-ng musl glibc newlib"
+  fi
 fi
 
 if [ ! -d openadk ]; then
@@ -895,8 +902,13 @@ build() {
       DEFAULT="$DEFAULT $default_newlib"
       ;;
   esac
+  # use special C library version
+  if [[ $libcversion ]]; then
+    DEFAULT="$DEFAULT ADK_TARGET_LIBC_VERSION=$libcversion"
+  fi
 
   rm .config* .defconfig 2>/dev/null
+  echo "Using following defaults: $DEFAULT"
   make $DEFAULT defconfig
   for pkg in $packages; do
     p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
