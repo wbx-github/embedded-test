@@ -54,23 +54,27 @@ help() {
 Syntax: $0 [ --libc=<libc> --arch=<arch> --test=<test> ]
 
 Explanation:
-	--libc=<libc>             c library to use (${valid_libc})
-	--arch=<arch>             architecture to check (otherwise all supported)
-	--skiparch=<arch>         architectures to skip when all choosen
-	--test=<test>             run test (${valid_tests}), default toolchain
-	--libc-source=<dir>       use directory with source for C library
-	--gcc-source=<dir>        use directory with source for gcc
-	--binutils-source=<dir>   use directory with source for binutils
-	--gdb-source=<dir>        use directory with source for gdb
-	--ntp=<ntpserver>         set NTP server for test run
-	--packages=<packagelist>  add extra packages to the build
-	--update                  update OpenADK source via git pull, before building
-	--continue                continue on a broken build
-	--cleandir                clean OpenADK build directories before build
-	--clean                   clean OpenADK build directory for single arch
-	--debug                   enable debug output from OpenADK
-	--shell                   start a shell instead of test autorun
-	--help                    this help text
+	--libc=<libc>                c library to use (${valid_libc})
+	--arch=<arch>                architecture to check (otherwise all supported)
+	--skiparch=<arch>            architectures to skip when all choosen
+	--test=<test>                run test (${valid_tests}), default toolchain
+	--libc-source=<dir>          use directory with source for C library
+	--gcc-source=<dir>           use directory with source for gcc
+	--binutils-source=<dir>      use directory with source for binutils
+	--gdb-source=<dir>           use directory with source for gdb
+	--libc-version=<version>     use version of C library
+	--gcc-version=<version>      use version of gcc
+	--binutils-version=<version> use version of binutils
+	--gdb-version=<version>      use version of gdb 
+	--ntp=<ntpserver>            set NTP server for test run
+	--packages=<packagelist>     add extra packages to the build
+	--update                     update OpenADK source via git pull, before building
+	--continue                   continue on a broken build
+	--cleandir                   clean OpenADK build directories before build
+	--clean                      clean OpenADK build directory for single arch
+	--debug                      enable debug output from OpenADK
+	--shell                      start a shell instead of test autorun
+	--help                       this help text
 EOF
 	exit 1
 }
@@ -101,6 +105,10 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--gcc-source=*) gccsource=${1#*=}; shift ;;
   (--binutils-source=*) binutilssource=${1#*=}; shift ;;
   (--gdb-source=*) gdbsource=${1#*=}; shift ;;
+  (--libc-version=*) libcversion=${1#*=}; shift ;;
+  (--gcc-version=*) gccversion=${1#*=}; shift ;;
+  (--binutils-version=*) binutilsversion=${1#*=}; shift ;;
+  (--gdb-version=*) gdbversion=${1#*=}; shift ;;
   (--packages=*) packages=${1#*=}; shift ;;
   (--ntp=*) ntp=${1#*=}; shift ;;
   (--help) help; shift ;;
@@ -913,25 +921,41 @@ for lib in ${libc}; do
   case $lib in
     uclibc-ng)
       archlist=$arch_list_uclibcng
-      version=1.0.10
+      if [[ $libcversion ]]; then
+        version=$libcversion
+      else
+        version=1.0.10
+      fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
       ;;
     glibc)
       archlist=$arch_list_glibc
-      version=2.22
+      if [[ $libcversion ]]; then
+        version=$libcversion
+      else
+        version=2.22
+      fi
       libver=glibc-${version}
       libdir=glibc
       ;;
     musl)
       archlist=$arch_list_musl
-      version=1.1.12
+      if [[ $libcversion ]]; then
+        version=$libcversion
+      else
+        version=1.1.12
+      fi
       libver=musl-${version}
       libdir=musl
       ;;
     newlib)
       archlist=$arch_list_newlib
-      version=2.2.0
+      if [[ $libcversion ]]; then
+        version=$libcversion
+      else
+        version=2.2.0
+      fi
       libver=newlib-${version}
       libdir=newlib
       ;;
