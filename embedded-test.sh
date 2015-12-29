@@ -39,6 +39,9 @@ giturl=http://git.openadk.org/openadk.git
 valid_libc="uclibc-ng musl glibc newlib"
 valid_tests="toolchain boot libc ltp mksh native"
 
+bootserver=10.0.0.1
+buildserver=10.0.0.2
+
 tools='make git wget xz cpio tar awk sed'
 f=0
 for tool in $tools; do
@@ -56,9 +59,10 @@ help() {
 Syntax: $0 [ --libc=<libc> --arch=<arch> --test=<test> ]
 
 Explanation:
-	--libc=<libc>                c library to use (${valid_libc})
+	--libc=<libc>                C library to use (${valid_libc})
 	--arch=<arch>                architecture to check (otherwise all supported)
 	--skiparch=<arch>            architectures to skip when all choosen
+	--targets=<targets.txt>      a list of remote targets to test via nfsroot or chroot
 	--test=<test>                run test (${valid_tests}), default toolchain
 	--libc-source=<dir>          use directory with source for C library
 	--gcc-source=<dir>           use directory with source for gcc
@@ -102,6 +106,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--libc=*) libc=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
   (--skiparch=*) skiparchs=${1#*=}; shift ;;
+  (--targets=*) targets=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
   (--libc-source=*) libcsource=${1#*=}; shift ;;
   (--gcc-source=*) gccsource=${1#*=}; shift ;;
@@ -117,6 +122,10 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--*) echo "unknown option $1"; exit 1 ;; 
   (-*) help ;;
 }; done
+
+if [ ! -z $targets ]; then
+  targetmode=1
+fi
 
 if [ -z "$libc" ]; then
   if [[ $libcversion ]]; then
@@ -670,6 +679,80 @@ get_arch_info() {
   esac
 }
 
+# creating test script to be run on boot
+create_run_sh() {
+  test=$1
+  file=$2
+  type=$3
+
+  if [ "$type" = "netcat" ]; then
+    tee="| tee REPORT"
+  fi
+
+cat > $file << EOF
+#!/bin/sh
+uname -a
+if [ \$ntpserver ]; then
+  rdate \$ntpserver
+else
+  rdate time.fu-berlin.de
+fi
+EOF
+
+  # boot test
+  if [ $test = "boot" ]; then
+cat >> $file << EOF
+file /bin/busybox
+size /bin/busybox
+for i in \$(ls /lib/*.so|grep -v libgcc);do
+  size \$i
+done
+EOF
+  fi
+  # ltp test
+  if [ $test = "ltp" ]; then
+cat >> $file << EOF
+/opt/ltp/runltp
+EOF
+  fi
+  # mksh test
+  if [ $test = "mksh" ]; then
+cat >> $file << EOF
+mksh /opt/mksh/test.sh
+EOF
+  fi
+  # libc test
+  if [ $test = "libc" ]; then
+    case $lib in
+      uclibc-ng)
+cat >> $file << EOF
+cd /opt/uclibc-ng/test
+sh ./uclibcng-testrunner.sh $tee
+EOF
+      ;;
+      musl|glibc)
+cat >> $file << EOF
+cd /opt/libc-test
+CC=: make run
+EOF
+      ;;
+    esac
+  fi
+
+  if [ "$type" = "netcat" ]; then
+cat >> $file << EOF
+echo quit|nc $buildserver 9999
+EOF
+  fi
+
+  if [ "$type" = "quit" ]; then
+cat >> $file << EOF
+exit
+EOF
+  fi
+  chmod u+x ${root}/run.sh
+}
+
 runtest() {
   lib=$1
   arch=$2
@@ -750,62 +833,7 @@ runtest() {
     tar -xf $archive -C $root
   fi
 
-  # creating test script to be run on boot
-cat > ${root}/run.sh << EOF
-#!/bin/sh
-uname -a
-if [ \$ntpserver ]; then
-  rdate \$ntpserver
-else
-  rdate time.fu-berlin.de
-fi
-EOF
-
-  # boot test
-  if [ $test = "boot" ]; then
-cat >> ${root}/run.sh << EOF
-file /bin/busybox
-size /bin/busybox
-for i in \$(ls /lib/*.so|grep -v libgcc);do
-  size \$i
-done
-exit
-EOF
-  fi
-  # ltp test
-  if [ $test = "ltp" ]; then
-cat >> ${root}/run.sh << EOF
-/opt/ltp/runltp
-exit
-EOF
-  fi
-  # mksh test
-  if [ $test = "mksh" ]; then
-cat >> ${root}/run.sh << EOF
-mksh /opt/mksh/test.sh
-exit
-EOF
-  fi
-  # libc test
-  if [ $test = "libc" ]; then
-    case $lib in
-      uclibc-ng)
-cat >> ${root}/run.sh << EOF
-cd /opt/uclibc-ng/test
-sh ./uclibcng-testrunner.sh
-exit
-EOF
-      ;;
-      musl|glibc)
-cat >> ${root}/run.sh << EOF
-cd /opt/libc-test
-CC=: make run
-exit
-EOF
-      ;;
-    esac
-  fi
-  chmod u+x ${root}/run.sh
+  create_run_sh $test ${root}/run.sh quit
 
   if [ $piggyback -eq 1 ]; then
     (cd openadk && make v)
@@ -825,15 +853,15 @@ EOF
   case $emulator in
     qemu)
       echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee REPORT.${arch}.${test}.${libver}
+      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee REPORT.${arch}.${emulator}.${test}.${libver}
       ;;
     nsim)
       echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
-      ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee REPORT.${arch}.${test}.${libver}
+      ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee REPORT.${arch}.${emulator}.${test}.${libver}
       ;;
   esac
   if [ $? -eq 0 ]; then
-    echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${test}.${libver}"
+    echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${emulator}.${test}.${libver}"
   else
     echo "Test ${test} failed for ${arch} with ${lib} ${libver}."
   fi
@@ -843,14 +871,22 @@ build() {
   lib=$1
   arch=$2
   test=$3
+  system=$4
+  rootfs=$5
 
-  get_arch_info $arch $lib
   cd openadk
 
-  DEFAULT="ADK_TARGET_LIBC=$lib"
+  if [[ $targetmode ]]; then
+    DEFAULT="ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=$system ADK_TARGET_FS=$rootfs"
+  else
+    get_arch_info $arch $lib
+  fi
+
   if [ $debug -eq 1 ]; then
     DEFAULT="$DEFAULT ADK_VERBOSE=1"
   fi
+
+  # build defaults for different tests
   if [ $test = "boot" ]; then
     DEFAULT="$DEFAULT ADK_TEST_BASE=y"
   fi
@@ -888,6 +924,9 @@ build() {
         ;;
     esac
   fi
+
+  # build defaults for different C library
+  DEFAULT="$DEFAULT ADK_TARGET_LIBC=$lib"
   case $lib in
     uclibc-ng)
       DEFAULT="$DEFAULT $default_uclibc_ng"
@@ -1001,38 +1040,69 @@ for lib in ${libc}; do
     echo "completely cleaning openadk build directory"
     (cd openadk && make cleandir)
   fi
-  for arch in ${archlist}; do
-    get_arch_info $arch $lib
-    if [ $cont -eq 1 ]; then
-      if [ -f "REPORT.${arch}.${test}.${libver}" ]; then
-        echo "Skipping already run test $test for $arch and $lib"
+
+  if [[ $targetmode ]]; then
+    create_run_sh $test run.sh netcat
+
+    while read line; do
+      target_host=$(echo $line|cut -f 1 -d ,)
+      target_ip=$(echo $line|cut -f 2 -d ,)
+      target_arch=$(echo $line|cut -f 3 -d ,)
+      target_system=$(echo $line|cut -f 4 -d ,)
+      target_suffix=$(echo $line|cut -f 5 -d ,)
+      target_rootfs=$(echo $line|cut -f 6 -d ,)
+      target_powerid=$(echo $line|cut -f 7 -d ,)
+      echo "Testing target system $target_system ($target_arch) with $target_rootfs on $target_host"
+      build $lib $target_arch $test $target_system $target_rootfs
+      kernel=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${target_rootfs}-kernel
+      tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.xz
+      scp $kernel root@${bootserver}:/tftpboot/${target_host}
+      ssh root@${bootserver} "cd /tftpboot; ln -sf ${target_host} vmlinux"
+      ssh root@${bootserver} "mkdir /nfsroot/${target_host}"
+      xzcat $tarball | ssh root@${bootserver} "tar -xvf - -C /nfsroot/${target_host}"
+      scp run.sh root@${bootserver}:/nfsroot/${target_host}
+      echo "Powering on target system"
+      ssh root@${bootserver} "sispmctl -o $target_powerid"
+      echo "Waiting for target system to finish"
+      nc -l -p 9999
+      echo "Test finished. Powering off target system"
+      ssh root@${bootserver} "sispmctl -f $target_powerid"
+      scp root@${bootserver}:/nfsroot/${target_host}/REPORT REPORT.${target_arch}.${target_system}.${test}.${libver}
+    done < $targets
+  else
+    for arch in $archlist; do
+      get_arch_info $arch $lib
+      if [ $cont -eq 1 ]; then
+        if [ -f "REPORT.${arch}.${test}.${libver}" ]; then
+          echo "Skipping already run test $test for $arch and $lib"
+          continue
+        fi
+      fi
+      if [ "$arch" = "$skiparchs" ]; then
+        echo "Skipping $skiparchs"
         continue
       fi
-    fi
-    if [ "$arch" = "$skiparchs" ]; then
-      echo "Skipping $skiparchs"
-      continue
-    fi
-    if [[ "$allowed_tests" = *${test}* ]]; then
-      if [[ "$allowed_libc" = *${lib}* ]]; then
-        echo "Compiling for $lib and $arch testing $test"
-        build $lib $arch $test
-        if [ "$test" != "toolchain" ]; then
-          if [[ "$runtime_test" = *${lib}* ]]; then
-            runtest $lib $arch $test
-          else
-            # fake stamp for continue
-            touch REPORT.${arch}.${test}.${libver}
-            echo "runtime test disabled."
+      if [[ "$allowed_tests" = *${test}* ]]; then
+        if [[ "$allowed_libc" = *${lib}* ]]; then
+          echo "Compiling for $lib and $arch testing $test"
+          build $lib $arch $test
+          if [ "$test" != "toolchain" ]; then
+            if [[ "$runtime_test" = *${lib}* ]]; then
+              runtest $lib $arch $test
+            else
+              # fake stamp for continue
+              touch REPORT.${arch}.${test}.${libver}
+              echo "runtime test disabled."
+            fi
           fi
+        else
+          echo "$lib not available for $arch"
         fi
       else
-        echo "$lib not available for $arch"
+         echo "$test not available for $arch and $lib"
       fi
-    else
-       echo "$test not available for $arch and $lib"
-    fi
-  done
+    done
+  fi
 done
 echo "All tests finished."
 exit 0
