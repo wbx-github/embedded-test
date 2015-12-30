@@ -347,29 +347,25 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=little"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=little"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=little"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=little"
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=microblaze ADK_TARGET_SYSTEM=toolchain-microblaze ADK_TARGET_ENDIAN=little"
       cpu_arch=microblazeel
-      march=microblaze-ml605
-      qemu_machine=petalogix-ml605
-      dtbdir=openadk/target/microblaze
-      qemu_args="${qemu_args} -dtb ${dtbdir}/ml605.dtb"
+      march=microblaze-s3adsp1800
+      qemu_machine=petalogix-s3adsp1800
       ;;
     microblazebe)
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=big"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=big"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-ml605 ADK_TARGET_ENDIAN=big"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=big"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=big"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=big"
       cpu_arch=microblaze
-      march=microblaze-ml605
+      march=microblaze-s3adsp1800
       qemu=qemu-system-${cpu_arch}
-      qemu_machine=petalogix-ml605
-      dtbdir=openadk/target/microblaze
-      qemu_args="${qemu_args} -dtb ${dtbdir}/ml605.dtb"
+      qemu_machine=petalogix-s3adsp1800
       ;;
     mips)
       allowed_libc="uclibc-ng musl glibc newlib"
