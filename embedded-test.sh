@@ -91,7 +91,6 @@ cleandir=0
 shell=0
 update=0
 debug=0
-piggyback=0
 ntp=""
 libc=""
 test="toolchain"
@@ -152,21 +151,16 @@ else
   fi
 fi
 
-cpu_arch=
-march=
-qemu=
-qemu_machine=
-qemu_args=
-suffix=
-dtbdir=
-emulator=
-piggyback=
-allowed_libc=
-runtime_test=
-
 get_arch_info() {
   arch=$1
   lib=$2
+
+  emulator=qemu
+  noappend=0
+  piggyback=0
+  allowed_libc=
+  runtime_test=
+  qemu_args=-nographic
 
   case ${arch} in
     aarch64)
@@ -754,21 +748,15 @@ runtest() {
   arch=$2
   test=$3
 
-  emulator=qemu
-  qemu=qemu-system-${arch}
-  qemu_args=-nographic
   if [ $ntp ]; then
     qemu_append="-append ntpserver=$ntp"
   fi
   if [ $shell -eq 1 ]; then
     qemu_append="-append shell"
   fi
-  noappend=0
-  piggyback=0
-  suffix=
-  libdir=lib
-  march=${arch}
 
+  qemu=qemu-system-${arch}
+  march=${arch}
   get_arch_info $arch $lib
 
   case $emulator in
