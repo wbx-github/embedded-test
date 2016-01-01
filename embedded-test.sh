@@ -689,7 +689,11 @@ else
   rdate time.fu-berlin.de
 fi
 EOF
-
+  if [ "$type" = "netcat" ]; then
+cat >> $file << EOF
+dmesg > REPORT
+EOF
+  fi
   # boot test
   if [ $test = "boot" ]; then
 cat >> $file << EOF
@@ -741,7 +745,7 @@ cat >> $file << EOF
 exit
 EOF
   fi
-  chmod u+x ${root}/run.sh
+  chmod u+x $file
 }
 
 runtest() {
