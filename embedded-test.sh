@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
@@ -311,7 +311,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng newlib"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=lm32 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-lm32"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=lm32 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-lm32"
       ;;
     m68k)
       allowed_libc="uclibc-ng newlib"
