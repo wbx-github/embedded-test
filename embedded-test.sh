@@ -158,6 +158,7 @@ get_arch_info() {
   emulator=qemu
   noappend=0
   piggyback=0
+  suffix=
   allowed_libc=
   runtime_test=
   qemu_args=-nographic
@@ -858,6 +859,7 @@ build() {
   system=$4
   rootfs=$5
 
+  DEFAULT=
   cd openadk
 
   if [[ $targetmode ]]; then
