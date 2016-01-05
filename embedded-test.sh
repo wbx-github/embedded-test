@@ -23,13 +23,13 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="alpha armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 ia64 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
 
 # musl
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 alpha armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
 # newlib
 arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
@@ -173,6 +173,17 @@ get_arch_info() {
       cpu_arch=aarch64
       qemu_machine=virt
       qemu_args="${qemu_args} -cpu cortex-a57 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+      ;;
+    alpha)
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="glibc"
+      allowed_tests="toolchain boot libc ltp mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=alpha ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-alpha"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=alpha ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-alpha"
+      cpu_arch=alpha
+      march=alpha
+      qemu=qemu-system-${cpu_arch}
+      qemu_args="${qemu_args} -monitor null"
       ;;
     armv5)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -1080,11 +1091,10 @@ for lib in ${libc}; do
           if [ "$test" != "toolchain" ]; then
             if [[ "$runtime_test" = *${lib}* ]]; then
               runtest $lib $arch $test
-            else
-              # fake stamp for continue
-              touch REPORT.${arch}.${test}.${libver}
-              echo "runtime test disabled."
             fi
+          else
+            # fake stamp for continue
+            touch REPORT.${arch}.${test}.${libver}
           fi
         else
           echo "$lib not available for $arch"
