@@ -677,7 +677,7 @@ create_run_sh() {
   type=$3
 
   if [ "$type" = "netcat" ]; then
-    tee="| tee REPORT"
+    tee="| tee -a /REPORT"
   fi
 
 cat > $file << EOF
@@ -691,29 +691,29 @@ fi
 EOF
   if [ "$type" = "netcat" ]; then
 cat >> $file << EOF
-dmesg > REPORT
+dmesg >> /REPORT
 EOF
   fi
   # boot test
   if [ $test = "boot" ]; then
 cat >> $file << EOF
-file /bin/busybox
-size /bin/busybox
+file /bin/busybox $tee
+size /bin/busybox $tee
 for i in \$(ls /lib/*.so|grep -v libgcc);do
-  size \$i
+  size \$i $tee
 done
 EOF
   fi
   # ltp test
   if [ $test = "ltp" ]; then
 cat >> $file << EOF
-/opt/ltp/runltp
+/opt/ltp/runltp $tee
 EOF
   fi
   # mksh test
   if [ $test = "mksh" ]; then
 cat >> $file << EOF
-mksh /opt/mksh/test.sh
+mksh /opt/mksh/test.sh $tee
 EOF
   fi
   # libc test
@@ -728,7 +728,7 @@ EOF
       musl|glibc)
 cat >> $file << EOF
 cd /opt/libc-test
-CC=: make run
+CC=: make run $tee
 EOF
       ;;
     esac
@@ -1034,7 +1034,7 @@ for lib in ${libc}; do
   if [[ $targetmode ]]; then
     create_run_sh $test run.sh netcat
 
-    while read line; do
+    while read -u3 line; do
       target_host=$(echo $line|cut -f 1 -d ,)
       target_ip=$(echo $line|cut -f 2 -d ,)
       target_arch=$(echo $line|cut -f 3 -d ,)
@@ -1047,18 +1047,19 @@ for lib in ${libc}; do
       kernel=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${target_rootfs}-kernel
       tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.xz
       scp $kernel root@${bootserver}:/tftpboot/${target_host}
-      ssh root@${bootserver} "cd /tftpboot; ln -sf ${target_host} vmlinux"
-      ssh root@${bootserver} "mkdir /nfsroot/${target_host}"
-      xzcat $tarball | ssh root@${bootserver} "tar -xvf - -C /nfsroot/${target_host}"
+      ssh -n root@${bootserver} "cd /tftpboot; ln -sf ${target_host} vmlinux"
+      ssh -n root@${bootserver} "mkdir /nfsroot/${target_host} 2>/dev/null"
+      xzcat $tarball | ssh root@${bootserver} "tar -xf - -C /nfsroot/${target_host}"
       scp run.sh root@${bootserver}:/nfsroot/${target_host}
       echo "Powering on target system"
-      ssh root@${bootserver} "sispmctl -o $target_powerid"
+      ssh -n root@${bootserver} "sispmctl -o $target_powerid"
       echo "Waiting for target system to finish"
       nc -l -p 9999
       echo "Test finished. Powering off target system"
-      ssh root@${bootserver} "sispmctl -f $target_powerid"
+      ssh -n root@${bootserver} "sispmctl -f $target_powerid"
       scp root@${bootserver}:/nfsroot/${target_host}/REPORT REPORT.${target_arch}.${target_system}.${test}.${libver}
-    done < $targets
+      ssh -n root@${bootserver} "rm /nfsroot/${target_host}/REPORT"
+    done 3< $targets
   else
     for arch in $archlist; do
       get_arch_info $arch $lib
