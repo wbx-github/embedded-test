@@ -78,6 +78,7 @@ Explanation:
 	--continue                   continue on a broken build
 	--cleandir                   clean OpenADK build directories before build
 	--clean                      clean OpenADK build directory for single arch
+	--no-clean                   do not clean OpenADK build directory for single arch
 	--debug                      enable debug output from OpenADK
 	--shell                      start a shell instead of test autorun
 	--help                       this help text
@@ -87,6 +88,7 @@ EOF
 
 cont=0
 clean=0
+noclean=0
 cleandir=0
 shell=0
 update=0
@@ -98,6 +100,7 @@ test="toolchain"
 while [[ $1 != -- && $1 = -* ]]; do case $1 { 
   (--cleandir) cleandir=1; shift ;;
   (--clean) clean=1; shift ;;
+  (--no-clean) noclean=1; shift ;;
   (--debug) debug=1; shift ;;
   (--update) update=1; shift ;;
   (--continue) cont=1; shift ;;
@@ -1033,7 +1036,9 @@ for lib in ${libc}; do
     (cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
     touch $topdir/openadk/dl/${libver}.tar.xz.nohash
     # we need to clean system, when external source is used
-    clean=1
+    if [ $noclean -eq 0 ]; then
+      clean=1
+    fi
   fi
 
   # start with a clean dir
