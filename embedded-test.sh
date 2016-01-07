@@ -1,6 +1,6 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2015
+# Copyright © 2014-2016
 #	Waldemar Brodkorb <wbx@embedded-test.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 ia64 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa"
+arch_list_uclibcng="alpha armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 ia64 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
@@ -673,11 +673,21 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_XTENSA=dc233c"
       cpu_arch=xtensa
       qemu=qemu-system-${cpu_arch}
       qemu_machine=ml605
       qemu_args="${qemu_args} -cpu dc233c"
+      ;;
+    xtensa-nommu)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_XTENSA=de212"
+      cpu_arch=xtensa
+      qemu=qemu-system-${cpu_arch}
+      qemu_machine=ml605
+      qemu_args="${qemu_args} -cpu de212"
       ;;
     *)
       echo "architecture ${arch} not supported"; exit 1;;
