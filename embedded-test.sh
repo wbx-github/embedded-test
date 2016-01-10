@@ -1090,7 +1090,7 @@ for lib in ${libc}; do
     for arch in $archlist; do
       get_arch_info $arch $lib
       if [ $cont -eq 1 ]; then
-        if [ -f "REPORT.${arch}.${test}.${libver}" ]; then
+        if [ -f "REPORT.${arch}.${emulator}.${test}.${libver}" ]; then
           echo "Skipping already run test $test for $arch and $lib"
           continue
         fi
@@ -1109,7 +1109,7 @@ for lib in ${libc}; do
             fi
           else
             # fake stamp for continue
-            touch REPORT.${arch}.${test}.${libver}
+            touch REPORT.${arch}.${emulator}.${test}.${libver}
           fi
         else
           echo "$lib not available for $arch"
