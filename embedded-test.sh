@@ -29,7 +29,7 @@ arch_list_uclibcng="alpha armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 
 arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 alpha armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 alpha armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
 # newlib
 arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
@@ -557,6 +557,15 @@ get_arch_info() {
       runtime_test="glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
+      cpu_arch=ppc64
+      qemu=qemu-system-${cpu_arch}
+      qemu_machine=pseries
+      ;;
+    ppc64le)
+      allowed_libc="glibc"
+      runtime_test="glibc"
+      allowed_tests="toolchain"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=little"
       cpu_arch=ppc64
       qemu=qemu-system-${cpu_arch}
       qemu_machine=pseries
