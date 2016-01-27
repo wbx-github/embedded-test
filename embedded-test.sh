@@ -23,13 +23,13 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha armv5 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 ia64 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa xtensa-nommu"
+arch_list_uclibcng="alpha armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 ia64 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh3 sh4 sh4eb sparc x86 x86_64 xtensa xtensa-nommu"
 
 # musl
-arch_list_musl="aarch64 armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
+arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 alpha armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
 
 # newlib
 arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
@@ -203,6 +203,21 @@ get_arch_info() {
       suffix=soft_eabi
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
       qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111"
+      ;;
+    armv6)
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
+      allowed_tests="toolchain boot libc ltp mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-realview-eb-mpcore"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-realview-eb-mpcore"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-realview-eb-mpcore"
+      cpu_arch=arm
+      march=arm-realview-eb-mpcore
+      qemu=qemu-system-${cpu_arch}
+      qemu_machine=realview-eb-mpcore
+      suffix=soft_eabi
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
+      qemu_args="${qemu_args} -net user -net nic"
       ;;
     armv7)
       allowed_libc="uclibc-ng musl glibc"
