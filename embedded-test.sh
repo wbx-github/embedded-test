@@ -29,7 +29,7 @@ arch_list_uclibcng="alpha armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be 
 arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc sparc64 tile x86 x86_64"
+arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc sparc64 tilegx x86 x86_64"
 
 # newlib
 arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
@@ -654,11 +654,11 @@ get_arch_info() {
       qemu_machine=sun4u
       qemu_args="${qemu_args} -net nic,model=e1000 -net user"
       ;;
-    tile)
+    tilegx)
       allowed_libc="glibc"
       runtime_test=""
       allowed_tests="toolchain"
-      default_glibc="ADK_APPLIANCE=new ADK_TARGET_ARCH=tile ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-tile"
+      default_glibc="ADK_APPLIANCE=new ADK_TARGET_ARCH=tile ADK_TARGET_CPU=tilegx ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-tile"
       ;;
     x86)
       allowed_libc="uclibc-ng musl glibc newlib"
