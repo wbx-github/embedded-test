@@ -215,7 +215,7 @@ get_arch_info() {
       march=arm-realview-eb-mpcore
       qemu=qemu-system-${cpu_arch}
       qemu_machine=realview-eb-mpcore
-      suffix=soft_eabi
+      suffix=hard_eabihf
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${cpu_arch}_${suffix}
       qemu_args="${qemu_args} -net user -net nic"
       ;;
