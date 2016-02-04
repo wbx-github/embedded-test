@@ -761,7 +761,8 @@ EOF
   # mksh test
   if [ $test = "mksh" ]; then
 cat >> $file << EOF
-mksh /opt/mksh/test.sh $tee
+tty=\$(cat /proc/consoles |cut -f 1 -d " ")
+mksh -T !/dev/\$tty -c '/opt/mksh/test.sh' $tee
 EOF
   fi
   # libc test
