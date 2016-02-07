@@ -310,7 +310,7 @@ get_arch_info() {
     crisv32)
       allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc mksh ltp native"
+      allowed_tests="toolchain boot libc ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=cris ADK_TARGET_ENDIAN=little ADK_TARGET_SYSTEM=toolchain-cris ADK_TARGET_CPU=crisv32"
       cpu_arch=crisv32
