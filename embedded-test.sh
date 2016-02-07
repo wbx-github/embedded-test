@@ -1075,6 +1075,23 @@ for lib in ${libc}; do
       clean=1
     fi
   fi
+  if [ ! -z $binutilssource ]; then
+    if [ ! -d $binutilssource ]; then
+      echo "Not a directory."
+      exit 1
+    fi
+    usrc=$(mktemp -d /tmp/XXXX)
+    echo "Creating binutils source tarball openadk/dl/binutils-git.tar.xz"
+    cp -a $binutilssource $usrc/binutils-git
+    mkdir -p $topdir/openadk/dl 2>/dev/null
+    rm $topdir/openadk/dl/binutils-git.tar.xz 2>/dev/null
+    (cd $usrc && tar cJf $topdir/openadk/dl/binutils-git.tar.xz binutils-git)
+    touch $topdir/openadk/dl/binutils-git.tar.xz.nohash
+    # we need to clean system, when external source is used
+    if [ $noclean -eq 0 ]; then
+      clean=1
+    fi
+  fi
 
   # start with a clean dir
   if [ $cleandir -eq 1 ]; then
