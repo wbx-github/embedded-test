@@ -32,7 +32,7 @@ arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips m
 arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
 
 # newlib
-arch_list_newlib="armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
+arch_list_newlib="aarch64 arc armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -644,7 +644,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=sparc ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc"
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=sparc ADK_TARGET_SYSTEM=toolchain-sparc"
       cpu_arch=sparc
-      qemu_machine=SS-5
+      qemu_machine=SS-10
       ;;
     sparc64)
       allowed_libc="glibc"
