@@ -32,7 +32,7 @@ arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips m
 arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
 
 # newlib
-arch_list_newlib="aarch64 arc armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
+arch_list_newlib="aarch64 arcv1 armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -168,11 +168,12 @@ get_arch_info() {
 
   case ${arch} in
     aarch64)
-      allowed_libc="musl glibc"
+      allowed_libc="musl glibc newlib"
       runtime_test="musl glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
+      default_newlib="ADK_APPLIANCE=test ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=toolchain-aarch64"
       cpu_arch=aarch64
       qemu_machine=virt
       qemu_args="${qemu_args} -cpu cortex-a57 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
@@ -245,7 +246,7 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=arm ADK_TARGET_ENDIAN=big ADK_TARGET_SYSTEM=toolchain-arm"
       ;;
     arcv1)
-      allowed_libc="uclibc-ng"
+      allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=nsim-arcv1 ADK_TARGET_ENDIAN=little"
