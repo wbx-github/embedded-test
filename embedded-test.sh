@@ -537,14 +537,14 @@ get_arch_info() {
       allowed_libc="glibc"
       runtime_test=""
       allowed_tests="toolchain"
-      default_glibc="ADK_APPLIANCE=new ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-nios2"
+      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-nios2"
       ;;
     or1k)
       allowed_libc="uclibc-ng musl newlib"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-or1k"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-or1k"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=or1k"
       ;;
     ppc)
@@ -658,7 +658,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=sparc ADK_TARGET_CPU=leon3 ADK_TARGET_SYSTEM=toolchain-sparc"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_ARCH=sparc ADK_TARGET_CPU=leon3 ADK_TARGET_SYSTEM=generic-sparc"
       ;;
     sparc64)
       allowed_libc="glibc"
@@ -673,7 +673,7 @@ get_arch_info() {
       allowed_libc="glibc"
       runtime_test=""
       allowed_tests="toolchain"
-      default_glibc="ADK_APPLIANCE=new ADK_TARGET_OS=linux ADK_TARGET_ARCH=tile ADK_TARGET_CPU=tilegx ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-tile"
+      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=tile ADK_TARGET_CPU=tilegx ADK_TARGET_SYSTEM=generic-tile"
       ;;
     x86)
       allowed_libc="uclibc-ng musl glibc newlib"
