@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc x86 x86_64 xtensa xtensa-nommu"
+arch_list_uclibcng="alpha armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 ia64 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc ppcsf sh4 sh4eb x86 x86_64"
@@ -545,7 +545,6 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=toolchain-or1k"
-      default_newlib="ADK_APPLIANCE=new ADK_TARGET_ARCH=or1k ADK_TARGET_SYSTEM=toolchain-or1k"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=or1k"
       ;;
     ppc)
@@ -609,14 +608,14 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_OS=linux ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh2"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh2"
       cpu_arch=sh2
       ;;
     sh3)
       allowed_libc="uclibc-ng"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_OS=linux ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3"
       cpu_arch=sh3
       ;;
     sh4)
@@ -654,6 +653,12 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc"
       cpu_arch=sparc
       qemu_machine=SS-10
+      ;;
+    sparc-leon3)
+      allowed_libc="uclibc-ng"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=new ADK_TARGET_ARCH=sparc ADK_TARGET_CPU=leon3 ADK_TARGET_SYSTEM=toolchain-sparc"
       ;;
     sparc64)
       allowed_libc="glibc"
