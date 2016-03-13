@@ -23,13 +23,13 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64el mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
+arch_list_uclibcng="alpha armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc ppcsf sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64eln32 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
+arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
 
 # newlib
 arch_list_newlib="aarch64 arcv1 armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
@@ -506,6 +506,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
       cpu_arch=mips64
       march=mips64
+      endian=el
       qemu=qemu-system-mips64el
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
@@ -519,6 +520,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
       cpu_arch=mips64
       march=mips64
+      endian=el
       qemu=qemu-system-mips64el
       qemu=qemu-system-${cpu_arch}
       qemu_machine=malta
@@ -533,6 +535,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
       cpu_arch=mips64
       march=mips64
+      endian=el
       qemu=qemu-system-mips64el
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
@@ -880,19 +883,19 @@ runtest() {
     rm -rf openadk/extra 2>/dev/null
     mkdir openadk/extra 2>/dev/null
     if [ ! -z $suffix ]; then
-      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
+      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
     else
-      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
+      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
     fi
   else
     echo "Generating root filesystem for test run"
     root=$(mktemp -d /tmp/XXXX)
     if [ ! -z $suffix ]; then
-      archive=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/qemu-${march}-initramfsarchive-kernel
+      archive=openadk/firmware/${emulator}-${march}${endian}_${lib}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}_${suffix}/qemu-${march}-initramfsarchive-kernel
     else
-      archive=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-${lib}-initramfsarchive.tar.xz
-      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfsarchive-kernel
+      archive=openadk/firmware/${emulator}-${march}${endian}_${lib}/${emulator}-${march}-${lib}-initramfsarchive.tar.xz
+      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}/${emulator}-${march}-initramfsarchive-kernel
     fi
 
     if [ ! -f $archive ]; then
