@@ -32,7 +32,7 @@ arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips m
 arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
 
 # newlib
-arch_list_newlib="aarch64 arcv1 armv5 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel mips mipsel or1k ppc sparc x86"
+arch_list_newlib="aarch64 arcv1 armv5 armv6 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -206,12 +206,13 @@ get_arch_info() {
       qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111"
       ;;
     armv6)
-      allowed_libc="uclibc-ng musl glibc"
+      allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-realview-eb-mpcore"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-realview-eb-mpcore"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-realview-eb-mpcore"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arm ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arm1176jzf-s"
       cpu_arch=mpcore
       march=arm-realview-eb-mpcore
       qemu=qemu-system-arm
@@ -541,6 +542,24 @@ get_arch_info() {
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_n64
       ;;
+    moxie)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=moxie"
+      ;;
+    nds32le)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nds32 ADK_TARGET_ENDIAN=little"
+      ;;
+    nds32be)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nds32 ADK_TARGET_ENDIAN=big"
+      ;;
     nios2)
       allowed_libc="glibc"
       runtime_test=""
@@ -691,6 +710,12 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=tile ADK_TARGET_CPU=tilegx ADK_TARGET_SYSTEM=generic-tile"
       ;;
+    v850)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=v850"
+      ;;
     x86)
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
@@ -729,7 +754,6 @@ get_arch_info() {
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=xtensa"
       cpu_arch=dc233c
       qemu=qemu-system-xtensa
       qemu_machine=ml605
