@@ -727,20 +727,22 @@ get_arch_info() {
       allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=xtensa"
-      cpu_arch=xtensa
-      qemu=qemu-system-${cpu_arch}
+      cpu_arch=dc233c
+      qemu=qemu-system-xtensa
       qemu_machine=ml605
       qemu_args="${qemu_args} -cpu dc233c"
+      suffix=${cpu_arch}
       ;;
     xtensa-nommu)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212"
-      cpu_arch=xtensa
-      qemu=qemu-system-${cpu_arch}
+      cpu_arch=de212
+      qemu=qemu-system-xtensa
       qemu_machine=ml605
       qemu_args="${qemu_args} -cpu de212"
+      suffix=${cpu_arch}
       ;;
     *)
       echo "architecture ${arch} not supported"; exit 1;;
