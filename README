@@ -20,7 +20,8 @@ the base system and the C library.  Then it runs either a
 libc test suite, the ltp project or a native compile of a toolchain. 
 More tests can be implemented later.
 
-A full build without any options needs 500 GB of disk space.
+A full build without any options needs 320 GB of disk space.
+All combinations of C library and architectures are build.
 
 Have fun
  Waldemar
