@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
+arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc ppcsf sh4 sh4eb x86 x86_64"
@@ -32,7 +32,7 @@ arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips m
 arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
 
 # newlib
-arch_list_newlib="aarch64 arcv1 armv5 armv6 armeb bfin crisv10 crisv32 frv lm32 m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
+arch_list_newlib="aarch64 arcv1 armv5 armv6 armeb bfin crisv10 crisv32 frv h8300 lm32 m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
