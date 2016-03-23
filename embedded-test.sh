@@ -382,7 +382,7 @@ get_arch_info() {
     metag)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain boot libc"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=metag ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-metag"
       cpu_arch=metag
       qemu=qemu-system-meta
