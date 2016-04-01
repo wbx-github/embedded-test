@@ -1119,7 +1119,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.2.0
+        version=2.4.0
       fi
       libver=newlib-${version}
       libdir=newlib
