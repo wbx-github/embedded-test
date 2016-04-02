@@ -32,7 +32,7 @@ arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips m
 arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
 
 # newlib
-arch_list_newlib="aarch64 arcv1 armv5 armv6 armeb bfin crisv10 crisv32 frv h8300 lm32 m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
+arch_list_newlib="aarch64 arcv1 armv5 armv6 armeb bfin crisv10 crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -339,6 +339,12 @@ get_arch_info() {
       piggyback=1
       suffix=${cpu_arch}
       ;;
+    epiphany)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=epiphany"
+      ;;
     frv)
       allowed_libc="newlib"
       runtime_test=""
@@ -365,6 +371,12 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=lm32 ADK_TARGET_SYSTEM=qemu-lm32"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=lm32"
+      ;;
+    m32r)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=m32r"
       ;;
     m68k)
       allowed_libc="uclibc-ng newlib"
