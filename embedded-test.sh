@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bfin c6x crisv10 crisv32 h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
+arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc ppcsf sh4 sh4eb x86 x86_64"
@@ -306,11 +306,22 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=generic-avr32"
       ;;
-    bfin)
+    bf512-bflt)
       allowed_libc="uclibc-ng"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=generic-bfin"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
+      ;;
+    bf512-fdpic)
+      allowed_libc="uclibc-ng"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
+      ;;
+    bfin)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=bfin"
       ;;
     c6x)
