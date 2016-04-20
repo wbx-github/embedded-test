@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
+arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc ppcsf sh4 sh4eb x86 x86_64"
@@ -283,7 +283,7 @@ get_arch_info() {
       emulator=nsim
       endian=eb
       cpu_arch=arc700
-      suffix=${cpu_arch}
+      suffix=${cpu_arch}${endian}
       march=arcv1
       piggyback=1
       ;;
@@ -297,7 +297,7 @@ get_arch_info() {
       endian=eb
       cpu_arch=archs
       march=arcv2
-      suffix=${cpu_arch}
+      suffix=${cpu_arch}${endian}
       piggyback=1
       ;;
     avr32)
@@ -357,9 +357,10 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=epiphany"
       ;;
     frv)
-      allowed_libc="newlib"
+      allowed_libc="uclibc-ng newlib"
       runtime_test=""
       allowed_tests="toolchain"
+      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=frv ADK_TARGET_SYSTEM=generic-frv"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=frv"
       ;;
     ia64)
@@ -486,7 +487,7 @@ get_arch_info() {
       qemu=qemu-system-mipsel
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-      suffix=${cpu_arch}_hard
+      suffix=${cpu_arch}${endian}_hard
       ;;
     mipselsf)
       allowed_libc="uclibc-ng musl glibc"
@@ -501,7 +502,7 @@ get_arch_info() {
       qemu=qemu-system-mipsel
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-      suffix=${cpu_arch}_soft
+      suffix=${cpu_arch}${endian}_soft
       ;;
     mips64)
       allowed_libc="uclibc-ng glibc"
@@ -552,7 +553,7 @@ get_arch_info() {
       qemu=qemu-system-mips64el
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-      suffix=${cpu_arch}_o32
+      suffix=${cpu_arch}${endian}_o32
       ;;
     mips64eln32)
       allowed_libc="uclibc-ng glibc"
@@ -566,7 +567,7 @@ get_arch_info() {
       qemu=qemu-system-mips64el
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-      suffix=${cpu_arch}_n32
+      suffix=${cpu_arch}${endian}_n32
       ;;
     mips64eln64)
       allowed_libc="uclibc-ng glibc"
@@ -580,7 +581,7 @@ get_arch_info() {
       qemu=qemu-system-mips64el
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
-      suffix=${cpu_arch}_n64
+      suffix=${cpu_arch}${endian}_n64
       ;;
     moxie)
       allowed_libc="newlib"
@@ -947,19 +948,19 @@ runtest() {
     rm -rf openadk/extra 2>/dev/null
     mkdir openadk/extra 2>/dev/null
     if [ ! -z $suffix ]; then
-      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
+      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
     else
-      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
+      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
     fi
   else
     echo "Generating root filesystem for test run"
     root=$(mktemp -d /tmp/XXXX)
     if [ ! -z $suffix ]; then
-      archive=openadk/firmware/${emulator}-${march}${endian}_${lib}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
-      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}_${suffix}/qemu-${march}-initramfsarchive-kernel
+      archive=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/qemu-${march}-initramfsarchive-kernel
     else
-      archive=openadk/firmware/${emulator}-${march}${endian}_${lib}/${emulator}-${march}-${lib}-initramfsarchive.tar.xz
-      kernel=openadk/firmware/${emulator}-${march}${endian}_${lib}/${emulator}-${march}-initramfsarchive-kernel
+      archive=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-${lib}-initramfsarchive.tar.xz
+      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfsarchive-kernel
     fi
 
     if [ ! -f $archive ]; then
@@ -1112,7 +1113,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.13
+        version=1.0.14
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
