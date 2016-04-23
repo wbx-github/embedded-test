@@ -26,7 +26,7 @@
 arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
-arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf or1k ppc ppcsf sh4 sh4eb x86 x86_64"
+arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf sh4 sh4eb x86 x86_64"
 
 # glibc
 arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
@@ -521,11 +521,12 @@ get_arch_info() {
       suffix=${cpu_arch}_o32
       ;;
     mips64n32)
-      allowed_libc="uclibc-ng glibc"
-      runtime_test="uclibc-ng glibc"
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
       cpu_arch=mips64
       march=mips64
       qemu=qemu-system-${cpu_arch}
@@ -534,11 +535,12 @@ get_arch_info() {
       suffix=${cpu_arch}_n32
       ;;
     mips64n64)
-      allowed_libc="uclibc-ng glibc"
-      runtime_test="uclibc-ng glibc"
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
       cpu_arch=mips64
       march=mips64
       qemu=qemu-system-${cpu_arch}
@@ -561,11 +563,12 @@ get_arch_info() {
       suffix=${cpu_arch}${endian}_o32
       ;;
     mips64eln32)
-      allowed_libc="uclibc-ng glibc"
-      runtime_test="uclibc-ng glibc"
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
       cpu_arch=mips64
       march=mips64
       endian=el
@@ -575,11 +578,12 @@ get_arch_info() {
       suffix=${cpu_arch}${endian}_n32
       ;;
     mips64eln64)
-      allowed_libc="uclibc-ng glibc"
-      runtime_test="uclibc-ng glibc"
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
       cpu_arch=mips64
       march=mips64
       endian=el
