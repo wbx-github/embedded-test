@@ -175,9 +175,10 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64"
-      cpu_arch=aarch64
+      cpu_arch=cortex_a53
       qemu_machine=virt
-      qemu_args="${qemu_args} -cpu cortex-a57 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+      qemu_args="${qemu_args} -cpu cortex-a53 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+      suffix=${cpu_arch}
       ;;
     alpha)
       allowed_libc="uclibc-ng glibc"
@@ -428,9 +429,12 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=little"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=microblaze ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-microblaze-s3adsp1800 ADK_TARGET_ENDIAN=little"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=microblaze ADK_TARGET_ENDIAN=little"
-      cpu_arch=microblazeel
+      cpu_arch=microblaze
+      endian=el
       march=microblaze-s3adsp1800
+      qemu=qemu-system-microblazeel
       qemu_machine=petalogix-s3adsp1800
+      suffix=${cpu_arch}${endian}
       ;;
     microblazebe)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -442,8 +446,9 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=microblaze ADK_TARGET_ENDIAN=big"
       cpu_arch=microblaze
       march=microblaze-s3adsp1800
-      qemu=qemu-system-${cpu_arch}
+      qemu=qemu-system-microblaze
       qemu_machine=petalogix-s3adsp1800
+      suffix=${cpu_arch}
       ;;
     mips)
       allowed_libc="uclibc-ng musl glibc newlib"
