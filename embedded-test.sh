@@ -999,15 +999,15 @@ runtest() {
   case $emulator in
     qemu)
       echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee REPORT.${arch}.${emulator}.${test}.${libver}
+      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee REPORT.${arch}.${test}.${libver}
       ;;
     nsim)
       echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
-      ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee REPORT.${arch}.${emulator}.${test}.${libver}
+      ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee REPORT.${arch}.${test}.${libver}
       ;;
   esac
   if [ $? -eq 0 ]; then
-    echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${emulator}.${test}.${libver}"
+    echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${test}.${libver}"
   else
     echo "Test ${test} failed for ${arch} with ${lib} ${libver}."
   fi
@@ -1240,7 +1240,7 @@ for lib in ${libc}; do
     for arch in $archlist; do
       get_arch_info $arch $lib
       if [ $cont -eq 1 ]; then
-        if [ -f "REPORT.${arch}.${emulator}.${test}.${libver}" ]; then
+        if [ -f "REPORT.${arch}.${test}.${libver}" ]; then
           echo "Skipping already run test $test for $arch and $lib"
           continue
         fi
@@ -1259,7 +1259,7 @@ for lib in ${libc}; do
             fi
           else
             # fake stamp for continue
-            touch REPORT.${arch}.${emulator}.${test}.${libver}
+            touch REPORT.${arch}.${test}.${libver}
           fi
         else
           echo "$lib not available for $arch"
