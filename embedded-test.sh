@@ -26,13 +26,13 @@
 arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
-arch_list_musl="aarch64 armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf sh4 sh4eb x86 x86_64"
+arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf sh4 sh4eb x86 x86_64"
 
 # glibc
-arch_list_glibc="aarch64 alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
+arch_list_glibc="aarch64 aarch64be alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
 
 # newlib
-arch_list_newlib="aarch64 arcv1 armv5 armv6 armeb bfin crisv10 crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
+arch_list_newlib="aarch64 aarch64be arcv1 armv5 armv6 armeb bfin crisv10 crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -175,6 +175,18 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64"
+      cpu_arch=cortex_a53
+      qemu_machine=virt
+      qemu_args="${qemu_args} -cpu cortex-a53 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+      suffix=${cpu_arch}
+      ;;
+    aarch64be)
+      allowed_libc="musl glibc newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_musl="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=generic-aarch64 ADK_TARGET_ENDIAN=big"
+      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=generic-aarch64 ADK_TARGET_ENDIAN=big"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64 ADK_TARGET_ENDIAN=big"
       cpu_arch=cortex_a53
       qemu_machine=virt
       qemu_args="${qemu_args} -cpu cortex-a53 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
