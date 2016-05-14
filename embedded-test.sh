@@ -26,7 +26,7 @@
 arch_list_uclibcng="alpha arm-nommu armv5 armv6 armv7 armeb arcv1 arcv2 arcv1-be arcv2-be avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
 
 # musl
-arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf sh4 sh4eb x86 x86_64"
+arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le sh4 sh4eb x86 x86_64"
 
 # glibc
 arch_list_glibc="aarch64 aarch64be alpha armv5 armv6 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64"
@@ -667,22 +667,26 @@ get_arch_info() {
       suffix=soft
       ;;
     ppc64)
-      allowed_libc="glibc"
-      runtime_test="glibc"
+      allowed_libc="musl glibc"
+      runtime_test="musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=big"
       cpu_arch=ppc64
       qemu=qemu-system-${cpu_arch}
       qemu_machine=pseries
+      suffix=${cpu_arch}
       ;;
     ppc64le)
-      allowed_libc="glibc"
-      runtime_test="glibc"
-      allowed_tests="toolchain"
+      allowed_libc="musl glibc"
+      runtime_test="musl glibc"
+      allowed_tests="toolchain boot libc mksh ltp native"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=little"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=little"
       cpu_arch=ppc64
       qemu=qemu-system-${cpu_arch}
       qemu_machine=pseries
+      suffix=${cpu_arch}
       ;;
     s390)
       allowed_libc="glibc"
