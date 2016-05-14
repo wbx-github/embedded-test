@@ -684,7 +684,9 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=little"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=ppc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-ppc64 ADK_TARGET_ENDIAN=little"
       cpu_arch=ppc64
-      qemu=qemu-system-${cpu_arch}
+      endian=le
+      march=ppc64
+      qemu=qemu-system-ppc64
       qemu_machine=pseries
       suffix=${cpu_arch}
       ;;
