@@ -38,6 +38,7 @@ topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
 valid_libc="uclibc-ng musl glibc newlib"
 valid_tests="toolchain boot libc ltp mksh native"
+valid_modes="dynamic static"
 
 bootserver=10.0.0.1
 buildserver=10.0.0.2
@@ -64,6 +65,7 @@ Explanation:
 	--skiparch=<arch>            architectures to skip when all choosen
 	--targets=<targets.txt>      a list of remote targets to test via nfsroot or chroot
 	--test=<test>                run test (${valid_tests}), default toolchain
+	--mode=<mode>                run mode (${valid_modes}), default dynamic
 	--libc-source=<dir>          use directory with source for C library
 	--gcc-source=<dir>           use directory with source for gcc
 	--binutils-source=<dir>      use directory with source for binutils
@@ -96,6 +98,7 @@ debug=0
 ntp=""
 libc=""
 test="toolchain"
+mode="dynamic"
 
 while [[ $1 != -- && $1 = -* ]]; do case $1 { 
   (--cleandir) cleandir=1; shift ;;
@@ -110,6 +113,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--skiparch=*) skiparchs=${1#*=}; shift ;;
   (--targets=*) targets=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
+  (--mode=*) mode=${1#*=}; shift ;;
   (--libc-source=*) libcsource=${1#*=}; shift ;;
   (--gcc-source=*) gccsource=${1#*=}; shift ;;
   (--binutils-source=*) binutilssource=${1#*=}; shift ;;
@@ -873,10 +877,14 @@ EOF
 cat >> $file << EOF
 file /bin/busybox $tee
 size /bin/busybox $tee
+EOF
+  if [ $mode = "dynamic" ]; then
+cat >> $file << EOF
 for i in \$(ls /lib/*.so|grep -v libgcc);do
   size \$i $tee
 done
 EOF
+  fi
   fi
   # ltp test
   if [ $test = "ltp" ]; then
@@ -1035,8 +1043,9 @@ build() {
   lib=$1
   arch=$2
   test=$3
-  system=$4
-  rootfs=$5
+  mode=$4
+  system=$5
+  rootfs=$6
 
   DEFAULT=
   cd openadk
@@ -1114,6 +1123,12 @@ build() {
   rm .config* .defconfig 2>/dev/null
   echo "Using following defaults: $DEFAULT"
   make $DEFAULT defconfig
+
+  # build defaults for different modes
+  if [ $mode = "static" ]; then
+    printf "ADK_TARGET_USE_STATIC_LIBS=y" >> .config
+    yes|make oldconfig
+  fi
   for pkg in $packages; do
     p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
     yes|make oldconfig
@@ -1237,7 +1252,7 @@ for lib in ${libc}; do
       target_rootfs=$(echo $line|cut -f 6 -d ,)
       target_powerid=$(echo $line|cut -f 7 -d ,)
       echo "Testing target system $target_system ($target_arch) with $target_rootfs on $target_host"
-      build $lib $target_arch $test $target_system $target_rootfs
+      build $lib $target_arch $test $mode $target_system $target_rootfs
       kernel=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${target_rootfs}-kernel
       tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.xz
       scp $kernel root@${bootserver}:/tftpboot/${target_host}
@@ -1270,7 +1285,7 @@ for lib in ${libc}; do
       if [[ "$allowed_tests" = *${test}* ]]; then
         if [[ "$allowed_libc" = *${lib}* ]]; then
           echo "Compiling for $lib and $arch testing $test"
-          build $lib $arch $test
+          build $lib $arch $test $mode
           if [ "$test" != "toolchain" ]; then
             if [[ "$runtime_test" = *${lib}* ]]; then
               runtest $lib $arch $test
