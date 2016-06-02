@@ -77,11 +77,12 @@ Explanation:
 	--ntp=<ntpserver>            set NTP server for test run
 	--packages=<packagelist>     add extra packages to the build
 	--update                     update OpenADK source via git pull, before building
+	--create                     create toolchain archive for external usage
 	--continue                   continue on a broken build
 	--cleandir                   clean OpenADK build directories before build
 	--clean                      clean OpenADK build directory for single arch
 	--no-clean                   do not clean OpenADK build directory for single arch
-	--debug                      enable debug output from OpenADK
+	--verbose                    enable verbose output from OpenADK
 	--shell                      start a shell instead of test autorun
 	--help                       this help text
 EOF
@@ -94,7 +95,8 @@ noclean=0
 cleandir=0
 shell=0
 update=0
-debug=0
+verbose=0
+create=0
 ntp=""
 libc=""
 test="toolchain"
@@ -104,8 +106,9 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--cleandir) cleandir=1; shift ;;
   (--clean) clean=1; shift ;;
   (--no-clean) noclean=1; shift ;;
-  (--debug) debug=1; shift ;;
+  (--verbose) verbose=1; shift ;;
   (--update) update=1; shift ;;
+  (--create) create=1; shift ;;
   (--continue) cont=1; shift ;;
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
@@ -916,6 +919,21 @@ EOF
       ;;
     esac
   fi
+  # info
+cat >> $file <<EOF
+if [ -f /etc/.adkgithash ]; then
+  echo "OpenADK git version:"
+  cat /etc/.adkgithash
+fi
+if [ -f /etc/.adkcompiler ]; then
+  echo "Compiler used:"
+  cat /etc/.adkcompiler
+fi
+if [ -f /etc/.adklinker ]; then
+  echo "Linker used:"
+  cat /etc/.adklinker
+fi
+EOF
 
   if [ "$type" = "netcat" ]; then
 cat >> $file << EOF
@@ -1056,7 +1074,7 @@ build() {
     get_arch_info $arch $lib
   fi
 
-  if [ $debug -eq 1 ]; then
+  if [ $verbose -eq 1 ]; then
     DEFAULT="$DEFAULT ADK_VERBOSE=1"
   fi
 
