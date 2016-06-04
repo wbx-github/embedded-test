@@ -1142,15 +1142,20 @@ build() {
   echo "Using following defaults: $DEFAULT"
   make $DEFAULT defconfig
 
+  if [ $create -eq 1 ]; then
+    printf "ADK_CREATE_TOOLCHAIN_ARCHIVE=y" >> .config
+  fi
   # build defaults for different modes
   if [ $mode = "static" ]; then
     printf "ADK_TARGET_USE_STATIC_LIBS=y" >> .config
-    yes|make oldconfig
   fi
   for pkg in $packages; do
     p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
-    yes|make oldconfig
   done
+
+  # refresh after any changes to config
+  yes|make oldconfig
+
   if [ $clean -eq 1 ]; then
     echo "cleaning openadk build directory"
     make cleansystem
