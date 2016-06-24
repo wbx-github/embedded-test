@@ -736,8 +736,8 @@ get_arch_info() {
       ;;
     sh4eb)
       allowed_libc="uclibc-ng musl glibc"
-      runtime_test=""
-      allowed_tests="toolchain"
+      runtime_test="uclibc-ng musl glibc"
+      allowed_tests="toolchain boot libc ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
