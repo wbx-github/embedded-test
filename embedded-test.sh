@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu armv5 armv6 armv7 armeb avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensa-nommu"
+arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu armv5 armv6 armv7 armeb avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le sh4 sh4eb x86 x86_64"
@@ -828,7 +828,18 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c ADK_TARGET_ENDIAN=little"
+      cpu_arch=dc233c
+      qemu=qemu-system-xtensa
+      qemu_machine=ml605
+      qemu_args="${qemu_args} -cpu dc233c"
+      suffix=${cpu_arch}
+      ;;
+    xtensabe)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=kc705_be ADK_TARGET_ENDIAN=big"
       cpu_arch=dc233c
       qemu=qemu-system-xtensa
       qemu_machine=ml605
@@ -839,7 +850,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212 ADK_TARGET_ENDIAN=little"
       cpu_arch=de212
       qemu=qemu-system-xtensa
       qemu_machine=ml605
