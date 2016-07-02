@@ -38,7 +38,6 @@ topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
 valid_libc="uclibc-ng musl glibc newlib"
 valid_tests="toolchain boot libc ltp mksh native"
-valid_modes="dynamic static"
 
 bootserver=10.0.0.1
 buildserver=10.0.0.2
@@ -65,7 +64,6 @@ Explanation:
 	--skiparch=<arch>            architectures to skip when all choosen
 	--targets=<targets.txt>      a list of remote targets to test via nfsroot or chroot
 	--test=<test>                run test (${valid_tests}), default toolchain
-	--mode=<mode>                run mode (${valid_modes}), default dynamic
 	--libc-source=<dir>          use directory with source for C library
 	--gcc-source=<dir>           use directory with source for gcc
 	--binutils-source=<dir>      use directory with source for binutils
@@ -82,6 +80,7 @@ Explanation:
 	--cleandir                   clean OpenADK build directories before build
 	--clean                      clean OpenADK build directory for single arch
 	--no-clean                   do not clean OpenADK build directory for single arch
+	--static                     use static compilation
 	--verbose                    enable verbose output from OpenADK
 	--shell                      start a shell instead of test autorun
 	--help                       this help text
@@ -97,10 +96,10 @@ shell=0
 update=0
 verbose=0
 create=0
+static=0
 ntp=""
 libc=""
 test="toolchain"
-mode="dynamic"
 
 while [[ $1 != -- && $1 = -* ]]; do case $1 { 
   (--cleandir) cleandir=1; shift ;;
@@ -109,6 +108,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--verbose) verbose=1; shift ;;
   (--update) update=1; shift ;;
   (--create) create=1; shift ;;
+  (--static) static=1; shift ;;
   (--continue) cont=1; shift ;;
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
@@ -116,7 +116,6 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--skiparch=*) skiparchs=${1#*=}; shift ;;
   (--targets=*) targets=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
-  (--mode=*) mode=${1#*=}; shift ;;
   (--libc-source=*) libcsource=${1#*=}; shift ;;
   (--gcc-source=*) gccsource=${1#*=}; shift ;;
   (--binutils-source=*) binutilssource=${1#*=}; shift ;;
@@ -895,7 +894,7 @@ cat >> $file << EOF
 file /bin/busybox $tee
 size /bin/busybox $tee
 EOF
-  if [ $mode = "dynamic" ]; then
+  if [ $static -eq 0 ]; then
 cat >> $file << EOF
 for i in \$(ls /lib/*.so|grep -v libgcc);do
   size \$i $tee
@@ -1053,19 +1052,24 @@ runtest() {
     qemu_args="$qemu_args ${qemu_append}"
   fi
 
+  if [ $static -eq 1 ]; then
+    rsuffix=.static
+  fi
+  report=REPORT.${arch}.${test}.${libver}${rsuffix}
+
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
   case $emulator in
     qemu)
       echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee REPORT.${arch}.${test}.${libver}
+      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
       ;;
     nsim)
       echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
-      ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee REPORT.${arch}.${test}.${libver}
+      ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee $report
       ;;
   esac
   if [ $? -eq 0 ]; then
-    echo "Test ${test} for ${arch} finished. See REPORT.${arch}.${test}.${libver}"
+    echo "Test ${test} for ${arch} finished. See $report"
   else
     echo "Test ${test} failed for ${arch} with ${lib} ${libver}."
   fi
@@ -1075,7 +1079,7 @@ build() {
   lib=$1
   arch=$2
   test=$3
-  mode=$4
+  static=$4
   system=$5
   rootfs=$6
 
@@ -1159,8 +1163,7 @@ build() {
   if [ $create -eq 1 ]; then
     printf "ADK_CREATE_TOOLCHAIN_ARCHIVE=y" >> .config
   fi
-  # build defaults for different modes
-  if [ $mode = "static" ]; then
+  if [ $static -eq 1 ]; then
     printf "ADK_TARGET_USE_STATIC_LIBS=y" >> .config
   fi
   for pkg in $packages; do
@@ -1270,7 +1273,6 @@ for lib in ${libc}; do
       clean=1
     fi
   fi
-
   # start with a clean dir
   if [ $cleandir -eq 1 ]; then
     echo "completely cleaning openadk build directory"
@@ -1289,7 +1291,7 @@ for lib in ${libc}; do
       target_rootfs=$(echo $line|cut -f 6 -d ,)
       target_powerid=$(echo $line|cut -f 7 -d ,)
       echo "Testing target system $target_system ($target_arch) with $target_rootfs on $target_host"
-      build $lib $target_arch $test $mode $target_system $target_rootfs
+      build $lib $target_arch $test $static $target_system $target_rootfs
       kernel=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${target_rootfs}-kernel
       tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.xz
       scp $kernel root@${bootserver}:/tftpboot/${target_host}
@@ -1310,7 +1312,7 @@ for lib in ${libc}; do
     for arch in $archlist; do
       get_arch_info $arch $lib
       if [ $cont -eq 1 ]; then
-        if [ -f "REPORT.${arch}.${test}.${libver}" ]; then
+        if [ -f $report ]; then
           echo "Skipping already run test $test for $arch and $lib"
           continue
         fi
@@ -1319,17 +1321,22 @@ for lib in ${libc}; do
         echo "Skipping $skiparchs"
         continue
       fi
+      if [ $static -eq 1 ]; then
+        rsuffix=.static
+      fi
+      report=REPORT.${arch}.${test}.${libver}$rsuffix
+
       if [[ "$allowed_tests" = *${test}* ]]; then
         if [[ "$allowed_libc" = *${lib}* ]]; then
           echo "Compiling for $lib and $arch testing $test"
-          build $lib $arch $test $mode
+          build $lib $arch $test $static
           if [ "$test" != "toolchain" ]; then
             if [[ "$runtime_test" = *${lib}* ]]; then
               runtest $lib $arch $test
             fi
           else
             # fake stamp for continue
-            touch REPORT.${arch}.${test}.${libver}
+            touch $report
           fi
         else
           echo "$lib not available for $arch"
