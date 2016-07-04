@@ -81,6 +81,9 @@ Explanation:
 	--clean                      clean OpenADK build directory for single arch
 	--no-clean                   do not clean OpenADK build directory for single arch
 	--static                     use static compilation
+	--ssp                        use smack stashing protection
+	--debug                      make debug build
+	--nothreads                  disable threading support (only for uClibc-ng)
 	--verbose                    enable verbose output from OpenADK
 	--shell                      start a shell instead of test autorun
 	--help                       this help text
@@ -97,6 +100,9 @@ update=0
 verbose=0
 create=0
 static=0
+ssp=0
+debug=0
+nothreads=0
 ntp=""
 libc=""
 test="toolchain"
@@ -109,6 +115,9 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--update) update=1; shift ;;
   (--create) create=1; shift ;;
   (--static) static=1; shift ;;
+  (--ssp) ssp=1; shift ;;
+  (--debug) debug=1; shift ;;
+  (--nothreads) nothreads=1; shift ;;
   (--continue) cont=1; shift ;;
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
@@ -142,6 +151,19 @@ if [ -z "$libc" ]; then
   else
     libc="uclibc-ng musl glibc newlib"
   fi
+fi
+
+if [ $static -eq 1 ]; then
+  rsuffix=${rsuffix}.static
+fi
+if [ $ssp -eq 1 ]; then
+  rsuffix=${rsuffix}.ssp
+fi
+if [ $debug -eq 1 ]; then
+  rsuffix=${rsuffix}.debug
+fi
+if [ $nothreads -eq 1 ]; then
+  rsuffix=${rsuffix}.nothreads
 fi
 
 if [ ! -d openadk ]; then
@@ -1052,9 +1074,6 @@ runtest() {
     qemu_args="$qemu_args ${qemu_append}"
   fi
 
-  if [ $static -eq 1 ]; then
-    rsuffix=.static
-  fi
   report=REPORT.${arch}.${test}.${libver}${rsuffix}
 
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
@@ -1079,9 +1098,8 @@ build() {
   lib=$1
   arch=$2
   test=$3
-  static=$4
-  system=$5
-  rootfs=$6
+  system=$4
+  rootfs=$5
 
   DEFAULT=
   cd openadk
@@ -1166,6 +1184,16 @@ build() {
   if [ $static -eq 1 ]; then
     printf "ADK_TARGET_USE_STATIC_LIBS=y" >> .config
   fi
+  if [ $ssp -eq 1 ]; then
+    printf "ADK_TARGET_USE_SSP=y" >> .config
+  fi
+  if [ $debug -eq 1 ]; then
+    printf "ADK_DEBUG=y" >> .config
+  fi
+  if [ $nothreads -eq 1 ]; then
+    printf "ADK_TARGET_LIB_WITHOUT_THREADS=y" >> .config
+  fi
+
   for pkg in $packages; do
     p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
   done
@@ -1291,7 +1319,7 @@ for lib in ${libc}; do
       target_rootfs=$(echo $line|cut -f 6 -d ,)
       target_powerid=$(echo $line|cut -f 7 -d ,)
       echo "Testing target system $target_system ($target_arch) with $target_rootfs on $target_host"
-      build $lib $target_arch $test $static $target_system $target_rootfs
+      build $lib $target_arch $test $target_system $target_rootfs
       kernel=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${target_rootfs}-kernel
       tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.xz
       scp $kernel root@${bootserver}:/tftpboot/${target_host}
@@ -1321,15 +1349,12 @@ for lib in ${libc}; do
         echo "Skipping $skiparchs"
         continue
       fi
-      if [ $static -eq 1 ]; then
-        rsuffix=.static
-      fi
-      report=REPORT.${arch}.${test}.${libver}$rsuffix
+      report=REPORT.${arch}.${test}.${libver}${rsuffix}
 
       if [[ "$allowed_tests" = *${test}* ]]; then
         if [[ "$allowed_libc" = *${lib}* ]]; then
           echo "Compiling for $lib and $arch testing $test"
-          build $lib $arch $test $static
+          build $lib $arch $test
           if [ "$test" != "toolchain" ]; then
             if [[ "$runtime_test" = *${lib}* ]]; then
               runtest $lib $arch $test
