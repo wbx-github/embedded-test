@@ -1243,7 +1243,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.1.14
+        version=1.1.15
       fi
       libver=musl-${version}
       libdir=musl
