@@ -1342,6 +1342,7 @@ for lib in ${libc}; do
   else
     for arch in $archlist; do
       get_arch_info $arch $lib
+      report=REPORT.${arch}.${test}.${libver}${rsuffix}
       if [ $cont -eq 1 ]; then
         if [ -f $report ]; then
           echo "Skipping already run test $test for $arch and $lib"
@@ -1352,7 +1353,6 @@ for lib in ${libc}; do
         echo "Skipping $skiparchs"
         continue
       fi
-      report=REPORT.${arch}.${test}.${libver}${rsuffix}
 
       if [[ "$allowed_tests" = *${test}* ]]; then
         if [[ "$allowed_libc" = *${lib}* ]]; then
