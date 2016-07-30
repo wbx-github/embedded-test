@@ -1293,6 +1293,7 @@ for lib in ${libc}; do
       clean=1
     fi
   fi
+  # binutils source used?
   if [ ! -z $binutilssource ]; then
     if [ ! -d $binutilssource ]; then
       echo "Not a directory."
@@ -1305,6 +1306,42 @@ for lib in ${libc}; do
     rm $topdir/openadk/dl/binutils-git.tar.xz 2>/dev/null
     (cd $usrc && tar cJf $topdir/openadk/dl/binutils-git.tar.xz binutils-git)
     touch $topdir/openadk/dl/binutils-git.tar.xz.nohash
+    # we need to clean system, when external source is used
+    if [ $noclean -eq 0 ]; then
+      clean=1
+    fi
+  fi
+  # gcc source used?
+  if [ ! -z $gccsource ]; then
+    if [ ! -d $gccsource ]; then
+      echo "Not a directory."
+      exit 1
+    fi
+    usrc=$(mktemp -d /tmp/XXXX)
+    echo "Creating gcc source tarball openadk/dl/gcc-git.tar.xz"
+    cp -a $gccsource $usrc/gcc-git
+    mkdir -p $topdir/openadk/dl 2>/dev/null
+    rm $topdir/openadk/dl/gcc-git.tar.xz 2>/dev/null
+    (cd $usrc && tar cJf $topdir/openadk/dl/gcc-git.tar.xz gcc-git)
+    touch $topdir/openadk/dl/gcc-git.tar.xz.nohash
+    # we need to clean system, when external source is used
+    if [ $noclean -eq 0 ]; then
+      clean=1
+    fi
+  fi
+  # gdb source used?
+  if [ ! -z $gdbsource ]; then
+    if [ ! -d $gdbsource ]; then
+      echo "Not a directory."
+      exit 1
+    fi
+    usrc=$(mktemp -d /tmp/XXXX)
+    echo "Creating gdb source tarball openadk/dl/gdb-git.tar.xz"
+    cp -a $gdbsource $usrc/gdb-git
+    mkdir -p $topdir/openadk/dl 2>/dev/null
+    rm $topdir/openadk/dl/gdb-git.tar.xz 2>/dev/null
+    (cd $usrc && tar cJf $topdir/openadk/dl/gdb-git.tar.xz gdb-git)
+    touch $topdir/openadk/dl/gdb-git.tar.xz.nohash
     # we need to clean system, when external source is used
     if [ $noclean -eq 0 ]; then
       clean=1
