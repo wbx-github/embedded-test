@@ -72,6 +72,7 @@ Explanation:
 	--gcc-version=<version>      use version of gcc
 	--binutils-version=<version> use version of binutils
 	--gdb-version=<version>      use version of gdb 
+	--kernel-version=<version>   use version of Linux kernel
 	--ntp=<ntpserver>            set NTP server for test run
 	--packages=<packagelist>     add extra packages to the build
 	--update                     update OpenADK source via git pull, before building
@@ -133,6 +134,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--gcc-version=*) gccversion=${1#*=}; shift ;;
   (--binutils-version=*) binutilsversion=${1#*=}; shift ;;
   (--gdb-version=*) gdbversion=${1#*=}; shift ;;
+  (--kernel-version=*) kernelversion=${1#*=}; shift ;;
   (--packages=*) packages=${1#*=}; shift ;;
   (--ntp=*) ntp=${1#*=}; shift ;;
   (--help) help; shift ;;
@@ -1175,6 +1177,10 @@ build() {
   # use special C library version
   if [[ $libcversion ]]; then
     DEFAULT="$DEFAULT ADK_TARGET_LIBC_VERSION=$libcversion"
+  fi
+  # use special Linux kernel version
+  if [[ $kernelversion ]]; then
+    DEFAULT="$DEFAULT ADK_TARGET_KERNEL_VERSION=$kernelversion"
   fi
 
   rm .config* .defconfig 2>/dev/null
