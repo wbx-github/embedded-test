@@ -1182,6 +1182,15 @@ build() {
   if [[ $kernelversion ]]; then
     DEFAULT="$DEFAULT ADK_TARGET_KERNEL_VERSION=$kernelversion"
   fi
+  if [[ $binutilsversion ]]; then
+    DEFAULT="$DEFAULT ADK_TOOLCHAIN_BINUTILS_VERSION=$binutilsversion"
+  fi
+  if [[ $gccversion ]]; then
+    DEFAULT="$DEFAULT ADK_TOOLCHAIN_GCC_VERSION=$gccversion"
+  fi
+  if [[ $gdbversion ]]; then
+    DEFAULT="$DEFAULT ADK_TOOLCHAIN_GDB_VERSION=$gdbversion"
+  fi
 
   rm .config* .defconfig 2>/dev/null
   echo "Using following defaults: $DEFAULT"
