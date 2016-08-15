@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu armv5 armv7 armeb avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe xtensa-nommu"
+arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu armv5 armv7 armv7-thumb2 armeb avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le sh4 sh4eb x86 x86_64 x86_64_x32"
@@ -277,6 +277,19 @@ get_arch_info() {
       qemu=qemu-system-arm
       qemu_machine=vexpress-a9
       suffix=${cpu_arch}_hard_eabihf
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
+      qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
+      ;;
+    armv7-thumb2)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc ltp mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=arm ADK_TARGET_INSTRUCTION_SET=thumb ADK_TARGET_FS=initramfsarchive ADK_TARGET_FLOAT=soft ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9"
+      cpu_arch=cortex_a9
+      march=arm-vexpress-a9
+      qemu=qemu-system-arm
+      qemu_machine=vexpress-a9
+      suffix=${cpu_arch}_soft_eabi
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
       ;;
