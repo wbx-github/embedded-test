@@ -948,6 +948,19 @@ cat >> $file << EOF
 /opt/ltp/runltp $tee
 EOF
   fi
+  # native test
+  if [ $test = "native" ]; then
+cat >> $file << EOF
+echo '#include <stdio.h>\nint main() {\n printf("Hello World");\n return 0; \n}'> /hello.c
+gcc -o /hello /hello.c $tee
+/hello $tee
+if [ \$? -eq 0 ]; then
+  echo "\nsuccess"
+else
+  echo "\nfailed"
+fi
+EOF
+  fi
   # mksh test
   if [ $test = "mksh" ]; then
 cat >> $file << EOF
