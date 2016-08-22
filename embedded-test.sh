@@ -225,7 +225,7 @@ get_arch_info() {
     alpha)
       allowed_libc="uclibc-ng glibc"
       runtime_test="uclibc-ng glibc"
-      allowed_tests="toolchain boot libc ltp mksh native"
+      allowed_tests="toolchain boot libc ltp mksh"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=alpha ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-alpha"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=alpha ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-alpha"
       march=alpha
@@ -396,7 +396,7 @@ get_arch_info() {
     crisv32)
       allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc ltp native"
+      allowed_tests="toolchain boot libc ltp"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=cris ADK_TARGET_CPU=crisv32"
       cpu_arch=crisv32
