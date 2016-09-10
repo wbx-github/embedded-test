@@ -305,8 +305,8 @@ get_arch_info() {
     arm-nommu)
       allowed_libc="uclibc-ng"
       runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=arm ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_CPU=cortex-m4 ADK_TARGET_ENDIAN=little"
+      allowed_tests="toolchain boot"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-versatilepb-nommu ADK_TARGET_ENDIAN=little"
       ;;
     arcv1)
       allowed_libc="uclibc-ng newlib"
@@ -1277,7 +1277,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.23
+        version=2.24
       fi
       libver=glibc-${version}
       libdir=glibc
