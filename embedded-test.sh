@@ -304,9 +304,14 @@ get_arch_info() {
       ;;
     arm-nommu)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain boot"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-versatilepb-nommu ADK_TARGET_ENDIAN=little"
+      march=arm-versatilepb-nommu
+      qemu=qemu-system-arm
+      qemu_machine=versatilepb
+      suffix=soft_eabi
+      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111"
       ;;
     arcv1)
       allowed_libc="uclibc-ng newlib"
