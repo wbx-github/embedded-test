@@ -925,7 +925,7 @@ uname -a
 if [ \$ntpserver ]; then
   rdate \$ntpserver
 else
-  rdate time.fu-berlin.de
+  rdate ptbtime1.ptb.de
 fi
 EOF
   if [ "$type" = "netcat" ]; then
