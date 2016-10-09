@@ -388,7 +388,7 @@ get_arch_info() {
     bf512-flat)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
       emulator=sim
       model=bf512
@@ -401,7 +401,7 @@ get_arch_info() {
     bf512-fdpic)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
       emulator=sim
       model=bf512
