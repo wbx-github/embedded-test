@@ -3,6 +3,10 @@ git:
 install:
   - sudo apt-get -qq update
   - sudo apt-get install -y mksh qemu
+matrix:
+  include:
+  - env: ARCH=alpha
+  - env: ARCH=armv7
+  - env: ARCH=crisv10
 script:
-  - ./embedded-test.sh --arch=alpha --libc=uclibc-ng
-  - ./embedded-test.sh --arch=armv5 --libc=uclibc-ng
+  - ./embedded-test.sh --arch=$ARCH --libc=uclibc-ng
