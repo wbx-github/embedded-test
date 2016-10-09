@@ -54,6 +54,7 @@ topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
 valid_libc="uclibc-ng musl glibc newlib"
 valid_tests="toolchain boot libc ltp mksh native"
+valid_thread_types="none lt nptl"
 
 bootserver=10.0.0.1
 buildserver=10.0.0.2
@@ -80,6 +81,7 @@ Explanation:
 	--skiparch=<arch>            architectures to skip when all choosen
 	--targets=<targets.txt>      a list of remote targets to test via nfsroot or chroot
 	--test=<test>                run test (${valid_tests}), default toolchain
+	--threads=<type>             configure threading support (${valid_thread_types}) (only for uClibc-ng)
 	--libc-source=<dir>          use directory with source for C library
 	--gcc-source=<dir>           use directory with source for gcc
 	--binutils-source=<dir>      use directory with source for binutils
@@ -100,7 +102,6 @@ Explanation:
 	--static                     use static compilation
 	--ssp                        use smack stashing protection
 	--debug                      make debug build
-	--nothreads                  disable threading support (only for uClibc-ng)
 	--verbose                    enable verbose output from OpenADK
 	--shell                      start a shell instead of test autorun
 	--help                       this help text
@@ -119,7 +120,7 @@ create=0
 static=0
 ssp=0
 debug=0
-nothreads=0
+threads=""
 ntp=""
 libc=""
 test="toolchain"
@@ -134,7 +135,6 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--static) static=1; shift ;;
   (--ssp) ssp=1; shift ;;
   (--debug) debug=1; shift ;;
-  (--nothreads) nothreads=1; shift ;;
   (--continue) cont=1; shift ;;
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
@@ -142,6 +142,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--skiparch=*) skiparchs=${1#*=}; shift ;;
   (--targets=*) targets=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
+  (--threads=*) threads=${1#*=}; shift ;;
   (--libc-source=*) libcsource=${1#*=}; shift ;;
   (--gcc-source=*) gccsource=${1#*=}; shift ;;
   (--binutils-source=*) binutilssource=${1#*=}; shift ;;
@@ -179,9 +180,6 @@ if [ $ssp -eq 1 ]; then
 fi
 if [ $debug -eq 1 ]; then
   rsuffix=${rsuffix}.debug
-fi
-if [ $nothreads -eq 1 ]; then
-  rsuffix=${rsuffix}.nothreads
 fi
 
 if [ ! -d openadk ]; then
@@ -1300,8 +1298,14 @@ build() {
   if [ $debug -eq 1 ]; then
     printf "ADK_DEBUG=y" >> .config
   fi
-  if [ $nothreads -eq 1 ]; then
-    printf "ADK_TARGET_LIB_WITHOUT_THREADS=y" >> .config
+  if [ $threads = "none" ]; then
+    printf "ADK_TARGET_WITHOUT_THREADS=y" >> .config
+  fi
+  if [ $threads = "lt" ]; then
+    printf "ADK_TARGET_WITH_LT=y" >> .config
+  fi
+  if [ $threads = "nptl" ]; then
+    printf "ADK_TARGET_WITH_NPTL=y" >> .config
   fi
 
   for pkg in $packages; do
