@@ -1,4 +1,8 @@
+git:
+  depth: 3
 install:
   - sudo apt-get -qq update
   - sudo apt-get install -y mksh qemu
-script: ./embedded-test.sh
+script:
+  - ./embedded-test.sh --arch=alpha --libc=uclibc-ng
+  - ./embedded-test.sh --arch=armv5 --libc=uclibc-ng
