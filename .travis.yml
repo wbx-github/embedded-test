@@ -2,11 +2,13 @@ git:
   depth: 3
 install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y mksh qemu
+  - sudo apt-get install -y mksh
 matrix:
   include:
   - env: ARCH=alpha
   - env: ARCH=armv7
   - env: ARCH=crisv10
+  - env: ARCH=mips
+  - env: ARCH=mips64
 script:
   - ./embedded-test.sh --arch=$ARCH --libc=uclibc-ng
