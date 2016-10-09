@@ -28,16 +28,27 @@ arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
   crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel \
   microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 \
   mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc ppcsf \
-  sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe xtensa-nommu"
+  sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe \
+  xtensa-nommu"
 
 # musl
-arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le sh4 sh4eb x86 x86_64 x86_64_x32"
+arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel \
+  microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 \
+  mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le sh4 sh4eb \
+  x86 x86_64 x86_64_x32"
 
 # glibc
-arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb ia64 microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64 x86_64_x32"
+arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb ia64 \
+  microblazeel microblazebe mips mipssf mipsel mipselsf mips64 \
+  mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nios2 ppc \
+  ppcsf ppc64 ppc64le s390 sh4 sh4eb sparc64 tilegx x86 x86_64 \
+  x86_64_x32"
 
 # newlib
-arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc v850 x86"
+arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
+  crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel \
+  microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc \
+  v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
