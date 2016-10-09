@@ -1,3 +1,4 @@
+language: c
 git:
   depth: 3
 install:
@@ -6,8 +7,12 @@ install:
 matrix:
   include:
   - env: ARCH=alpha
+  - env: ARCH=armv5
   - env: ARCH=armv7
+  - env: ARCH=bf512-flat
+  - env: ARCH=bf512-fdpic
   - env: ARCH=crisv10
+  - env: ARCH=crisv32
   - env: ARCH=mips
   - env: ARCH=mips64
 script:
