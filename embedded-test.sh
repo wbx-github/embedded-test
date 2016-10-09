@@ -922,10 +922,12 @@ create_run_sh() {
 cat > $file << EOF
 #!/bin/sh
 uname -a
-if [ \$ntpserver ]; then
-  rdate \$ntpserver
-else
-  rdate ptbtime1.ptb.de
+if [ -x /usr/sbin/rdate ]; then
+  if [ \$ntpserver ]; then
+    rdate \$ntpserver
+  else
+    rdate ptbtime1.ptb.de
+  fi
 fi
 EOF
   if [ "$type" = "netcat" ]; then
@@ -937,12 +939,20 @@ EOF
   if [ $test = "boot" ]; then
 cat >> $file << EOF
 file /bin/busybox $tee
-size /bin/busybox $tee
+if [ -x /usr/bin/size ]; then
+  size /bin/busybox $tee
+else
+  ls -la /bin/busybox $tee
+fi
 EOF
   if [ $static -eq 0 ]; then
 cat >> $file << EOF
 for i in \$(ls /lib/*.so|grep -v libgcc);do
-  size \$i $tee
+  if [ -x /usr/bin/size ]; then
+    size \$i $tee
+  else
+    ls -la \$i $tee
+  fi
 done
 EOF
   fi
