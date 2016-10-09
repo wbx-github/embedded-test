@@ -480,16 +480,23 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=m68k ADK_TARGET_CPU=68040"
       cpu_arch=68040
       march=m68k-q800
-      qemu=qemu-system-m68k
+      qemu=qemu-system-m68k-full
       qemu_args="-nographic"
       qemu_machine=q800
       suffix=${cpu_arch}
       ;;
     m68k-nommu)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208"
+      cpu_arch=cf5208
+      march=m68k-mcf5208
+      qemu=qemu-system-m68k
+      qemu_args="-nographic"
+      qemu_machine=mcf5208evb
+      suffix=${cpu_arch}
+      piggyback=1
       ;;
     metag)
       allowed_libc="uclibc-ng"
