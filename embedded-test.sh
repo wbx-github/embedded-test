@@ -980,7 +980,9 @@ EOF
   # boot test
   if [ $test = "boot" ]; then
 cat >> $file << EOF
-file /bin/busybox $tee
+if [ -x /usr/bin/file ]; then
+  file /bin/busybox $tee
+fi
 if [ -x /usr/bin/size ]; then
   size /bin/busybox $tee
 else
