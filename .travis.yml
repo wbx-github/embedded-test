@@ -9,11 +9,20 @@ matrix:
   - env: ARCH=alpha
   - env: ARCH=armv5
   - env: ARCH=armv7
+  - env: ARCH=armeb
+  - env: ARCH=avr32
   - env: ARCH=bf512-flat
   - env: ARCH=bf512-fdpic
+  - env: ARCH=c6x
   - env: ARCH=crisv10
   - env: ARCH=crisv32
   - env: ARCH=mips
   - env: ARCH=mips64
+  - env: ARCH=ppc
+  - env: ARCH=sh4
+  - env: ARCH=sparc
+  - env: ARCH=x86
+  - env: ARCH=x86_64
+  - env: ARCH=xtensa
 script:
   - ./embedded-test.sh --arch=$ARCH --libc=uclibc-ng
