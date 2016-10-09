@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu armv5 armv7 armv7-thumb2 armeb avr32 bf512-bflt bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe xtensa-nommu"
+arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu armv5 armv7 armv7-thumb2 armeb avr32 bf512-flat bf512-fdpic c6x crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le sh4 sh4eb x86 x86_64 x86_64_x32"
@@ -189,6 +189,7 @@ get_arch_info() {
   lib=$2
 
   emulator=qemu
+  gdbcmd=
   noappend=0
   piggyback=0
   endian=
@@ -367,17 +368,31 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=generic-avr32"
       ;;
-    bf512-bflt)
+    bf512-flat)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
+      emulator=sim
+      model=bf512
+      march=bfin
+      binfmt=flat
+      gdbcmd="bfin-openadk-uclinux-uclibc-run --env operating --model bf512"
+      piggyback=1
+      suffix=bf512_flat
       ;;
     bf512-fdpic)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
+      emulator=sim
+      model=bf512
+      march=bfin
+      binfmt=fdpic
+      gdbcmd="bfin-openadk-linux-uclibc-run --env operating --model bf512"
+      piggyback=1
+      suffix=bf512_fdpic
       ;;
     bfin)
       allowed_libc="newlib"
@@ -1068,6 +1083,9 @@ runtest() {
         exit 1
       fi
       ;;
+    sim)
+      echo "Using GDB as simulator"
+      ;;
     *)
       echo "emulator/simulator not supported"
       exit 1
@@ -1131,6 +1149,10 @@ runtest() {
     nsim)
       echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
       ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee $report
+      ;;
+    sim)
+      echo "$emulator ${arch} ${kernel}"
+      ./openadk/toolchain_${emulator}-${march}_${lib}_${model}_${binfmt}/usr/bin/${gdbcmd} ${kernel}
       ;;
   esac
   if [ $? -eq 0 ]; then
