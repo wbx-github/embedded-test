@@ -27,9 +27,9 @@ arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
   armv5 armv7 armv7-thumb2 armeb avr32 bf512-flat bf512-fdpic c6x \
   crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel \
   microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 \
-  mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc ppcsf \
-  sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe \
-  xtensa-nommu"
+  mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc \
+  ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa \
+  xtensabe xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel \
@@ -712,10 +712,13 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nds32 ADK_TARGET_ENDIAN=big"
       ;;
     nios2)
-      allowed_libc="glibc"
-      runtime_test=""
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="glibc"
       allowed_tests="toolchain"
-      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=generic-nios2"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
+      qemu_machine=10m50-ghrd
+      piggyback=1
       ;;
     or1k)
       allowed_libc="uclibc-ng musl newlib"
