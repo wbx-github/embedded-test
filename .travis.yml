@@ -7,6 +7,9 @@ install:
 matrix:
   include:
   - env: ARCH=alpha
+  - env: ARCH=arcv1
+  - env: ARCH=arcv2
+  - env: ARCH=armv5
   - env: ARCH=armv5
   - env: ARCH=armv7
   - env: ARCH=armeb
@@ -16,6 +19,8 @@ matrix:
   - env: ARCH=c6x
   - env: ARCH=crisv10
   - env: ARCH=crisv32
+  - env: ARCH=m68k-nommu
+  - env: ARCH=m68k
   - env: ARCH=mips
   - env: ARCH=mips64
   - env: ARCH=ppc
