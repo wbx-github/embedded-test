@@ -1,4 +1,7 @@
 language: c
+notifications:
+  email:
+    - wbx@embedded-test.org
 git:
   depth: 3
 install:
@@ -22,12 +25,16 @@ matrix:
   - env: ARCH=m68k-nommu
   - env: ARCH=m68k
   - env: ARCH=mips
+  - env: ARCH=mipsel
   - env: ARCH=mips64
+  - env: ARCH=mips64el
   - env: ARCH=ppc
+  - env: ARCH=ppcsf
   - env: ARCH=sh4
   - env: ARCH=sparc
   - env: ARCH=x86
   - env: ARCH=x86_64
   - env: ARCH=xtensa
+  - env: ARCH=xtensa-nommu
 script:
   - ./embedded-test.sh --arch=$ARCH --libc=uclibc-ng
