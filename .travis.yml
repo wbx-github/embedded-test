@@ -11,10 +11,14 @@ matrix:
   include:
   - env: ARCH=alpha
   - env: ARCH=arcv1
+  - env: ARCH=arcv1-be
   - env: ARCH=arcv2
+  - env: ARCH=arcv2-be
+  - env: ARCH=arm-nommu
   - env: ARCH=armv5
-  - env: ARCH=armv5
+  - env: ARCH=armv6
   - env: ARCH=armv7
+  - env: ARCH=armv7-thumb2
   - env: ARCH=armeb
   - env: ARCH=avr32
   - env: ARCH=bf512-flat
@@ -22,19 +26,38 @@ matrix:
   - env: ARCH=c6x
   - env: ARCH=crisv10
   - env: ARCH=crisv32
-  - env: ARCH=m68k-nommu
+  - env: ARCH=frv
+  - env: ARCH=h8300
+  - env: ARCH=lm32
   - env: ARCH=m68k
+  - env: ARCH=m68k-nommu
+  - env: ARCH=metag
+  - env: ARCH=microblazeel
+  - env: ARCH=microblazebe
   - env: ARCH=mips
+  - env: ARCH=mipssf
   - env: ARCH=mipsel
+  - env: ARCH=mipselsf
   - env: ARCH=mips64
+  - env: ARCH=mips64n32
+  - env: ARCH=mips64n64
   - env: ARCH=mips64el
+  - env: ARCH=mips64eln32
+  - env: ARCH=mips64eln64
+  - env: ARCH=nds32le
+  - env: ARCH=or1k
   - env: ARCH=ppc
   - env: ARCH=ppcsf
+  - env: ARCH=sh2
+  - env: ARCH=sh3
   - env: ARCH=sh4
+  - env: ARCH=sh4eb
   - env: ARCH=sparc
+  - env: ARCH=sparc-leon3
   - env: ARCH=x86
   - env: ARCH=x86_64
   - env: ARCH=xtensa
+  - env: ARCH=xtensabe
   - env: ARCH=xtensa-nommu
 script:
   - ./embedded-test.sh --arch=$ARCH --libc=uclibc-ng
