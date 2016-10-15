@@ -1,7 +1,10 @@
 language: c
 notifications:
   email:
-    - wbx@embedded-test.org
+    recipients:
+      - wbx@embedded-test.org
+    on_success: always
+    on_failure: always
 git:
   depth: 3
 install:
