@@ -120,7 +120,6 @@ create=0
 static=0
 ssp=0
 debug=0
-threads=""
 ntp=""
 libc=""
 test="toolchain"
@@ -1298,14 +1297,16 @@ build() {
   if [ $debug -eq 1 ]; then
     printf "ADK_DEBUG=y" >> .config
   fi
-  if [ $threads = "none" ]; then
-    printf "ADK_TARGET_WITHOUT_THREADS=y" >> .config
-  fi
-  if [ $threads = "lt" ]; then
-    printf "ADK_TARGET_WITH_LT=y" >> .config
-  fi
-  if [ $threads = "nptl" ]; then
-    printf "ADK_TARGET_WITH_NPTL=y" >> .config
+  if [ ! -z $threads ]; then
+    if [ $threads = "none" ]; then
+      printf "ADK_TARGET_WITHOUT_THREADS=y" >> .config
+    fi
+    if [ $threads = "lt" ]; then
+      printf "ADK_TARGET_WITH_LT=y" >> .config
+    fi
+    if [ $threads = "nptl" ]; then
+      printf "ADK_TARGET_WITH_NPTL=y" >> .config
+    fi
   fi
 
   for pkg in $packages; do
