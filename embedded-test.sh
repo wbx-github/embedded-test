@@ -516,6 +516,7 @@ get_arch_info() {
       qemu_args="-nographic -display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
       qemu_machine=01sp
       piggyback=1
+      skiplt=metag
       ;;
     microblazeel)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -1500,6 +1501,10 @@ for lib in ${libc}; do
       fi
       if [ "$arch" = "$skiparchs" ]; then
         echo "Skipping $skiparchs"
+        continue
+      fi
+      if [ "$arch" = "$skiplt" ]; then
+        echo "Skipping $skiplt"
         continue
       fi
 
