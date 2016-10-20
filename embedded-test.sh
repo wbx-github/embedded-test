@@ -1408,7 +1408,9 @@ for lib in ${libc}; do
     fi
     usrc=$(mktemp -d /tmp/XXXX)
     echo "Creating binutils source tarball openadk/dl/binutils-git.tar.xz"
-    cp -a $binutilssource $usrc/binutils-git
+    (cd $binutilssource && ./src-release.sh binutils)
+    tar xf $binutilssource/binutils-*.tar -C $usrc
+    (cd $usrc && mv binutils-* binutils-git)
     mkdir -p $topdir/openadk/dl 2>/dev/null
     rm $topdir/openadk/dl/binutils-git.tar.xz 2>/dev/null
     (cd $usrc && tar cJf $topdir/openadk/dl/binutils-git.tar.xz binutils-git)
