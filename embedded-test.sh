@@ -78,7 +78,8 @@ Syntax: $0 [ --libc=<libc> --arch=<arch> --test=<test> ]
 Explanation:
 	--libc=<libc>                C library to use (${valid_libc})
 	--arch=<arch>                architecture to check (otherwise all supported)
-	--skiparch=<arch>            architectures to skip when all choosen
+	--skip-arch=<arch>           architectures to skip when all choosen
+	--skip-nsim                  skip nsim simulator tests
 	--targets=<targets.txt>      a list of remote targets to test via nfsroot or chroot
 	--test=<test>                run test (${valid_tests}), default toolchain
 	--threads=<type>             configure threading support (${valid_thread_types}) (only for uClibc-ng)
@@ -120,6 +121,7 @@ create=0
 static=0
 ssp=0
 debug=0
+skipnsim=0
 ntp=""
 libc=""
 test="toolchain"
@@ -138,7 +140,8 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--shell) shell=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
-  (--skiparch=*) skiparchs=${1#*=}; shift ;;
+  (--skip-arch=*) skiparchs=${1#*=}; shift ;;
+  (--skip-nsim) skipnsim=1 shift ;;
   (--targets=*) targets=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
   (--threads=*) threads=${1#*=}; shift ;;
@@ -1508,6 +1511,13 @@ for lib in ${libc}; do
       if [ "$arch" = "$skiplt" ]; then
         echo "Skipping $skiplt"
         continue
+      fi
+      # skip nsim
+      if [ $skipnsim -eq 1 ]; then
+        if [[ "$arch" = arcv* ]]; then
+          echo "Skipping nsim $arch"
+          continue
+        fi
       fi
 
       if [[ "$allowed_tests" = *${test}* ]]; then
