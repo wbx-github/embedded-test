@@ -554,9 +554,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=mips ADK_TARGET_ENDIAN=big"
       cpu_arch=mips32
       qemu=qemu-system-mips
@@ -568,9 +568,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft ADK_TARGET_CPU=mips32"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft ADK_TARGET_CPU=mips32"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=soft ADK_TARGET_CPU=mips32"
       cpu_arch=mips32
       march=mips
       qemu=qemu-system-mips
@@ -582,9 +582,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=mips ADK_TARGET_ENDIAN=little"
       cpu_arch=mips32
       endian=el
@@ -598,9 +598,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft ADK_TARGET_CPU=mips32"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft ADK_TARGET_CPU=mips32"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=soft ADK_TARGET_CPU=mips32"
       cpu_arch=mips32
       endian=el
       march=mips
@@ -613,8 +613,8 @@ get_arch_info() {
       allowed_libc="uclibc-ng glibc"
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32 ADK_TARGET_CPU=mips64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32 ADK_TARGET_CPU=mips64"
       cpu_arch=mips64
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
@@ -624,9 +624,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64"
       cpu_arch=mips64
       march=mips64
       qemu=qemu-system-${cpu_arch}
@@ -638,9 +638,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64 ADK_TARGET_CPU=mips64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64 ADK_TARGET_CPU=mips64"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n64 ADK_TARGET_CPU=mips64"
       cpu_arch=mips64
       march=mips64
       qemu=qemu-system-${cpu_arch}
@@ -652,8 +652,8 @@ get_arch_info() {
       allowed_libc="uclibc-ng glibc"
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32 ADK_TARGET_CPU=mips64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=o32 ADK_TARGET_CPU=mips64"
       cpu_arch=mips64
       march=mips64
       endian=el
@@ -666,9 +666,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64"
       cpu_arch=mips64
       march=mips64
       endian=el
@@ -681,9 +681,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64 ADK_TARGET_CPU=mips64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64 ADK_TARGET_CPU=mips64"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=little ADK_TARGET_ABI=n64 ADK_TARGET_CPU=mips64"
       cpu_arch=mips64
       march=mips64
       endian=el
