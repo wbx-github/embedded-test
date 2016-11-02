@@ -87,6 +87,7 @@ Explanation:
 	--gcc-source=<dir>           use directory with source for gcc
 	--binutils-source=<dir>      use directory with source for binutils
 	--gdb-source=<dir>           use directory with source for gdb
+        --kernel-source=<dir>        use directory with source for Linux kernel
 	--libc-version=<version>     use version of C library
 	--gcc-version=<version>      use version of gcc
 	--binutils-version=<version> use version of binutils
@@ -149,6 +150,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--gcc-source=*) gccsource=${1#*=}; shift ;;
   (--binutils-source=*) binutilssource=${1#*=}; shift ;;
   (--gdb-source=*) gdbsource=${1#*=}; shift ;;
+  (--kernel-source=*) kernelsource=${1#*=}; shift ;;
   (--libc-version=*) libcversion=${1#*=}; shift ;;
   (--gcc-version=*) gccversion=${1#*=}; shift ;;
   (--binutils-version=*) binutilsversion=${1#*=}; shift ;;
@@ -1457,6 +1459,28 @@ for lib in ${libc}; do
     # we need to clean system, when external source is used
     if [ $noclean -eq 0 ]; then
       clean=1
+    fi
+  fi
+  # Linux kernel source used?
+  if [ ! -z $kernelsource ]; then
+    if [ ! -d $kernelsource ]; then
+      echo "Not a directory."
+      exit 1
+    fi
+    if [ ! -f openadk/dl/linux-git.tar.xz ]; then
+      usrc=$(mktemp -d /tmp/XXXX)
+      echo "Creating Linux kernel source tarball openadk/dl/linux-git.tar.xz"
+      cp -a $kernelsource $usrc/linux-git
+      mkdir -p $topdir/openadk/dl 2>/dev/null
+      rm $topdir/openadk/dl/linux-git.tar.xz 2>/dev/null
+      (cd $usrc && tar cJf $topdir/openadk/dl/linux-git.tar.xz linux-git)
+      touch $topdir/openadk/dl/linux-git.tar.xz.nohash
+      # we need to clean system, when external source is used
+      if [ $noclean -eq 0 ]; then
+        clean=1
+      fi
+    else
+      echo "Tarball already exist, skipping creation"
     fi
   fi
   # start with a clean dir
