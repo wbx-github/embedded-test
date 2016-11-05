@@ -27,8 +27,8 @@ arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
   armv5 armv7 armv7-thumb2 armeb avr32 bf512-flat bf512-fdpic c6x \
   crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel \
   microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 \
-  mips64n64 mips64el mips64eln32 mips64eln64 nds32le or1k ppc \
-  ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa \
+  mips64n64 mips64el mips64eln32 mips64eln64 nds32le nios2 or1k \
+  ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa \
   xtensabe xtensa-nommu"
 
 # musl
