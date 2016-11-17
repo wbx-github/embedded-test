@@ -1033,7 +1033,7 @@ EOF
   # libc test
   if [ $test = "libc" ]; then
 cat >> $file << EOF
-cd /opt/uclibc-ng/test
+cd /usr/lib/uclibc-ng-test/test
 sh ./uclibcng-testrunner.sh $tee
 EOF
   fi
