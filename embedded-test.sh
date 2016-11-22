@@ -392,7 +392,7 @@ get_arch_info() {
       runtime_test="uclibc-ng"
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
-      emulator=sim
+      emulator=gdb
       model=bf512
       march=bfin
       binfmt=flat
@@ -405,7 +405,7 @@ get_arch_info() {
       runtime_test="uclibc-ng"
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=bfin ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
-      emulator=sim
+      emulator=gdb
       model=bf512
       march=bfin
       binfmt=fdpic
@@ -434,7 +434,7 @@ get_arch_info() {
       ;;
     crisv32)
       allowed_libc="uclibc-ng newlib"
-      runtime_test=""
+      runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=cris ADK_TARGET_CPU=crisv32"
@@ -725,11 +725,13 @@ get_arch_info() {
       ;;
     or1k)
       allowed_libc="uclibc-ng musl newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-or1k"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-or1k"
+      runtime_test="uclibc-ng musl"
+      allowed_tests="toolchain boot libc libcmusl mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=sim-or1k"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=sim-or1k"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=or1k"
+      emulator=sim
+      piggyback=1
       ;;
     ppc)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -1112,6 +1114,13 @@ runtest() {
       fi
       ;;
     sim)
+      echo "Using OR1k simulator"
+      if ! which sim >/dev/null; then
+        echo "Checking if $emulator is installed... failed"
+        exit 1
+      fi
+      ;;
+    gdb)
       echo "Using GDB as simulator"
       ;;
     *)
@@ -1179,6 +1188,10 @@ runtest() {
       ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee $report
       ;;
     sim)
+      echo "$emulator ${arch} ${kernel}"
+      sim -f openadk/target/or1k/or1ksim.cfg ${kernel}
+      ;;
+    gdb)
       echo "$emulator ${arch} ${kernel}"
       ./openadk/toolchain_${emulator}-${march}_${lib}_${model}_${binfmt}/usr/bin/${gdbcmd} ${kernel}
       ;;
@@ -1520,9 +1533,11 @@ for lib in ${libc}; do
         echo "Skipping $skiparchs"
         continue
       fi
-      if [ "$arch" = "$skiplt" ]; then
-        echo "Skipping $skiplt"
-        continue
+      if [ "$threads" = "lt" ]; then
+        if [ "$arch" = "$skiplt" ]; then
+          echo "Skipping $skiplt"
+          continue
+        fi
       fi
       # skip nsim
       if [ $skipnsim -eq 1 ]; then
