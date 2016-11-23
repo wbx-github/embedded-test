@@ -34,8 +34,8 @@ arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel \
   microblazebe mips mipssf mipsel mipselsf mips64n32 mips64n64 \
-  mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le sh4 sh4eb \
-  x86 x86_64 x86_64_x32"
+  mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le s390 sh4 \
+  sh4eb x86 x86_64 x86_64_x32"
 
 # glibc
 arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb ia64 \
@@ -725,7 +725,7 @@ get_arch_info() {
       ;;
     or1k)
       allowed_libc="uclibc-ng musl newlib"
-      runtime_test="uclibc-ng musl"
+      runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc libcmusl mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=sim-or1k"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=sim-or1k"
@@ -788,9 +788,10 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     s390)
-      allowed_libc="glibc"
-      runtime_test="glibc"
-      allowed_tests="toolchain boot libc mksh ltp native"
+      allowed_libc="musl glibc"
+      runtime_test="musl glibc"
+      allowed_tests="toolchain boot libc libcmusl mksh ltp native"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=s390 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-s390"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=s390 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-s390"
       cpu_arch=s390x
       qemu=qemu-system-${cpu_arch}
