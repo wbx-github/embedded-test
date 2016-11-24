@@ -1318,7 +1318,7 @@ build() {
   fi
 
   for pkg in $packages; do
-    p=$(echo $pkg|tr '[:lower:]' '[:upper:]');printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
+    p=$(echo $pkg|tr '[:lower:]' '[:upper:]'|tr - _);printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
   done
 
   # refresh after any changes to config
