@@ -47,8 +47,8 @@ arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb ia64 \
 # newlib
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
   crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel \
-  microblazebe mips mipsel moxie nds32le nds32be nios2 or1k ppc \
-  sparc v850 x86"
+  microblazebe mips mipsel moxie msp430 nds32le nds32be nios2 or1k \
+  ppc sparc v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -700,6 +700,12 @@ get_arch_info() {
       runtime_test=""
       allowed_tests="toolchain"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=moxie"
+      ;;
+    msp430)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=msp430"
       ;;
     nds32le)
       allowed_libc="uclibc-ng newlib"
