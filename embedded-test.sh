@@ -25,11 +25,11 @@
 # uClibc-ng
 arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
   armv5 armv7 armv7-thumb2 armeb avr32 bf512-flat bf512-fdpic c6x \
-  crisv10 crisv32 frv h8300 lm32 m68k m68k-nommu metag microblazeel \
-  microblazebe mips mipssf mipsel mipselsf mips64 mips64n32 \
-  mips64n64 mips64el mips64eln32 mips64eln64 nds32le nios2 or1k \
-  ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa \
-  xtensabe xtensa-nommu"
+  crisv10 crisv32 frv h8300 ia64 lm32 m68k m68k-nommu metag \
+  microblazeel microblazebe mips mipssf mipsel mipselsf mips64 \
+  mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nds32le \
+  nios2 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 \
+  x86_64 xtensa xtensabe xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel \
@@ -522,6 +522,7 @@ get_arch_info() {
       qemu_machine=01sp
       piggyback=1
       skiplt=metag
+      skipstatic=metag
       ;;
     microblazeel)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -1190,7 +1191,7 @@ runtest() {
       ;;
     sim)
       echo "$emulator ${arch} ${kernel}"
-      sim -f openadk/target/or1k/or1ksim.cfg ${kernel}
+      sim -f openadk/target/or1k/or1ksim.cfg ${kernel} | tee $report
       ;;
     gdb)
       echo "$emulator ${arch} ${kernel}"
@@ -1297,7 +1298,7 @@ build() {
     printf "ADK_CREATE_TOOLCHAIN_ARCHIVE=y" >> .config
   fi
   if [ $static -eq 1 ]; then
-    printf "ADK_TARGET_USE_STATIC_LIBS=y" >> .config
+    printf "ADK_TARGET_USE_STATIC_LIBS_ONLY=y" >> .config
   fi
   if [ $ssp -eq 1 ]; then
     printf "ADK_TARGET_USE_SSP=y" >> .config
@@ -1537,6 +1538,12 @@ for lib in ${libc}; do
       if [ "$threads" = "lt" ]; then
         if [ "$arch" = "$skiplt" ]; then
           echo "Skipping $skiplt"
+          continue
+        fi
+      fi
+      if [ $static -eq 1 ]; then
+        if [ "$arch" = "$skipstatic" ]; then
+          echo "Skipping $skipstatic"
           continue
         fi
       fi
