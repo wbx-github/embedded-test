@@ -47,8 +47,8 @@ arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb ia64 \
 # newlib
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
   crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel \
-  microblazebe mips mipsel moxie nds32le nds32be or1k ppc sparc \
-  v850 x86"
+  microblazebe mips mipsel moxie nds32le nds32be nios2 or1k ppc \
+  sparc v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -716,11 +716,12 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nds32 ADK_TARGET_ENDIAN=big"
       ;;
     nios2)
-      allowed_libc="uclibc-ng glibc"
+      allowed_libc="uclibc-ng glibc newlib"
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nios2"
       qemu_machine=10m50-ghrd
       piggyback=1
       ;;
