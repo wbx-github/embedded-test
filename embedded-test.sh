@@ -717,8 +717,8 @@ get_arch_info() {
       ;;
     nios2)
       allowed_libc="uclibc-ng glibc"
-      runtime_test="glibc"
-      allowed_tests="toolchain"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       qemu_machine=10m50-ghrd
