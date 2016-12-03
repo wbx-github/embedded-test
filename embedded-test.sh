@@ -545,6 +545,7 @@ get_arch_info() {
       qemu=qemu-system-microblazeel
       qemu_machine=petalogix-s3adsp1800
       suffix=${cpu_arch}${endian}
+      skipssp=microblazeel
       ;;
     microblazebe)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -559,6 +560,7 @@ get_arch_info() {
       qemu=qemu-system-microblaze
       qemu_machine=petalogix-s3adsp1800
       suffix=${cpu_arch}
+      skipssp=microblazebe
       ;;
     mips)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -1343,7 +1345,7 @@ build() {
   done
 
   # refresh after any changes to config
-  yes|make oldconfig
+  yes|make oldconfig >/dev/null
 
   if [ $clean -eq 1 ]; then
     echo "cleaning openadk build directory"
@@ -1564,6 +1566,12 @@ for lib in ${libc}; do
       if [ $static -eq 1 ]; then
         if [ "$arch" = "$skipstatic" ]; then
           echo "Skipping $skipstatic"
+          continue
+        fi
+      fi
+      if [ $ssp -eq 1 ]; then
+        if [ "$arch" = "$skipssp" ]; then
+          echo "Skipping $skipssp"
           continue
         fi
       fi
