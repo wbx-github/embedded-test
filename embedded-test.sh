@@ -47,8 +47,8 @@ arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb ia64 \
 # newlib
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
   crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel \
-  microblazebe mips mipsel moxie msp430 nds32le nds32be nios2 or1k \
-  ppc sparc v850 x86"
+  microblazebe mips mipsel mn10300 moxie msp430 nds32le nds32be \
+  nios2 or1k ppc sparc v850 x86"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -694,6 +694,12 @@ get_arch_info() {
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}${endian}_n64
+      ;;
+    mn10300)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=mn10300"
       ;;
     moxie)
       allowed_libc="newlib"
