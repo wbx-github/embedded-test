@@ -31,6 +31,8 @@ matrix:
   - env: ARCH=crisv32
   - env: ARCH=frv
   - env: ARCH=h8300
+  - env: ARCH=hppa
+  - env: ARCH=ia64
   - env: ARCH=lm32
   - env: ARCH=m68k
   - env: ARCH=m68k-nommu
