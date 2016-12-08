@@ -1248,6 +1248,9 @@ build() {
   fi
 
   # build defaults for different tests
+  if [ $test = "toolchain" ]; then
+    DEFAULT="$DEFAULT ADK_TEST_TOOLCHAIN=y"
+  fi
   if [ $test = "boot" ]; then
     DEFAULT="$DEFAULT ADK_TEST_BASE=y"
   fi
