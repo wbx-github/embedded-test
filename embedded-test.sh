@@ -101,6 +101,7 @@ Explanation:
 	--cleandir                   clean OpenADK build directories before build
 	--clean                      clean OpenADK build directory for single arch
 	--no-clean                   do not clean OpenADK build directory for single arch
+	--cxx                        enable C++ toolchain
 	--static                     use static compilation
 	--ssp                        use smack stashing protection
 	--debug                      make debug build
@@ -120,6 +121,7 @@ update=0
 verbose=0
 create=0
 static=0
+cxx=0
 ssp=0
 debug=0
 skipnsim=0
@@ -135,6 +137,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--update) update=1; shift ;;
   (--create) create=1; shift ;;
   (--static) static=1; shift ;;
+  (--cxx) cxx=1; shift ;;
   (--ssp) ssp=1; shift ;;
   (--debug) debug=1; shift ;;
   (--continue) cont=1; shift ;;
@@ -184,6 +187,9 @@ if [ $ssp -eq 1 ]; then
 fi
 if [ $debug -eq 1 ]; then
   rsuffix=${rsuffix}.debug
+fi
+if [ $cxx -eq 1 ]; then
+  rsuffix=${rsuffix}.cxx
 fi
 
 if [ ! -d openadk ]; then
@@ -1011,16 +1017,21 @@ EOF
 cat >> $file << EOF
 if [ -x /usr/bin/file ]; then
   file /bin/busybox $tee
+  file /usr/bin/helloworld* $tee
 fi
 if [ -x /usr/bin/size ]; then
   size /bin/busybox $tee
 else
   ls -la /bin/busybox $tee
 fi
+helloworld
+helloworld.static
+helloworld-cxx
+helloworld-cxx.static
 EOF
   if [ $static -eq 0 ]; then
 cat >> $file << EOF
-for i in \$(ls /lib/*.so|grep -v libgcc);do
+for i in \$(ls /lib/*.so 2>/dev/null|grep -v libgcc);do
   if [ -x /usr/bin/size ]; then
     size \$i $tee
   else
@@ -1320,31 +1331,36 @@ build() {
   make $DEFAULT defconfig
 
   if [ $create -eq 1 ]; then
-    printf "ADK_CREATE_TOOLCHAIN_ARCHIVE=y" >> .config
+    printf "ADK_CREATE_TOOLCHAIN_ARCHIVE=y\n" >> .config
   fi
   if [ $static -eq 1 ]; then
-    printf "ADK_TARGET_USE_STATIC_LIBS_ONLY=y" >> .config
+    printf "ADK_TARGET_USE_STATIC_LIBS_ONLY=y\n" >> .config
+  fi
+  if [ $cxx -eq 1 ]; then
+    printf "ADK_TOOLCHAIN_WITH_CXX=y\n" >> .config
+    printf "ADK_COMPILE_LIBSTDCXX=y\n" >> .config
+    printf "ADK_PACKAGE_LIBSTDCXX=y\n" >> .config
   fi
   if [ $ssp -eq 1 ]; then
-    printf "ADK_TARGET_USE_SSP=y" >> .config
+    printf "ADK_TARGET_USE_SSP=y\n" >> .config
   fi
   if [ $debug -eq 1 ]; then
-    printf "ADK_DEBUG=y" >> .config
+    printf "ADK_DEBUG=y\n" >> .config
   fi
   if [ ! -z $threads ]; then
     if [ $threads = "none" ]; then
-      printf "ADK_TARGET_WITHOUT_THREADS=y" >> .config
+      printf "ADK_TARGET_WITHOUT_THREADS=y\n" >> .config
     fi
     if [ $threads = "lt" ]; then
-      printf "ADK_TARGET_WITH_LT=y" >> .config
+      printf "ADK_TARGET_WITH_LT=y\n" >> .config
     fi
     if [ $threads = "nptl" ]; then
-      printf "ADK_TARGET_WITH_NPTL=y" >> .config
+      printf "ADK_TARGET_WITH_NPTL=y\n" >> .config
     fi
   fi
 
   for pkg in $packages; do
-    p=$(echo $pkg|tr '[:lower:]' '[:upper:]'|tr - _);printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y" >> .config
+    p=$(echo $pkg|tr '[:lower:]' '[:upper:]'|tr - _);printf "ADK_COMPILE_$p=y\nADK_PACKAGE_$p=y\n" >> .config
   done
 
   # refresh after any changes to config
