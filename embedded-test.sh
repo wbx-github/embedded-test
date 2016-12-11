@@ -976,6 +976,7 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212 ADK_TARGET_ENDIAN=little"
       cpu_arch=de212
+      march=xtensa
       qemu=qemu-system-xtensa
       qemu_machine=ml605
       qemu_args="${qemu_args} -cpu de212"
@@ -1133,7 +1134,7 @@ runtest() {
         echo "Checking if $qemu is installed... failed"
         exit 1
       fi
-      qemuver=$(${qemu} -version|awk '{ print $4 }')
+      qemuver=$(${qemu} -version|awk '{ print $4 }'|head -1)
       if [ "$arch" != "metag" ]; then
         if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 240 ]; then
           echo "Your qemu version is too old. Please update to 2.4 or greater"
