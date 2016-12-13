@@ -48,7 +48,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb hppa \
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
   crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel \
   microblazebe mips mipsel mn10300 moxie msp430 nds32le nds32be \
-  nios2 or1k ppc sparc sparc64 v850 x86 x86_64"
+  nios2 or1k ppc rx sparc sparc64 v850 x86 x86_64"
 
 topdir=$(pwd)
 giturl=http://git.openadk.org/openadk.git
@@ -815,6 +815,12 @@ get_arch_info() {
       qemu=qemu-system-ppc64
       qemu_machine=pseries
       suffix=${cpu_arch}
+      ;;
+    rx)
+      allowed_libc="newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=rx"
       ;;
     s390)
       allowed_libc="musl glibc"
