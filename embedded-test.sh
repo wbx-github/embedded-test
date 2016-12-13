@@ -46,7 +46,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb hppa \
 
 # newlib
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
-  crisv32 epiphany frv h8300 lm32 m32r m68k microblazeel \
+  crisv32 epiphany frv h8300 ia64 lm32 m32r m68k microblazeel \
   microblazebe mips mipsel mn10300 moxie msp430 nds32le nds32be \
   nios2 or1k ppc rx sparc sparc64 v850 x86 x86_64"
 
@@ -465,11 +465,12 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=frv"
       ;;
     ia64)
-      allowed_libc="uclibc-ng glibc"
+      allowed_libc="uclibc-ng glibc newlib"
       runtime_test=""
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=generic-ia64"
       default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=generic-ia64"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=ia64"
       ;;
     h8300)
       allowed_libc="uclibc-ng newlib"
