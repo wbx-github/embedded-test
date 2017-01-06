@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
+arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
   armv5 armv7 armv7-thumb2 armeb avr32 bf512-flat bf512-fdpic c6x \
   crisv10 crisv32 frv h8300 hppa ia64 lm32 m68k m68k-nommu metag \
   microblazeel microblazebe mips mipssf mipsel mipselsf mips64 \
@@ -224,9 +224,10 @@ get_arch_info() {
 
   case ${arch} in
     aarch64)
-      allowed_libc="musl glibc newlib"
-      runtime_test="musl glibc"
+      allowed_libc="uclibc-ng musl glibc newlib"
+      runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc libcmusl ltp mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-aarch64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64"
@@ -236,9 +237,10 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     aarch64be)
-      allowed_libc="musl glibc newlib"
+      allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test=""
       allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=generic-aarch64 ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=generic-aarch64 ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=aarch64 ADK_TARGET_SYSTEM=generic-aarch64 ADK_TARGET_ENDIAN=big"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64 ADK_TARGET_ENDIAN=big"
