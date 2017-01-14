@@ -1,6 +1,6 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2016
+# Copyright © 2014-2017
 #	Waldemar Brodkorb <wbx@embedded-test.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -23,13 +23,14 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be arcv2-be arm-nommu \
-  armv5 armv7 armv7-thumb2 armeb avr32 bf512-flat bf512-fdpic c6x \
-  crisv10 crisv32 frv h8300 hppa ia64 lm32 m68k m68k-nommu metag \
-  microblazeel microblazebe mips mipssf mipsel mipselsf mips64 \
-  mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 nds32le \
-  nios2 or1k ppc ppcsf sh2 sh3 sh4 sh4eb sparc sparc-leon3 x86 \
-  x86_64 xtensa xtensabe xtensa-nommu"
+arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
+  arcv2-be arm-nommu armv5 armv7 armv7-thumb2 armeb avr32 \
+  bf512-flat bf512-fdpic c6x crisv10 crisv32 frv h8300 hppa ia64 \
+  lm32 m68k m68k-nommu metag microblazeel microblazebe mips \
+  mipssf mipsel mipselsf mips64 mips64n32 mips64n64 mips64el \
+  mips64eln32 mips64eln64 nds32le nios2 or1k ppc ppcsf sh2 sh3 \
+  sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe \
+  xtensa-nommu"
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel \
@@ -494,6 +495,7 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=linux ADK_TARGET_ARCH=lm32 ADK_TARGET_SYSTEM=qemu-lm32"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=lm32"
+      skipcxx=lm32
       ;;
     m32r)
       allowed_libc="newlib"
@@ -1356,9 +1358,13 @@ build() {
     printf "ADK_TARGET_USE_STATIC_LIBS_ONLY=y\n" >> .config
   fi
   if [ $cxx -eq 1 ]; then
-    printf "ADK_TOOLCHAIN_WITH_CXX=y\n" >> .config
-    printf "ADK_COMPILE_LIBSTDCXX=y\n" >> .config
-    printf "ADK_PACKAGE_LIBSTDCXX=y\n" >> .config
+    if [ "$arch" = "$skipcxx" -o "$lib" = "newlib" ]; then
+      echo "Skipping $skipcxx"
+    else
+      printf "ADK_TOOLCHAIN_WITH_CXX=y\n" >> .config
+      printf "ADK_COMPILE_LIBSTDCXX=y\n" >> .config
+      printf "ADK_PACKAGE_LIBSTDCXX=y\n" >> .config
+    fi
   fi
   if [ $ssp -eq 1 ]; then
     printf "ADK_TARGET_USE_SSP=y\n" >> .config
@@ -1437,7 +1443,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.4.0
+        version=2.5.0
       fi
       libver=newlib-${version}
       libdir=newlib
