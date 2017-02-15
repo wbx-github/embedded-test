@@ -52,7 +52,7 @@ arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
   nios2 or1k ppc rx sh sparc sparc64 v850 x86 x86_64"
 
 topdir=$(pwd)
-giturl=http://git.openadk.org/openadk.git
+giturl=https://git.openadk.org/git/openadk.git
 valid_libc="uclibc-ng musl glibc newlib"
 valid_tests="toolchain boot libc libcmusl ltp mksh native"
 valid_thread_types="none lt nptl"
