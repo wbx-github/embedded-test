@@ -976,7 +976,7 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c ADK_TARGET_ENDIAN=little"
       cpu_arch=dc233c
       qemu=qemu-system-xtensa
-      qemu_machine=ml605
+      qemu_machine=kc705
       qemu_args="${qemu_args} -cpu dc233c"
       suffix=${cpu_arch}
       ;;
@@ -987,21 +987,22 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=kc705_be ADK_TARGET_ENDIAN=big"
       cpu_arch=dc233c
       qemu=qemu-system-xtensa
-      qemu_machine=ml605
+      qemu_machine=kc705
       qemu_args="${qemu_args} -cpu dc233c"
       suffix=${cpu_arch}
       ;;
     xtensa-nommu)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212 ADK_TARGET_ENDIAN=little"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212 ADK_TARGET_ENDIAN=little"
       cpu_arch=de212
       march=xtensa
       qemu=qemu-system-xtensa
-      qemu_machine=ml605
-      qemu_args="${qemu_args} -cpu de212"
+      qemu_machine=kc705
+      qemu_args="${qemu_args} -cpu de212 -m 256"
       suffix=${cpu_arch}
+      piggyback=1
       ;;
     *)
       echo "architecture ${arch} not supported"; exit 1;;
