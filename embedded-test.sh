@@ -751,7 +751,7 @@ get_arch_info() {
     nios2)
       allowed_libc="uclibc-ng glibc newlib"
       runtime_test="uclibc-ng glibc"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nios2"
@@ -1415,7 +1415,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.23
+        version=1.0.24
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
