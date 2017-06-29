@@ -236,6 +236,7 @@ get_arch_info() {
       qemu_machine=virt
       qemu_args="${qemu_args} -cpu cortex-a53 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       suffix=${cpu_arch}
+      skiplt=aarch64
       ;;
     aarch64be)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -249,6 +250,7 @@ get_arch_info() {
       qemu_machine=virt
       qemu_args="${qemu_args} -cpu cortex-a53 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       suffix=${cpu_arch}
+      skiplt=aarch64be
       ;;
     alpha)
       allowed_libc="uclibc-ng glibc"
