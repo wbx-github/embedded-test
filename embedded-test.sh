@@ -1417,7 +1417,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.25
+        version=1.0.26
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
