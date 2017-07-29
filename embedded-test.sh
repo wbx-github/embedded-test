@@ -26,7 +26,7 @@
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be arm-nommu armv5 armv7 armv7-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic c6x crisv10 crisv32 frv h8300 hppa ia64 \
-  lm32 m68k m68k-nommu metag microblazeel microblazebe mips32 \
+  lm32 m68k m68k-nommu metag microblazeel microblazebe mips32 mips32r6 \
   mips32sf mips32el mips32elsf mips64 mips64n32 mips64n64 mips64el \
   mips64eln32 mips64eln64 nds32le nios2 or1k ppc ppcsf sh2 sh3 \
   sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe \
@@ -34,13 +34,13 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel \
-  microblazebe mips32 mips32sf mips32el mips32elsf mips64n32 mips64n64 \
+  microblazebe mips32 mips32r6 mips32sf mips32el mips32elsf mips64n32 mips64n64 \
   mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le s390 sh4 \
   sh4eb x86 x86_64 x86_64_x32"
 
 # glibc
 arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb \
-  ia64 microblazeel microblazebe mips32 mips32sf mips32el mips32elsf \
+  ia64 microblazeel microblazebe mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   nios2 ppc ppcsf ppc64 ppc64le s390 sh3 sh4 sh4eb sparc64 tilegx \
   x86 x86_64 x86_64_x32"
@@ -590,6 +590,19 @@ get_arch_info() {
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_hard
       ;;
+    mips32r6)
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
+      allowed_tests="toolchain boot libc libcmusl mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
+      cpu_arch=mips32r6
+      qemu=qemu-system-mips
+      qemu_machine=malta
+      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      suffix=${cpu_arch}_hard
+      ;;
     mips32sf)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
@@ -645,6 +658,17 @@ get_arch_info() {
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_o32
+      ;;
+    mips64r6n32)
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="toolchain boot libc libcmusl mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64r6"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=n32 ADK_TARGET_CPU=mips64r6"
+      cpu_arch=mips64r6
+      qemu_machine=malta
+      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      suffix=${cpu_arch}_n32
       ;;
     mips64n32)
       allowed_libc="uclibc-ng musl glibc"
