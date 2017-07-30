@@ -585,6 +585,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=mips ADK_TARGET_ENDIAN=big"
       cpu_arch=mips32
+      march=mips
       qemu=qemu-system-mips
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
@@ -598,6 +599,7 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=big ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
       cpu_arch=mips32r6
+      march=mips
       qemu=qemu-system-mips
       qemu_machine=malta
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
