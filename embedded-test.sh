@@ -602,7 +602,7 @@ get_arch_info() {
       march=mips
       qemu=qemu-system-mips
       qemu_machine=malta
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -cpu mips32r6-generic -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_hard
       ;;
     mips32sf)
@@ -789,7 +789,7 @@ get_arch_info() {
     or1k)
       allowed_libc="uclibc-ng musl newlib"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc libcmusl mksh ltp native"
+      allowed_tests="toolchain boot libc libcmusl ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-or1k"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-or1k"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=or1k"
