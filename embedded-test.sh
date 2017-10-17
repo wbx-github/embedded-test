@@ -29,7 +29,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   lm32 m68k m68k-nommu metag microblazeel microblazebe mips32 mips32r6 \
   mips32sf mips32el mips32elsf mips64 mips64n32 mips64n64 mips64el \
   mips64eln32 mips64eln64 nds32le nios2 or1k ppc ppcsf sh2 sh3 \
-  sh4 sh4eb sparc sparc-leon3 x86 x86_64 xtensa xtensabe \
+  sh4 sh4eb sparc sparc-leon3 sparc64 x86 x86_64 xtensa xtensabe \
   xtensa-nommu"
 
 # musl
@@ -936,10 +936,11 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     sparc64)
-      allowed_libc="glibc newlib"
+      allowed_libc="uclibc-ng glibc newlib"
       runtime_test="glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc64"
       cpu_arch=v9
       qemu=qemu-system-sparc64
