@@ -24,7 +24,7 @@
 
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
-  arcv2-be arm-nommu armv5 armv7 armv7-thumb2 armeb avr32 \
+  arcv2-be arm-nommu armv5 armv6 armv7 armv7-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic c6x crisv10 crisv32 frv h8300 hppa ia64 \
   lm32 m68k m68k-nommu metag microblazeel microblazebe mips32 mips32r6 \
   mips32sf mips32el mips32elsf mips64 mips64n32 mips64n64 mips64el \
@@ -33,13 +33,13 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   xtensa-nommu"
 
 # musl
-arch_list_musl="aarch64 aarch64be armv5 armv7 armeb microblazeel \
+arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb microblazeel \
   microblazebe mips32 mips32r6 mips32sf mips32el mips32elsf mips64n32 mips64n64 \
   mips64eln32 mips64eln64 or1k ppc ppcsf ppc64 ppc64le s390 sh4 \
   sh4eb x86 x86_64 x86_64_x32"
 
 # glibc
-arch_list_glibc="aarch64 aarch64be alpha armv5 armv7 armeb \
+arch_list_glibc="aarch64 aarch64be alpha armv5 armv6 armv7 armeb \
   ia64 microblazeel microblazebe mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   nios2 ppc ppcsf ppc64 ppc64le s390 sh3 sh4 sh4eb sparc64 tilegx \
