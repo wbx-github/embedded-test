@@ -647,6 +647,21 @@ get_arch_info() {
       qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}${endian}_hard
       ;;
+    mips32r6el)
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
+      allowed_tests="toolchain boot libc libcmusl mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=mips ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips ADK_TARGET_ENDIAN=little ADK_TARGET_FLOAT=hard ADK_TARGET_CPU=mips32r6"
+      cpu_arch=mips32r6
+      march=mips
+      qemu=qemu-system-mipsel
+      qemu_machine=malta
+      qemu_args="${qemu_args} -cpu mips32r6-generic -device e1000,netdev=adk0 -netdev user,id=adk0"
+      endian=el
+      suffix=${cpu_arch}${endian}_hard
+      ;;
     mips32elsf)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
