@@ -55,7 +55,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv5 armv6 armv7 armeb \
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
   crisv32 epiphany ft32 frv h8300 ia64 lm32 m32r m68k microblazeel \
   microblazebe mips32 mips32el mn10300 moxie msp430 nds32le nds32be \
-  nios2 or1k ppc rx sh sparc sparc64 v850 x86 x86_64"
+  nios2 or1k ppc rx sh sparc sparc64 v850 x86 x86_64 xtensa"
 
 topdir=$(pwd)
 giturl=https://git.openadk.org/git/openadk.git
@@ -1069,10 +1069,11 @@ get_arch_info() {
       suffix=x32
       ;;
     xtensa)
-      allowed_libc="uclibc-ng"
+      allowed_libc="newlib uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c ADK_TARGET_ENDIAN=little"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=xtensa"
       cpu_arch=dc233c
       qemu=qemu-system-xtensa
       qemu_machine=kc705
