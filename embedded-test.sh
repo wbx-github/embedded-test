@@ -1,6 +1,6 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2017
+# Copyright © 2014-2018
 #	Waldemar Brodkorb <wbx@embedded-test.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -1515,7 +1515,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.27
+        version=1.0.28
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
