@@ -534,7 +534,7 @@ get_arch_info() {
     m68k-nommu)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain"
+      allowed_tests="toolchain boot libc"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=linux ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208"
       cpu_arch=cf5208
       march=m68k-mcf5208
@@ -1138,10 +1138,6 @@ EOF
   # boot test
   if [ $test = "boot" ]; then
 cat >> $file << EOF
-if [ -x /usr/bin/file ]; then
-  file /bin/busybox $tee
-  file /usr/bin/helloworld* $tee
-fi
 if [ -x /usr/bin/size ]; then
   size /bin/busybox $tee
 else
@@ -1149,8 +1145,12 @@ else
 fi
 helloworld
 helloworld.static
+if [ -x helloworld-cxx ]; then
 helloworld-cxx
+fi
+if [ -x helloworld-cxx.static ]; then
 helloworld-cxx.static
+fi
 EOF
   if [ $static -eq 0 ]; then
 cat >> $file << EOF
