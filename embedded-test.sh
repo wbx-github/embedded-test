@@ -526,7 +526,7 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=m68k ADK_TARGET_CPU=68040"
       cpu_arch=68040
       march=m68k-q800
-      qemu=qemu-system-m68k-full
+      qemu=qemu-system-m68k
       qemu_args="-nographic"
       qemu_machine=q800
       suffix=${cpu_arch}
@@ -1267,13 +1267,6 @@ runtest() {
     nsim)
       echo "Using Synopsys NSIM as simulator"
       if ! which nsimdrv >/dev/null; then
-        echo "Checking if $emulator is installed... failed"
-        exit 1
-      fi
-      ;;
-    sim)
-      echo "Using OR1k simulator"
-      if ! which sim >/dev/null; then
         echo "Checking if $emulator is installed... failed"
         exit 1
       fi
