@@ -1099,7 +1099,7 @@ get_arch_info() {
       cpu_arch=de212
       march=xtensa
       qemu=qemu-system-xtensa
-      qemu_machine=kc705
+      qemu_machine=kc705-nommu
       qemu_args="${qemu_args} -cpu de212 -m 256"
       suffix=${cpu_arch}
       piggyback=1
