@@ -26,7 +26,7 @@
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be arm-nommu armv5 armv6 armv7 armv7-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
-  c6x crisv10 crisv32 frv h8300 hppa ia64 \
+  c6x crisv10 crisv32 frv h8300-h8300h h8300-h8s hppa ia64 \
   lm32 m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -54,7 +54,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv5 armv6 armv7 armeb \
 
 # newlib
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
-  crisv32 epiphany ft32 frv h8300 ia64 lm32 m32r m68k microblazeel \
+  crisv32 epiphany ft32 frv h8300-h8300h ia64 lm32 m32r m68k microblazeel \
   microblazebe mips32 mips32el mn10300 moxie msp430 nds32le nds32be \
   nios2 or1k ppc rx sh sparc sparc64 v850 x86 x86_64 xtensa"
 
@@ -519,12 +519,19 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=generic-ia64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=ia64"
       ;;
-    h8300)
+    h8300-h8300h)
       allowed_libc="uclibc-ng newlib"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_SYSTEM=sim-h8300"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=h8300"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8300h ADK_TARGET_SYSTEM=sim-h8300"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8300h"
+      ;;
+    h8300-h8s)
+      allowed_libc="uclibc-ng newlib"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8s ADK_TARGET_SYSTEM=sim-h8300"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8s"
       ;;
     hppa)
       allowed_libc="uclibc-ng glibc"
