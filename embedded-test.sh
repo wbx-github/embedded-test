@@ -25,7 +25,8 @@
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be arm-nommu armv5 armv6 armv7 armv7-thumb2 armeb avr32 \
-  bf512-flat bf512-fdpic c6x crisv10 crisv32 frv h8300 hppa ia64 \
+  bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
+  c6x crisv10 crisv32 frv h8300 hppa ia64 \
   lm32 m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -432,6 +433,32 @@ get_arch_info() {
       gdbcmd="bfin-openadk-linux-uclibc-run --env operating --model bf512"
       piggyback=1
       suffix=bf512_fdpic
+      ;;
+    bf532-flat)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf532 ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
+      emulator=gdb
+      model=bf532
+      march=bfin
+      binfmt=flat
+      gdbcmd="bfin-openadk-uclinux-uclibc-run --env operating --model bf532"
+      piggyback=1
+      suffix=bf532_flat
+      ;;
+    bf532-fdpic)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf532 ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
+      emulator=gdb
+      model=bf532
+      march=bfin
+      binfmt=fdpic
+      gdbcmd="bfin-openadk-linux-uclibc-run --env operating --model bf532"
+      piggyback=1
+      suffix=bf532_fdpic
       ;;
     bfin)
       allowed_libc="newlib"
