@@ -26,7 +26,8 @@
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be arm-nommu armv5 armv6 armv7 armv7-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
-  c6x crisv10 crisv32 frv h8300-h8300h h8300-h8s hppa ia64 \
+  c6x crisv10 crisv32 csky-ck510 csky-ck807 csky-ck810 \
+  frv h8300-h8300h h8300-h8s hppa ia64 \
   lm32 m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -491,6 +492,42 @@ get_arch_info() {
       qemu_machine=axis-dev88
       piggyback=1
       suffix=${cpu_arch}
+      ;;
+    csky-ck610)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky-ck610 ADK_TARGET_ENDIAN=little"
+      dtbdir=openadk/target/csky
+      qemu=qemu-system-cskyv1
+      qemu_args="-nographic -dtb ${dtbdir}/qemu.dtb"
+      qemu_machine=virt
+      piggyback=1
+      suffix=soft
+      ;;
+    csky-ck807)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky-ck807 ADK_TARGET_ENDIAN=little"
+      dtbdir=openadk/target/csky
+      qemu=qemu-system-cskyv2
+      qemu_args="-nographic -dtb ${dtbdir}/qemu.dtb"
+      qemu_machine=virt
+      piggyback=1
+      suffix=soft
+      ;;
+    csky-ck810)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky-ck810 ADK_TARGET_ENDIAN=little"
+      dtbdir=openadk/target/csky
+      qemu=qemu-system-cskyv2
+      qemu_args="-nographic -dtb ${dtbdir}/qemu.dtb"
+      qemu_machine=virt
+      piggyback=1
+      suffix=soft
       ;;
     epiphany)
       allowed_libc="newlib"
