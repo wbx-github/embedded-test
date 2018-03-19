@@ -138,6 +138,7 @@ debug=0
 skipnsim=0
 ntp=""
 libc=""
+os="linux"
 test="toolchain"
 
 while [[ $1 != -- && $1 = -* ]]; do case $1 { 
@@ -572,10 +573,14 @@ get_arch_info() {
       ;;
     hppa)
       allowed_libc="uclibc-ng glibc"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=generic-hppa"
-      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=generic-hppa"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="boot libc mksh native toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
+      qemu=qemu-system-hppa
+      qemu_args="-nographic"
+      qemu_machine=hppa
+      piggyback=1
       ;;
     lm32)
       allowed_libc="uclibc-ng newlib"
