@@ -1417,10 +1417,6 @@ runtest() {
       echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
       ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee $report
       ;;
-    sim)
-      echo "$emulator ${arch} ${kernel}"
-      sim -f openadk/target/or1k/or1ksim.cfg ${kernel} | tee $report
-      ;;
     gdb)
       echo "$emulator ${arch} ${kernel}"
       ./openadk/toolchain_${emulator}-${march}_${lib}_${model}_${binfmt}/usr/bin/${gdbcmd} ${kernel}
