@@ -305,7 +305,7 @@ get_arch_info() {
       qemu_machine=realview-eb-mpcore
       suffix=${cpu_arch}_hard_eabihf
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -net user -net nic"
+      qemu_args="${qemu_args} -net user -net nic -dtb ${dtbdir}/arm-realview-eb-11mp-ctrevb.dtb"
       ;;
     armv7)
       allowed_libc="uclibc-ng musl glibc"
