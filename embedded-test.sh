@@ -1205,7 +1205,7 @@ if [ -x /usr/sbin/rdate ]; then
   if [ \$ntpserver ]; then
     rdate \$ntpserver
   else
-    rdate ptbtime1.ptb.de
+    rdate time.fu-berlin.de
   fi
 fi
 EOF
