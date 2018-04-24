@@ -353,7 +353,7 @@ get_arch_info() {
       qemu=qemu-system-arm
       qemu_machine=versatilepb
       suffix=soft_eabi
-      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111"
+      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       piggyback=1
       ;;
     arcv1)
