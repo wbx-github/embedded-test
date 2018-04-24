@@ -505,6 +505,7 @@ get_arch_info() {
       qemu_machine=virt
       piggyback=1
       suffix=soft
+      skiplt=csky-ck610
       ;;
     csky-ck807)
       allowed_libc="uclibc-ng"
@@ -517,6 +518,7 @@ get_arch_info() {
       qemu_machine=virt
       piggyback=1
       suffix=soft
+      skiplt=csky-ck807
       ;;
     csky-ck810)
       allowed_libc="uclibc-ng"
@@ -529,6 +531,7 @@ get_arch_info() {
       qemu_machine=virt
       piggyback=1
       suffix=soft
+      skiplt=csky-ck810
       ;;
     epiphany)
       allowed_libc="newlib"
