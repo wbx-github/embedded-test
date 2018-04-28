@@ -33,7 +33,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
   nds32le nios2 or1k ppc ppcsf sh2 sh3 sh4 sh4eb \
-  sparc sparc-leon3 sparc64 x86 x86_64 \
+  sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu"
 
 # musl
@@ -1101,7 +1101,7 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     tilegx)
-      allowed_libc="glibc"
+      allowed_libc="uclibc-ng glibc"
       runtime_test=""
       allowed_tests="toolchain"
       default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=tile ADK_TARGET_CPU=tilegx ADK_TARGET_SYSTEM=generic-tile"
