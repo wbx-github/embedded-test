@@ -348,11 +348,13 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb-nommu ADK_TARGET_ENDIAN=little"
-      march=arm-versatilepb-nommu
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no"
+      cpu_arch=arm926ej_s
+      march=arm-versatilepb
       qemu=qemu-system-arm
       qemu_machine=versatilepb
-      suffix=soft_eabi
+      suffix=${cpu_arch}_soft_eabi_nommu
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       piggyback=1
       ;;
@@ -617,7 +619,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208 ADK_TARGET_MMU=no"
       cpu_arch=cf5208
       march=m68k-mcf5208
       qemu=qemu-system-m68k
@@ -1177,7 +1179,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212 ADK_TARGET_ENDIAN=little"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=de212 ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no"
       cpu_arch=de212
       march=xtensa
       qemu=qemu-system-xtensa
