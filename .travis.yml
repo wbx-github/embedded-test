@@ -72,4 +72,4 @@ matrix:
   - env: ARCH=xtensa
   - env: ARCH=xtensabe
   - env: ARCH=xtensa-nommu
-script: travis_wait 60 ./embedded-test.sh --os=waldux --arch=$ARCH --libc=uclibc-ng
+script: travis_wait 60 ./embedded-test.sh --os=linux --arch=$ARCH --libc=uclibc-ng
