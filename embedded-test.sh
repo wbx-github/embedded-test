@@ -1024,21 +1024,21 @@ get_arch_info() {
       allowed_libc="newlib"
       runtime_test=""
       allowed_tests="toolchain"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sh ADK_TARGET_ENDIAN=little"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sh ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no"
       ;;
     sh2)
       allowed_libc="uclibc-ng"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh2"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh2 ADK_TARGET_MMU=no"
       cpu_arch=sh2
       ;;
     sh3)
       allowed_libc="uclibc-ng glibc"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3"
-      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3"
+      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3 ADK_TARGET_MMU=no"
+      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3 ADK_TARGET_MMU=no"
       cpu_arch=sh3
       ;;
     sh4)
