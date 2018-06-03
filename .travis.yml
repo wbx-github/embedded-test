@@ -31,7 +31,8 @@ matrix:
   - env: ARCH=crisv10
   - env: ARCH=crisv32
   - env: ARCH=frv
-  - env: ARCH=h8300
+  - env: ARCH=h8300-h8300h
+  - env: ARCH=h8300-h8s
   - env: ARCH=hppa
   - env: ARCH=ia64
   - env: ARCH=lm32
@@ -62,7 +63,9 @@ matrix:
   - env: ARCH=ppc
   - env: ARCH=ppcsf
   - env: ARCH=sh2
+  - env: ARCH=sh2eb
   - env: ARCH=sh3
+  - env: ARCH=sh3eb
   - env: ARCH=sh4
   - env: ARCH=sh4eb
   - env: ARCH=sparc
