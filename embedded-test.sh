@@ -24,7 +24,8 @@
 
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
-  arcv2-be arm-nommu armv5 armv6 armv7 armv7-thumb2 armeb avr32 \
+  arcv2-be armv5 armv5-nommu-arm armv5-nommu-thumb armv6 armv7 \
+  armv7-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   c6x crisv10 crisv32 csky-ck610 csky-ck807 csky-ck810 \
   frv h8300-h8300h h8300-h8s hppa ia64 \
@@ -291,6 +292,34 @@ get_arch_info() {
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       ;;
+    armv5-nommu-arm)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=arm"
+      cpu_arch=arm926ej_s
+      march=arm-versatilepb
+      qemu=qemu-system-arm
+      qemu_machine=versatilepb
+      suffix=${cpu_arch}_soft_eabi_arm_nommu
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
+      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      piggyback=1
+      ;;
+    armv5-nommu-thumb)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=thumb"
+      cpu_arch=arm926ej_s
+      march=arm-versatilepb
+      qemu=qemu-system-arm
+      qemu_machine=versatilepb
+      suffix=${cpu_arch}_soft_eabi_thumb_nommu
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
+      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      piggyback=1
+      ;;
     armv6)
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
@@ -343,20 +372,6 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arm ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=arm926ej-s"
-      ;;
-    arm-nommu)
-      allowed_libc="uclibc-ng"
-      runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no"
-      cpu_arch=arm926ej_s
-      march=arm-versatilepb
-      qemu=qemu-system-arm
-      qemu_machine=versatilepb
-      suffix=${cpu_arch}_soft_eabi_nommu
-      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
-      piggyback=1
       ;;
     arcv1)
       allowed_libc="uclibc-ng newlib"
