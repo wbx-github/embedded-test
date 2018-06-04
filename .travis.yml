@@ -18,8 +18,9 @@ matrix:
   - env: ARCH=arcv1-be
   - env: ARCH=arcv2
   - env: ARCH=arcv2-be
-  - env: ARCH=arm-nommu
   - env: ARCH=armv5
+  - env: ARCH=armv5-nommu-thumb
+  - env: ARCH=armv5-nommu-arm
   - env: ARCH=armv6
   - env: ARCH=armv7
   - env: ARCH=armv7-thumb2
