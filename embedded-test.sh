@@ -25,7 +25,7 @@
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be armv5 armv5-nommu-arm armv5-nommu-thumb armv6 armv7 \
-  armv7-thumb2 armeb avr32 \
+  armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   c6x crisv10 crisv32 csky-ck610 csky-ck807 csky-ck810 \
   frv h8300-h8300h h8300-h8s hppa ia64 \
@@ -332,7 +332,7 @@ get_arch_info() {
       march=arm-realview-eb-mpcore
       qemu=qemu-system-arm
       qemu_machine=realview-eb-mpcore
-      suffix=${cpu_arch}_hard_eabihf
+      suffix=${cpu_arch}_hard_eabihf_arm
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -net user -net nic -dtb ${dtbdir}/arm-realview-eb-11mp-ctrevb.dtb"
       ;;
@@ -347,7 +347,7 @@ get_arch_info() {
       march=arm-vexpress-a9
       qemu=qemu-system-arm
       qemu_machine=vexpress-a9
-      suffix=${cpu_arch}_hard_eabihf
+      suffix=${cpu_arch}_hard_eabihf_arm
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
       ;;
@@ -360,9 +360,37 @@ get_arch_info() {
       march=arm-vexpress-a9
       qemu=qemu-system-arm
       qemu_machine=vexpress-a9
-      suffix=${cpu_arch}_soft_eabi
+      suffix=${cpu_arch}_soft_eabi_thumb
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu cortex-a9 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
+      ;;
+    armv8)
+      allowed_libc="uclibc-ng musl glibc"
+      runtime_test="uclibc-ng musl glibc"
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_CPU=cortex-a53"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_CPU=cortex-a53"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_CPU=cortex-a53"
+      cpu_arch=cortex_a53
+      march=arm-vexpress-a9
+      qemu=qemu-system-arm
+      qemu_machine=vexpress-a9
+      suffix=${cpu_arch}_hard_eabihf_arm
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
+      qemu_args="${qemu_args} -cpu cortex-a53 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
+      ;;
+    armv8-thumb2)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_INSTRUCTION_SET=thumb ADK_TARGET_FS=initramfsarchive ADK_TARGET_FLOAT=soft ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_CPU=cortex-a53"
+      cpu_arch=cortex_a53
+      march=arm-vexpress-a9
+      qemu=qemu-system-arm
+      qemu_machine=vexpress-a9
+      suffix=${cpu_arch}_soft_eabi_thumb
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
+      qemu_args="${qemu_args} -cpu cortex-a53 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
       ;;
     armeb)
       allowed_libc="uclibc-ng musl glibc"
