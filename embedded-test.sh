@@ -288,7 +288,7 @@ get_arch_info() {
       march=arm-versatilepb
       qemu=qemu-system-arm
       qemu_machine=versatilepb
-      suffix=${cpu_arch}_soft_eabi
+      suffix=${cpu_arch}_soft_eabi_arm
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       ;;
