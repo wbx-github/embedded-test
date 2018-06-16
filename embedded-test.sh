@@ -407,7 +407,7 @@ get_arch_info() {
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc700"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc700"
-      emulator=nsim
+      emulator=synopsys-nsim
       cpu_arch=arc700
       suffix=${cpu_arch}
       piggyback=1
@@ -418,7 +418,7 @@ get_arch_info() {
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
-      emulator=nsim
+      emulator=synopsys-nsim
       cpu_arch=archs
       suffix=${cpu_arch}
       piggyback=1
@@ -429,7 +429,7 @@ get_arch_info() {
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=arc700"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=arc700"
-      emulator=nsim
+      emulator=synopsys-nsim
       endian=eb
       cpu_arch=arc700
       suffix=${cpu_arch}${endian}
@@ -442,7 +442,7 @@ get_arch_info() {
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
-      emulator=nsim
+      emulator=synopsys-nsim
       endian=eb
       cpu_arch=archs
       march=arcv2
@@ -1400,7 +1400,7 @@ runtest() {
         fi
       fi
       ;;
-    nsim)
+    synopsys-nsim)
       echo "Using Synopsys NSIM as simulator"
       if ! which nsimdrv >/dev/null; then
         echo "Checking if $emulator is installed... failed"
@@ -1470,7 +1470,7 @@ runtest() {
       echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
       ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
       ;;
-    nsim)
+    synopsys-nsim)
       echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
       ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee $report
       ;;
