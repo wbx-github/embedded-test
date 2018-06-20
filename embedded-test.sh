@@ -1243,7 +1243,7 @@ get_arch_info() {
       qemu=qemu-system-xtensa
       qemu_machine=kc705-nommu
       qemu_args="${qemu_args} -cpu de212 -m 256"
-      suffix=${cpu_arch}
+      suffix=${cpu_arch}_nommu
       piggyback=1
       ;;
     *)
@@ -1424,7 +1424,11 @@ runtest() {
     rm -rf openadk/extra 2>/dev/null
     mkdir openadk/extra 2>/dev/null
     if [ ! -z $suffix ]; then
-      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
+      if [ "$emulator" = "synopsys-nsim" ]; then
+        kernel=openadk/firmware/${emulator}_${lib}_${suffix}/${emulator}-initramfspiggyback-kernel
+      else
+        kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
+      fi
     else
       kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
     fi
