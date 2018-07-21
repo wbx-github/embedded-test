@@ -296,12 +296,12 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=arm"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=arm ADK_TARGET_BINFMT=flat"
       cpu_arch=arm926ej_s
       march=arm-versatilepb
       qemu=qemu-system-arm
       qemu_machine=versatilepb
-      suffix=${cpu_arch}_soft_eabi_arm_nommu
+      suffix=${cpu_arch}_soft_eabi_flat_arm_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       piggyback=1
@@ -310,12 +310,12 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=thumb"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=thumb ADK_TARGET_BINFMT=flat"
       cpu_arch=arm926ej_s
       march=arm-versatilepb
       qemu=qemu-system-arm
       qemu_machine=versatilepb
-      suffix=${cpu_arch}_soft_eabi_thumb_nommu
+      suffix=${cpu_arch}_soft_eabi_flat_thumb_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       piggyback=1
