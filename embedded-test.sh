@@ -1695,7 +1695,7 @@ for lib in ${libc}; do
     cp -a $libcsource $usrc/$libver
     mkdir -p $topdir/openadk/dl 2>/dev/null
     rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
-    (cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} )
+    (cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} && rm -rf $usrc)
     touch $topdir/openadk/dl/${libver}.tar.xz.nohash
     # we need to clean system, when external source is used
     if [ $noclean -eq 0 ]; then
@@ -1715,7 +1715,7 @@ for lib in ${libc}; do
     (cd $usrc && mv binutils-* binutils-git)
     mkdir -p $topdir/openadk/dl 2>/dev/null
     rm $topdir/openadk/dl/binutils-git.tar.xz 2>/dev/null
-    (cd $usrc && tar cJf $topdir/openadk/dl/binutils-git.tar.xz binutils-git)
+    (cd $usrc && tar cJf $topdir/openadk/dl/binutils-git.tar.xz binutils-git && rm -rf $usrc)
     touch $topdir/openadk/dl/binutils-git.tar.xz.nohash
     # we need to clean system, when external source is used
     if [ $noclean -eq 0 ]; then
@@ -1733,7 +1733,7 @@ for lib in ${libc}; do
     cp -a $gccsource $usrc/gcc-git
     mkdir -p $topdir/openadk/dl 2>/dev/null
     rm $topdir/openadk/dl/gcc-git.tar.xz 2>/dev/null
-    (cd $usrc && tar cJf $topdir/openadk/dl/gcc-git.tar.xz gcc-git)
+    (cd $usrc && tar cJf $topdir/openadk/dl/gcc-git.tar.xz gcc-git && rm -rf $usrc)
     touch $topdir/openadk/dl/gcc-git.tar.xz.nohash
     # we need to clean system, when external source is used
     if [ $noclean -eq 0 ]; then
@@ -1751,7 +1751,7 @@ for lib in ${libc}; do
     cp -a $gdbsource $usrc/gdb-git
     mkdir -p $topdir/openadk/dl 2>/dev/null
     rm $topdir/openadk/dl/gdb-git.tar.xz 2>/dev/null
-    (cd $usrc && tar cJf $topdir/openadk/dl/gdb-git.tar.xz gdb-git)
+    (cd $usrc && tar cJf $topdir/openadk/dl/gdb-git.tar.xz gdb-git && rm -rf $usrc)
     touch $topdir/openadk/dl/gdb-git.tar.xz.nohash
     # we need to clean system, when external source is used
     if [ $noclean -eq 0 ]; then
@@ -1770,7 +1770,7 @@ for lib in ${libc}; do
       cp -a $kernelsource $usrc/linux-git
       mkdir -p $topdir/openadk/dl 2>/dev/null
       rm $topdir/openadk/dl/linux-git.tar.xz 2>/dev/null
-      (cd $usrc && tar cJf $topdir/openadk/dl/linux-git.tar.xz linux-git)
+      (cd $usrc && tar cJf $topdir/openadk/dl/linux-git.tar.xz linux-git && rm -rf $usrc)
       touch $topdir/openadk/dl/linux-git.tar.xz.nohash
       # we need to clean system, when external source is used
       if [ $noclean -eq 0 ]; then
