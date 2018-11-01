@@ -27,7 +27,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be armv5 armv5-nommu-arm armv5-nommu-thumb armv6 armv7 \
   armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
-  c6x crisv10 crisv32 csky-ck610 csky-ck807 csky-ck810 \
+  c6x crisv10 crisv32 \
   frv h8300-h8300h h8300-h8s hppa ia64 \
   lm32 m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
