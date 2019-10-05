@@ -2,7 +2,7 @@ language: c
 notifications:
   email:
     recipients:
-      - wbx@embedded-test.org
+      - wbx@openadk.org
     on_success: always
     on_failure: always
 git:

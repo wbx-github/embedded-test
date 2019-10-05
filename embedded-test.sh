@@ -47,7 +47,7 @@ arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
 
 # glibc
 arch_list_glibc="aarch64 aarch64be alpha armv5 armv6 armv7 armeb \
-  ia64 m68k microblazeel microblazebe \
+  csky-ck610 csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
@@ -540,39 +540,39 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     csky-ck610)
-      allowed_libc="uclibc-ng"
-      runtime_test="uclibc-ng"
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky-ck610 ADK_TARGET_ENDIAN=little"
       dtbdir=openadk/target/csky
       qemu=qemu-system-cskyv1
-      qemu_args="-nographic -dtb ${dtbdir}/qemu.dtb"
+      qemu_args="-nographic"
       qemu_machine=virt
       piggyback=1
       suffix=soft
       skiplt=csky-ck610
       ;;
     csky-ck807)
-      allowed_libc="uclibc-ng"
-      runtime_test="uclibc-ng"
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky-ck807 ADK_TARGET_ENDIAN=little"
       dtbdir=openadk/target/csky
       qemu=qemu-system-cskyv2
-      qemu_args="-nographic -dtb ${dtbdir}/qemu.dtb"
+      qemu_args="-nographic"
       qemu_machine=virt
       piggyback=1
       suffix=soft
       skiplt=csky-ck807
       ;;
     csky-ck810)
-      allowed_libc="uclibc-ng"
-      runtime_test="uclibc-ng"
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky-ck810 ADK_TARGET_ENDIAN=little"
       dtbdir=openadk/target/csky
       qemu=qemu-system-cskyv2
-      qemu_args="-nographic -dtb ${dtbdir}/qemu.dtb"
+      qemu_args="-nographic"
       qemu_machine=virt
       piggyback=1
       suffix=soft
