@@ -1,7 +1,7 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2018
-#	Waldemar Brodkorb <wbx@embedded-test.org>
+# Copyright © 2014-2019
+#	Waldemar Brodkorb <wbx@openadk.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
 # are retained or reproduced in an accompanying document, permission
@@ -61,8 +61,8 @@ arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
   nios2 or1k ppc rx sh sparc sparc64 v850 x86 x86_64 xtensa"
 
 topdir=$(pwd)
-giturl=https://git.openadk.org/git/openadk.git
-valid_os="waldux linux"
+giturl=git://openadk.org/git/openadk
+valid_os="linux"
 valid_libc="uclibc-ng musl glibc newlib"
 valid_tests="toolchain boot libc ltp mksh native"
 valid_thread_types="none lt nptl"
@@ -70,7 +70,7 @@ valid_thread_types="none lt nptl"
 bootserver=10.0.0.1
 buildserver=10.0.0.2
 
-tools='make git wget xz cpio tar awk sed'
+tools='make git xz cpio tar awk sed'
 f=0
 for tool in $tools; do
   if ! which $tool >/dev/null; then
@@ -1641,7 +1641,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.30
+        version=1.0.31
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
@@ -1651,7 +1651,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.27
+        version=2.30
       fi
       libver=glibc-${version}
       libdir=glibc
@@ -1661,7 +1661,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.1.19
+        version=1.1.23
       fi
       libver=musl-${version}
       libdir=musl
