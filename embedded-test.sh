@@ -1214,13 +1214,14 @@ get_arch_info() {
       allowed_libc="newlib uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c ADK_TARGET_ENDIAN=little"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c ADK_TARGET_ENDIAN=little"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=xtensa"
       cpu_arch=dc233c
       qemu=qemu-system-xtensa
       qemu_machine=kc705
       qemu_args="${qemu_args} -cpu dc233c"
       suffix=${cpu_arch}
+      piggyback=1
       ;;
     xtensabe)
       allowed_libc="uclibc-ng"
