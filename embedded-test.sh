@@ -39,7 +39,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
-  microblazeel microblazebe \
+  m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64n32 mips64n64 mips64eln32 mips64eln64 \
   or1k ppc ppcsf ppc64 ppc64le s390 sh4 sh4eb \
@@ -645,10 +645,11 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=m32r"
       ;;
     m68k)
-      allowed_libc="uclibc-ng glibc newlib"
+      allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-q800 ADK_TARGET_CPU=68020"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=m68k ADK_TARGET_CPU=68040"
       cpu_arch=68040
