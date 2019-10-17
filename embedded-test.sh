@@ -46,12 +46,12 @@ arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
   x86 x86_64 x86_64_x32"
 
 # glibc
-arch_list_glibc="aarch64 aarch64be alpha armv5 armv6 armv7 armeb \
-  csky-ck610 csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
+arch_list_glibc="aarch64 aarch64be alpha armv6 armv7 \
+  csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
-  nios2 ppc ppcsf ppc64 ppc64le s390 sh3 sh4 sh4eb sparc64 tilegx \
+  nios2 ppc ppcsf ppc64 ppc64le s390 sh3 sh4 sh4eb sparc64 \
   x86 x86_64 x86_64_x32"
 
 # newlib
