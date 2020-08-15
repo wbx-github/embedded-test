@@ -46,7 +46,7 @@ arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
   x86 x86_64 x86_64_x32"
 
 # glibc
-arch_list_glibc="aarch64 aarch64be alpha armv6 armv7 \
+arch_list_glibc="aarch64 aarch64be alpha armv6 armv7 arcv2 arcv2-be \
   csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -413,8 +413,8 @@ get_arch_info() {
       piggyback=1
       ;;
     arcv2)
-      allowed_libc="uclibc-ng"
-      runtime_test="uclibc-ng"
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
@@ -437,8 +437,8 @@ get_arch_info() {
       piggyback=1
       ;;
     arcv2-be)
-      allowed_libc="uclibc-ng"
-      runtime_test="uclibc-ng"
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
@@ -1653,7 +1653,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.31
+        version=2.32
       fi
       libver=glibc-${version}
       libdir=glibc
@@ -1663,7 +1663,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.1.23
+        version=1.2.0
       fi
       libver=musl-${version}
       libdir=musl
