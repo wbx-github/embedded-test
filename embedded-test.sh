@@ -662,7 +662,7 @@ get_arch_info() {
       qemu=qemu-system-m68k
       qemu_args="-nographic"
       qemu_machine=mcf5208evb
-      suffix=${cpu_arch}
+      suffix=${cpu_arch}_nommu
       piggyback=1
       ;;
     metag)
