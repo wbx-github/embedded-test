@@ -1,6 +1,6 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2020
+# Copyright © 2014-2021
 #	Waldemar Brodkorb <wbx@openadk.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -1649,7 +1649,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.37
+        version=1.0.38
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
@@ -1659,7 +1659,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.32
+        version=2.33
       fi
       libver=glibc-${version}
       libdir=glibc
@@ -1669,7 +1669,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.2.1
+        version=1.2.2
       fi
       libver=musl-${version}
       libdir=musl
@@ -1679,7 +1679,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=3.3.0
+        version=4.1.0
       fi
       libver=newlib-${version}
       libdir=newlib
