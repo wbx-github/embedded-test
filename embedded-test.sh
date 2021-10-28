@@ -25,14 +25,14 @@
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be armv5 armv5-nommu-arm armv5-nommu-thumb armv6 armv7 \
-  armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
+  armv7-thumb2 armv8 armv8-thumb2 armeb \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   c6x crisv10 crisv32 csky-ck807 csky-ck810 \
-  frv h8300-h8300h h8300-h8s hppa ia64 kvx \
+  frv h8300-h8300h h8300-h8s hppa ia64 \
   m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
-  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le nds32be \
+  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
   nios2 or1k ppc ppcsf riscv64 sh2 sh2eb sh3 sh3eb sh4 sh4eb \
   sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu"
@@ -303,7 +303,7 @@ get_arch_info() {
       qemu_machine=versatilepb
       suffix=${cpu_arch}_soft_eabi_flat_arm_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      qemu_args="${qemu_args} -m 256 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       piggyback=1
       ;;
     armv5-nommu-thumb)
@@ -317,7 +317,7 @@ get_arch_info() {
       qemu_machine=versatilepb
       suffix=${cpu_arch}_soft_eabi_flat_thumb_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      qemu_args="${qemu_args} -m 256 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       piggyback=1
       ;;
     armv6)
@@ -660,7 +660,7 @@ get_arch_info() {
       cpu_arch=cf5208
       march=m68k-mcf5208
       qemu=qemu-system-m68k
-      qemu_args="-nographic"
+      qemu_args="-nographic -m 256"
       qemu_machine=mcf5208evb
       suffix=${cpu_arch}_nommu
       piggyback=1
