@@ -247,7 +247,7 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64"
       cpu_arch=cortex_a53
       qemu_machine=virt
-      qemu_args="${qemu_args} -cpu cortex-a53 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+      qemu_args="${qemu_args} -m 256 -cpu cortex-a53 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       suffix=${cpu_arch}
       skiplt=aarch64
       ;;
@@ -274,7 +274,7 @@ get_arch_info() {
       march=alpha
       qemu=qemu-system-alpha
       qemu_machine=clipper
-      qemu_args="${qemu_args} -monitor null"
+      qemu_args="${qemu_args} -monitor null -m 256"
       ;;
     armv5)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -614,8 +614,8 @@ get_arch_info() {
       ;;
     hppa)
       allowed_libc="uclibc-ng glibc"
-      runtime_test="uclibc-ng glibc"
-      allowed_tests="boot libc mksh native toolchain"
+      runtime_test=""
+      allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
       qemu=qemu-system-hppa
@@ -806,7 +806,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=mips64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-mips64 ADK_TARGET_ENDIAN=big ADK_TARGET_ABI=o32 ADK_TARGET_CPU=mips64"
       cpu_arch=mips64
       qemu_machine=malta
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_o32
       ;;
     mips64r6n32)
@@ -819,7 +819,7 @@ get_arch_info() {
       march=mips64
       qemu=qemu-system-${march}
       qemu_machine=malta
-      qemu_args="${qemu_args} -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_n32
       ;;
     mips64r6n64)
@@ -832,7 +832,7 @@ get_arch_info() {
       march=mips64
       qemu=qemu-system-${march}
       qemu_machine=malta
-      qemu_args="${qemu_args} -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_n64
       ;;
     mips64n32)
@@ -846,7 +846,7 @@ get_arch_info() {
       march=mips64
       qemu=qemu-system-${cpu_arch}
       qemu_machine=malta
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_n32
       ;;
     mips64n64)
@@ -860,7 +860,7 @@ get_arch_info() {
       march=mips64
       qemu=qemu-system-${cpu_arch}
       qemu_machine=malta
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}_n64
       ;;
     mips64el)
@@ -874,7 +874,7 @@ get_arch_info() {
       endian=el
       qemu=qemu-system-mips64el
       qemu_machine=malta
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}${endian}_o32
       ;;
     mips64eln32)
@@ -889,7 +889,7 @@ get_arch_info() {
       endian=el
       qemu=qemu-system-mips64el
       qemu_machine=malta
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}${endian}_n32
       ;;
     mips64eln64)
@@ -904,7 +904,7 @@ get_arch_info() {
       endian=el
       qemu=qemu-system-mips64el
       qemu_machine=malta
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}${endian}_n64
       ;;
     mips64r6eln32)
@@ -918,7 +918,7 @@ get_arch_info() {
       endian=el
       qemu=qemu-system-mips64el
       qemu_machine=malta
-      qemu_args="${qemu_args} -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}${endian}_n32
       ;;
     mips64r6eln64)
@@ -932,7 +932,7 @@ get_arch_info() {
       endian=el
       qemu=qemu-system-mips64el
       qemu_machine=malta
-      qemu_args="${qemu_args} -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -cpu I6400 -device e1000,netdev=adk0 -netdev user,id=adk0"
       suffix=${cpu_arch}${endian}_n64
       ;;
     mn10300)
@@ -1050,7 +1050,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64"
       cpu_arch=riscv64
       qemu=qemu-system-${cpu_arch}
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
       qemu_machine=virt
       piggyback=1
       ;;
@@ -1144,6 +1144,7 @@ get_arch_info() {
       cpu_arch=v8
       qemu=qemu-system-sparc
       qemu_machine=SS-10
+      qemu_args="${qemu_args} -m 256"
       suffix=${cpu_arch}
       ;;
     sparc-leon3)
@@ -1157,7 +1158,7 @@ get_arch_info() {
     sparc64)
       allowed_libc="uclibc-ng glibc newlib"
       runtime_test="glibc"
-      allowed_tests="toolchain boot libc mksh ltp native"
+      allowed_tests="toolchain"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc64"
@@ -1190,7 +1191,7 @@ get_arch_info() {
       cpu_arch=i686
       qemu=qemu-system-i386
       qemu_machine=pc
-      qemu_args="${qemu_args}"
+      qemu_args="${qemu_args} -m 256"
       ;;
     x86_64)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -1202,6 +1203,7 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=x86_64"
       cpu_arch=x86_64
       qemu_machine=pc
+      qemu_args="${qemu_args} -m 256"
       libdir=lib64
       ;;
     x86_64_x32)
@@ -1226,7 +1228,7 @@ get_arch_info() {
       cpu_arch=dc233c
       qemu=qemu-system-xtensa
       qemu_machine=kc705
-      qemu_args="${qemu_args} -cpu dc233c"
+      qemu_args="${qemu_args} -cpu dc233c -m 256"
       suffix=${cpu_arch}
       piggyback=1
       ;;
