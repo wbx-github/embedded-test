@@ -51,7 +51,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv6 armv7 arcv2 arcv2-be \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
-  nios2 ppc ppcsf ppc64 ppc64le riscv64 s390 sh3 sh4 sh4eb sparc64 \
+  nios2 ppc ppcsf ppc64 ppc64le riscv64 s390 sh4 sh4eb sparc64 \
   x86 x86_64 x86_64_x32"
 
 # newlib
@@ -1091,7 +1091,7 @@ get_arch_info() {
       cpu_arch=sh2
       ;;
     sh3)
-      allowed_libc="uclibc-ng glibc"
+      allowed_libc="uclibc-ng"
       runtime_test=""
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=little"
@@ -1099,7 +1099,7 @@ get_arch_info() {
       cpu_arch=sh3
       ;;
     sh3eb)
-      allowed_libc="uclibc-ng glibc"
+      allowed_libc="uclibc-ng"
       runtime_test=""
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=generic-sh ADK_TARGET_CPU=sh3 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=big"
