@@ -56,9 +56,9 @@ arch_list_glibc="aarch64 aarch64be alpha armv6 armv7 arcv2 arcv2-be \
 
 # newlib
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
-  crisv32 epiphany ft32 frv h8300-h8300h ia64 lm32 m32r m68k microblazeel \
-  microblazebe mips32 mips32el mn10300 moxie msp430 nds32le nds32be \
-  nios2 or1k ppc rx sh sparc sparc64 v850 x86 x86_64 xtensa"
+  crisv32 epiphany ft32 frv h8300-h8300h ia64 m32r m68k microblazeel \
+  microblazebe mips32 mips32el mn10300 moxie msp430 \
+  nios2 or1k ppc rx sh sparc v850 x86 x86_64 xtensa"
 
 topdir=$(pwd)
 giturl=git://openadk.org/git/openadk
