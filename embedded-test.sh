@@ -1,6 +1,6 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2021
+# Copyright © 2014-2022
 #	Waldemar Brodkorb <wbx@openadk.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -28,11 +28,11 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   armv7-thumb2 armv8 armv8-thumb2 armeb \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   c6x crisv10 crisv32 csky-ck807 csky-ck810 \
-  frv h8300-h8300h h8300-h8s hppa ia64 \
+  h8300-h8300h h8300-h8s hppa ia64 \
   m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
-  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
+  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
   nios2 or1k ppc ppcsf riscv64 sh2 sh2eb sh3 sh3eb sh4 sh4eb \
   sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu"
@@ -372,12 +372,7 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_CPU=cortex-a53"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_CPU=cortex-a53"
       cpu_arch=cortex_a53
-      march=arm-vexpress-a9
-      qemu=qemu-system-arm
-      qemu_machine=vexpress-a9
       suffix=${cpu_arch}_hard_eabihf_arm
-      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -cpu cortex-a53 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
       ;;
     armv8-thumb2)
       allowed_libc="uclibc-ng"
@@ -385,12 +380,7 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_INSTRUCTION_SET=thumb ADK_TARGET_FS=initramfsarchive ADK_TARGET_FLOAT=soft ADK_TARGET_SYSTEM=qemu-arm-vexpress-a9 ADK_TARGET_CPU=cortex-a53"
       cpu_arch=cortex_a53
-      march=arm-vexpress-a9
-      qemu=qemu-system-arm
-      qemu_machine=vexpress-a9
       suffix=${cpu_arch}_soft_eabi_thumb
-      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -cpu cortex-a53 -net user -net nic,model=lan9118 -dtb ${dtbdir}/vexpress-v2p-ca9.dtb"
       ;;
     armeb)
       allowed_libc="uclibc-ng musl glibc"
@@ -1157,8 +1147,8 @@ get_arch_info() {
       ;;
     sparc64)
       allowed_libc="uclibc-ng glibc newlib"
-      runtime_test="glibc"
-      allowed_tests="toolchain"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="toolchain boot libc mksh ltp native"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc64"
@@ -1651,7 +1641,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.39
+        version=1.0.40
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
