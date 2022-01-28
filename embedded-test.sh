@@ -604,8 +604,8 @@ get_arch_info() {
       ;;
     hppa)
       allowed_libc="uclibc-ng glibc"
-      runtime_test=""
-      allowed_tests="toolchain"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="toolchain boot libc ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
       qemu=qemu-system-hppa
