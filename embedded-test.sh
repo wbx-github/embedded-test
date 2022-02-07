@@ -51,7 +51,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arcv2-be \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
-  nios2 or1k ppc ppcsf ppc64 ppc64le riscv64 s390 sh4 sh4eb sparc64 \
+  nios2 or1k ppc ppcsf ppc64 ppc64le riscv32 riscv64 s390 sh4 sh4eb sparc64 \
   x86_64 x86_64_x32"
 
 # newlib
@@ -1032,6 +1032,17 @@ get_arch_info() {
       qemu_machine=pseries
       suffix=${cpu_arch}
       ;;
+    riscv32)
+      allowed_libc="glibc"
+      runtime_test="glibc"
+      allowed_tests="toolchain boot libc mksh ltp native"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv32 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv32"
+      cpu_arch=riscv32
+      qemu=qemu-system-${cpu_arch}
+      qemu_args="${qemu_args} -m 512 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_machine=virt
+      piggyback=1
+      ;;
     riscv64)
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
@@ -1041,7 +1052,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64"
       cpu_arch=riscv64
       qemu=qemu-system-${cpu_arch}
-      qemu_args="${qemu_args} -m 256 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 512 -device e1000,netdev=adk0 -netdev user,id=adk0"
       qemu_machine=virt
       piggyback=1
       ;;
