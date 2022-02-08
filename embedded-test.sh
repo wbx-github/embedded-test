@@ -1308,7 +1308,7 @@ fi
 EOF
   if [ $static -eq 0 ]; then
 cat >> $file << EOF
-for i in \$(ls /lib/*.so 2>/dev/null|grep -v libgcc);do
+for i in \$(ls /lib/* 2>/dev/null);do
   if [ -x /usr/bin/size ]; then
     size \$i $tee
   else
