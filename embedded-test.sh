@@ -58,7 +58,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arcv2-be \
 arch_list_newlib="aarch64 aarch64be arcv1 armv5 bfin crisv10 \
   crisv32 csky-ck807 epiphany ft32 frv h8300-h8300h ia64 m32r m68k microblazeel \
   microblazebe mips32 mips32el mn10300 moxie msp430 nds32le nds32be \
-  nios2 or1k ppc rx sh sparc v850 x86 x86_64 xtensa"
+  nios2 or1k ppc riscv64 rx sh sparc v850 x86 x86_64 xtensa"
 
 topdir=$(pwd)
 giturl=git://openadk.org/git/openadk
@@ -1050,6 +1050,7 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=riscv64"
       cpu_arch=riscv64
       qemu=qemu-system-${cpu_arch}
       qemu_args="${qemu_args} -m 512 -device e1000,netdev=adk0 -netdev user,id=adk0"
