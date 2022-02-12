@@ -55,8 +55,8 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arcv2-be \
   x86_64 x86_64_x32"
 
 # newlib
-arch_list_newlib="aarch64 aarch64be arcv1 armv5 armeb bfin crisv10 \
-  crisv32 epiphany ft32 frv h8300-h8300h ia64 m32r m68k microblazeel \
+arch_list_newlib="aarch64 aarch64be arcv1 armv5 bfin crisv10 \
+  crisv32 csky-ck807 epiphany ft32 frv h8300-h8300h ia64 m32r m68k microblazeel \
   microblazebe mips32 mips32el mn10300 moxie msp430 nds32le nds32be \
   nios2 or1k ppc rx sh sparc v850 x86 x86_64 xtensa"
 
@@ -389,7 +389,6 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arm ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=arm926ej-s"
       ;;
     arcv1)
       allowed_libc="uclibc-ng newlib"
@@ -530,10 +529,11 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     csky-ck807)
-      allowed_libc="uclibc-ng glibc"
+      allowed_libc="uclibc-ng glibc newlib"
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky ADK_TARGET_CPU=ck807 ADK_TARGET_ENDIAN=little"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=csky ADK_TARGET_CPU=ck807 ADK_TARGET_ENDIAN=little"
       march=csky
       qemu=qemu-system-cskyv2
       qemu_args="-nographic -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
