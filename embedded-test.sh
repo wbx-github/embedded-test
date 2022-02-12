@@ -28,7 +28,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   armv7-thumb2 armv8 armv8-thumb2 armeb \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   c6x crisv10 crisv32 csky-ck807 csky-ck810 \
-  h8300-h8300h h8300-h8s hppa ia64 \
+  h8300-h8300h h8300-h8s hppa ia64 kvx \
   m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -584,9 +584,13 @@ get_arch_info() {
       ;;
     kvx)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=kvx ADK_TARGET_SYSTEM=generic-kvx"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=kvx ADK_TARGET_SYSTEM=qemu-kvx"
+      qemu=qemu-system-kvx
+      qemu_args="-nographic"
+      qemu_machine=mppa-coolidge
+      piggyback=1
       ;;
     h8300-h8300h)
       allowed_libc="uclibc-ng newlib"
