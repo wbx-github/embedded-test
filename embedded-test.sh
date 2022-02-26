@@ -533,6 +533,7 @@ get_arch_info() {
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky ADK_TARGET_CPU=ck807 ADK_TARGET_ENDIAN=little"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky ADK_TARGET_CPU=ck807 ADK_TARGET_ENDIAN=little"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=csky ADK_TARGET_CPU=ck807 ADK_TARGET_ENDIAN=little"
       march=csky
       qemu=qemu-system-cskyv2
@@ -547,6 +548,7 @@ get_arch_info() {
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky ADK_TARGET_CPU=ck810 ADK_TARGET_ENDIAN=little"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=csky ADK_TARGET_SYSTEM=qemu-csky ADK_TARGET_CPU=ck810 ADK_TARGET_ENDIAN=little"
       march=csky
       qemu=qemu-system-cskyv2
       qemu_args="-nographic -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
@@ -963,8 +965,8 @@ get_arch_info() {
       ;;
     nios2)
       allowed_libc="uclibc-ng glibc newlib"
-      runtime_test="uclibc-ng glibc"
-      allowed_tests="toolchain"
+      runtime_test="glibc"
+      allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nios2"
