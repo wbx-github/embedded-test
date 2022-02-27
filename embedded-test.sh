@@ -975,7 +975,7 @@ get_arch_info() {
       ;;
     or1k)
       allowed_libc="uclibc-ng musl glibc newlib"
-      runtime_test="uclibc-ng glibc"
+      runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-or1k"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=or1k ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-or1k"
