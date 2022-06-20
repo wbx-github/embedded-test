@@ -27,7 +27,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
   arcv2-be armv5 armv5-nommu-arm armv5-nommu-thumb armv6 armv7 \
   armv7-thumb2 armv8 armv8-thumb2 armeb \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
-  c6x crisv10 crisv32 csky-ck807 csky-ck810 \
+  crisv10 crisv32 csky-ck807 csky-ck810 \
   h8300-h8300h h8300-h8s hppa ia64 kvx \
   m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
@@ -1660,7 +1660,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.40
+        version=1.0.41
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
@@ -1680,7 +1680,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.2.2
+        version=1.2.3
       fi
       libver=musl-${version}
       libdir=musl
