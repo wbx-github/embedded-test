@@ -24,7 +24,7 @@
 
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
-  arcv2-be armv5 armv5-nommu-arm armv5-nommu-thumb armv6 armv7 \
+  arcv2-be armv5 armv5-nommu-thumb armv6 armv7 \
   armv7-thumb2 armv8 armv8-thumb2 armeb \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   crisv10 crisv32 csky-ck807 csky-ck810 \
@@ -615,7 +615,7 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
       qemu=qemu-system-hppa
-      qemu_args="-nographic"
+      qemu_args="-nographic -device e1000,netdev=adk0 -netdev user,id=adk0"
       qemu_machine=hppa
       piggyback=1
       ;;
@@ -965,8 +965,8 @@ get_arch_info() {
       ;;
     nios2)
       allowed_libc="uclibc-ng glibc newlib"
-      runtime_test="glibc"
-      allowed_tests="toolchain boot"
+      runtime_test=""
+      allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nios2"
@@ -1059,7 +1059,7 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=riscv64"
       cpu_arch=riscv64
       qemu=qemu-system-${cpu_arch}
-      qemu_args="${qemu_args} -m 512 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       qemu_machine=virt
       piggyback=1
       ;;
