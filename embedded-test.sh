@@ -406,6 +406,7 @@ get_arch_info() {
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
       emulator=synopsys-nsim
       cpu_arch=archs
@@ -430,6 +431,7 @@ get_arch_info() {
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
       emulator=synopsys-nsim
       endian=eb
@@ -626,6 +628,16 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=lm32 ADK_TARGET_SYSTEM=qemu-lm32"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=lm32"
       skipcxx=lm32
+      ;;
+    loongarch)
+      allowed_libc="glibc"
+      runtime_test="glibc"
+      allowed_tests="toolchain"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch"
+      qemu=qemu-system-loongarch64
+      qemu_machine=virt
+      qemu_args='-nographic -bios target/loongarch/QEMU_EFI.fd -append console=ttyS0,115200'
+      piggyback=1
       ;;
     m32r)
       allowed_libc="newlib"
@@ -1045,7 +1057,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv32 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv32"
       cpu_arch=riscv32
       qemu=qemu-system-${cpu_arch}
-      qemu_args="${qemu_args} -m 512 -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       qemu_machine=virt
       piggyback=1
       ;;
@@ -1670,7 +1682,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.36
+        version=2.37
       fi
       libver=glibc-${version}
       libdir=glibc
