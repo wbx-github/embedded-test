@@ -405,11 +405,14 @@ get_arch_info() {
       allowed_libc="uclibc-ng glibc"
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
-      emulator=synopsys-nsim
+      qemu=qemu-system-arc
+      qemu_machine=virt
+      qemu_args="-nographic -monitor none -serial stdio -cpu archs"
       cpu_arch=archs
+      march=arc
       suffix=${cpu_arch}
       piggyback=1
       ;;
