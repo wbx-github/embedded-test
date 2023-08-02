@@ -23,8 +23,8 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arcv1-be \
-  arcv2-be armv5 armv5-nommu-thumb armv6 armv7 \
+arch_list_uclibcng="aarch64 aarch64be alpha arcv2 \
+  armv5 armv5-nommu-thumb armv6 armv7 \
   armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   crisv10 crisv32 csky-ck807 csky-ck810 \
@@ -46,7 +46,7 @@ arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
   x86 x86_64 x86_64_x32"
 
 # glibc
-arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arcv2-be \
+arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 \
   csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -55,7 +55,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arcv2-be \
   x86_64 x86_64_x32"
 
 # newlib
-arch_list_newlib="aarch64 aarch64be arcv1 armv5 bfin crisv10 \
+arch_list_newlib="aarch64 aarch64be armv5 bfin crisv10 \
   crisv32 csky-ck807 epiphany ft32 frv h8300-h8300h ia64 m32r m68k microblazeel \
   microblazebe mips32 mips32el mn10300 moxie msp430 nds32le nds32be \
   nios2 or1k ppc riscv64 rx sh sparc v850 x86 x86_64 xtensa"
@@ -91,7 +91,6 @@ Explanation:
 	--os=<operating system>      operating system to use (${valid_os})
 	--arch=<arch>                architecture to check (otherwise all supported)
 	--skip-arch=<arch>           architectures to skip when all choosen
-	--skip-nsim                  skip nsim simulator tests
 	--targets=<targets.txt>      a list of remote targets to test via nfsroot or chroot
 	--test=<test>                run test (${valid_tests}), default toolchain
 	--threads=<type>             configure threading support (${valid_thread_types}) (only for uClibc-ng)
@@ -136,7 +135,6 @@ static=0
 cxx=0
 ssp=0
 debug=0
-skipnsim=0
 ntp=""
 libc=""
 os="linux"
@@ -159,7 +157,6 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--os=*) os=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
   (--skip-arch=*) skiparchs=${1#*=}; shift ;;
-  (--skip-nsim) skipnsim=1 shift ;;
   (--targets=*) targets=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
   (--threads=*) threads=${1#*=}; shift ;;
@@ -390,17 +387,6 @@ get_arch_info() {
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       ;;
-    arcv1)
-      allowed_libc="uclibc-ng newlib"
-      runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc ltp mksh native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc700"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc700"
-      emulator=synopsys-nsim
-      cpu_arch=arc700
-      suffix=${cpu_arch}
-      piggyback=1
-      ;;
     arcv2)
       allowed_libc="uclibc-ng glibc"
       runtime_test="uclibc-ng glibc"
@@ -414,33 +400,6 @@ get_arch_info() {
       cpu_arch=archs
       march=arc
       suffix=${cpu_arch}
-      piggyback=1
-      ;;
-    arcv1-be)
-      allowed_libc="uclibc-ng"
-      runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc ltp mksh native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=arc700"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=arc700"
-      emulator=synopsys-nsim
-      endian=eb
-      cpu_arch=arc700
-      suffix=${cpu_arch}${endian}
-      march=arcv1
-      piggyback=1
-      ;;
-    arcv2-be)
-      allowed_libc="uclibc-ng glibc"
-      runtime_test="uclibc-ng glibc"
-      allowed_tests="toolchain boot libc ltp mksh native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=synopsys-nsim ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=big ADK_TARGET_CPU=archs"
-      emulator=synopsys-nsim
-      endian=eb
-      cpu_arch=archs
-      march=arcv2
-      suffix=${cpu_arch}${endian}
       piggyback=1
       ;;
     avr32)
@@ -1434,13 +1393,6 @@ runtest() {
         fi
       fi
       ;;
-    synopsys-nsim)
-      echo "Using Synopsys NSIM as simulator"
-      if ! which nsimdrv >/dev/null; then
-        echo "Checking if $emulator is installed... failed"
-        exit 1
-      fi
-      ;;
     gdb)
       echo "Using GDB as simulator"
       ;;
@@ -1458,11 +1410,7 @@ runtest() {
     rm -rf openadk/extra 2>/dev/null
     mkdir openadk/extra 2>/dev/null
     if [ ! -z $suffix ]; then
-      if [ "$emulator" = "synopsys-nsim" ]; then
-        kernel=openadk/firmware/${emulator}_${lib}_${suffix}/${emulator}-initramfspiggyback-kernel
-      else
         kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
-      fi
     else
       kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
     fi
@@ -1507,10 +1455,6 @@ runtest() {
     qemu)
       echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
       ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
-      ;;
-    synopsys-nsim)
-      echo "./openadk/scripts/nsim.sh ${arch} ${kernel}"
-      ./openadk/scripts/nsim.sh ${arch} ${kernel} | tee $report
       ;;
     gdb)
       echo "$emulator ${arch} ${kernel}"
@@ -1897,14 +1841,6 @@ for lib in ${libc}; do
           continue
         fi
       fi
-      # skip nsim
-      if [ $skipnsim -eq 1 ]; then
-        if [[ "$arch" = arcv* ]]; then
-          echo "Skipping nsim $arch"
-          continue
-        fi
-      fi
-
       if [[ "$allowed_tests" = *${test}* ]]; then
         if [[ "$allowed_libc" = *${lib}* ]]; then
           echo "Compiling for $lib and $arch testing $test"
