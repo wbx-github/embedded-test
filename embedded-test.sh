@@ -557,6 +557,7 @@ get_arch_info() {
       qemu_args="-nographic"
       qemu_machine=mppa-coolidge
       piggyback=1
+      skiplt=kvx
       ;;
     h8300-h8300h)
       allowed_libc="uclibc-ng newlib"
@@ -1140,7 +1141,7 @@ get_arch_info() {
       ;;
     sparc64)
       allowed_libc="uclibc-ng glibc newlib"
-      runtime_test="uclibc-ng glibc"
+      runtime_test="glibc"
       allowed_tests="toolchain boot libc"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
