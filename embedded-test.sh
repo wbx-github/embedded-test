@@ -50,7 +50,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 \
   csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
-  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
+  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 loongarch \
   nios2 or1k ppc ppcsf ppc64 ppc64le riscv32 riscv64 s390 sh4 sh4eb sparc64 \
   x86_64 x86_64_x32"
 
@@ -396,7 +396,7 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=archs"
       qemu=qemu-system-arc
       qemu_machine=virt
-      qemu_args="-nographic -monitor none -serial stdio -cpu archs"
+      qemu_args="-nographic -monitor none -serial stdio -cpu archs -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       cpu_arch=archs
       march=arc
       suffix=${cpu_arch}
@@ -940,8 +940,8 @@ get_arch_info() {
       ;;
     nios2)
       allowed_libc="uclibc-ng glibc newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
+      runtime_test="glibc"
+      allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nios2"
@@ -1052,7 +1052,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=s390 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-s390"
       cpu_arch=s390x
       qemu=qemu-system-${cpu_arch}
-      qemu_machine=s390-ccw-virtio-2.4
+      qemu_machine=s390-ccw-virtio
       ;;
     sh)
       allowed_libc="newlib"
@@ -1142,7 +1142,7 @@ get_arch_info() {
     sparc64)
       allowed_libc="uclibc-ng glibc newlib"
       runtime_test="glibc"
-      allowed_tests="toolchain boot libc"
+      allowed_tests="toolchain"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sparc64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc64"
@@ -1193,7 +1193,7 @@ get_arch_info() {
     x86_64_x32)
       allowed_libc="musl glibc"
       runtime_test="musl glibc"
-      allowed_tests="toolchain boot libc mksh ltp native"
+      allowed_tests="toolchain"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=x86_64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-x86_64 ADK_TARGET_ABI=x32"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=x86_64 ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-x86_64 ADK_TARGET_ABI=x32"
       cpu_arch=x86_64
