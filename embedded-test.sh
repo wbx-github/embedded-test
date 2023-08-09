@@ -28,7 +28,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 \
   armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   crisv10 crisv32 csky-ck807 csky-ck810 \
-  h8300-h8300h h8300-h8s hppa ia64 kvx \
+  h8300-h8300h h8300-h8s hppa ia64 kvx lm32 \
   m68k m68k-nommu metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -940,7 +940,7 @@ get_arch_info() {
       ;;
     nios2)
       allowed_libc="uclibc-ng glibc newlib"
-      runtime_test="glibc"
+      runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
@@ -1620,7 +1620,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.43
+        version=1.0.44
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
