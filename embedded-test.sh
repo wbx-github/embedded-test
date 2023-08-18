@@ -227,6 +227,7 @@ get_arch_info() {
   gdbcmd=
   noappend=0
   piggyback=0
+  disk=0
   endian=
   suffix=
   allowed_libc=
@@ -1094,29 +1095,31 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
       cpu_arch=sh4
       march=sh
       qemu=qemu-system-sh4
       qemu_machine=r2d
       qemu_args="${qemu_args} -monitor null -serial null -serial stdio"
       suffix=${cpu_arch}
+      disk=1
       ;;
     sh4eb)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       cpu_arch=sh4eb
       march=sh
       qemu=qemu-system-sh4eb
       qemu_machine=r2d
-      qemu_args="${qemu_args} -monitor null -serial null -serial stdio"
+      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -append noiotrap"
       suffix=${cpu_arch}
+      disk=1
       ;;
     sparc)
       allowed_libc="uclibc-ng glibc newlib"
@@ -1258,6 +1261,7 @@ create_run_sh() {
 cat > $file << EOF
 #!/bin/sh
 uname -a
+mount -o remount,rw /
 if [ -x /usr/sbin/rdate ]; then
   if [ \$ntpserver ]; then
     rdate \$ntpserver
@@ -1404,7 +1408,7 @@ runtest() {
   esac
 
   echo "Starting test for $lib and $arch"
-  # check if initramfs or piggyback is used
+  # check if initramfs, piggyback or disk is used
   if [ $piggyback -eq 1 ]; then
     echo "Using extra directory for test image creation"
     root=openadk/extra
@@ -1414,6 +1418,13 @@ runtest() {
         kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
     else
       kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
+    fi
+  elif [ $disk -eq 1 ]; then
+    echo "Using disk image for test"
+    if [ ! -z $suffix ]; then
+        kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-archive-kernel
+    else
+      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-archive-kernel
     fi
   else
     echo "Generating root filesystem for test run"
@@ -1437,6 +1448,8 @@ runtest() {
 
   if [ $piggyback -eq 1 ]; then
     (cd openadk && make v)
+  elif [ $disk -eq 1 ]; then
+    (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${libc}-archive+kernel.tar.xz)
   else
     echo "Creating initramfs filesystem"
     (cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
@@ -1454,8 +1467,13 @@ runtest() {
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
   case $emulator in
     qemu)
-      echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
+      if [ $disk -eq 1 ]; then
+        echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot openadk/qemu-${march}.img"
+        ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot openadk/qemu-${march}.img | tee $report
+      else
+        echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+        ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
+      fi
       ;;
     gdb)
       echo "$emulator ${arch} ${kernel}"
