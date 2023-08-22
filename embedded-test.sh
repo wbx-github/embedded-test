@@ -33,8 +33,8 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
-  nios2 or1k ppc ppcsf riscv64 sh2 sh2eb sh3 sh3eb sh4 sh4eb \
-  sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
+  nios2 or1k ppc ppcsf riscv64 riscv64-nommu sh2 sh2eb sh3 \
+  sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu"
 
 # musl
@@ -1038,6 +1038,19 @@ get_arch_info() {
       qemu_args="${qemu_args} -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       qemu_machine=virt
       piggyback=1
+      ;;
+    riscv64-nommu)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64 ADK_TARGET_MMU=no"
+      cpu_arch=riscv64
+      march=riscv64
+      qemu=qemu-system-${cpu_arch}
+      qemu_args="${qemu_args} -bios none -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0 -cpu rv64,mmu=off"
+      qemu_machine=virt
+      piggyback=1
+      suffix=nommu
       ;;
     rx)
       allowed_libc="newlib"
