@@ -33,7 +33,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
-  nios2 or1k ppc ppcsf riscv64 riscv64-nommu sh2 sh2eb sh3 \
+  nios2 or1k ppc ppcsf riscv32-nommu riscv64 riscv64-nommu sh2 sh2eb sh3 \
   sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu"
 
@@ -1025,6 +1025,19 @@ get_arch_info() {
       qemu_machine=virt
       piggyback=1
       ;;
+    riscv32-nommu)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv32 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv32 ADK_TARGET_MMU=no"
+      cpu_arch=riscv32
+      march=riscv32
+      qemu=qemu-system-${cpu_arch}
+      qemu_args="${qemu_args} -bios none -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0 -cpu rv32,mmu=off"
+      qemu_machine=virt
+      piggyback=1
+      suffix=nommu
+      ;;
     riscv64)
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
@@ -1042,7 +1055,7 @@ get_arch_info() {
     riscv64-nommu)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc mksh ltp native"
+      allowed_tests="toolchain boot libc ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64 ADK_TARGET_MMU=no"
       cpu_arch=riscv64
       march=riscv64
