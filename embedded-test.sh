@@ -24,7 +24,7 @@
 
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv2 \
-  armv5 armv5-nommu-thumb armv6 armv7 \
+  armv5 armv5-nommu-arm armv5-nommu-thumb armv6 armv7 \
   armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
   crisv10 crisv32 csky-ck807 csky-ck810 \
@@ -294,7 +294,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=arm ADK_TARGET_BINFMT=flat ADK_TARGET_THREADS=lt"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=arm ADK_TARGET_BINFMT=flat ADK_TARGET_THREADS=lt ADK_TARGET_FLOAT=soft"
       cpu_arch=arm926ej_s
       march=arm-versatilepb
       qemu=qemu-system-arm
@@ -308,7 +308,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=thumb ADK_TARGET_BINFMT=flat ADK_TARGET_THREADS=lt"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=thumb ADK_TARGET_BINFMT=flat ADK_TARGET_THREADS=lt ADK_TARGET_FLOAT=soft"
       cpu_arch=arm926ej_s
       march=arm-versatilepb
       qemu=qemu-system-arm
