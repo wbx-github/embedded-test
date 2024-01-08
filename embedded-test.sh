@@ -1,6 +1,6 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2023
+# Copyright © 2014-2024
 #	Waldemar Brodkorb <wbx@openadk.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="aarch64 aarch64be alpha arcv2 \
+arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
   armv5 armv5-nommu-arm armv5-nommu-thumb armv5-nommu-fdpic armv6 armv7 \
   armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
@@ -46,7 +46,7 @@ arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
   x86 x86_64 x86_64_x32"
 
 # glibc
-arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 \
+arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arc32 arc64 \
   csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -415,6 +415,29 @@ get_arch_info() {
       cpu_arch=archs
       march=arc
       suffix=${cpu_arch}
+      piggyback=1
+      ;;
+    arc32)
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="toolchain boot libc ltp mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc32"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc32"
+      qemu=qemu-system-arc
+      qemu_machine=virt,ram_start=0
+      qemu_args="-nographic -monitor none -serial stdio -cpu hs5x -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+      march=arc
+      piggyback=1
+      ;;
+    arc64)
+      allowed_libc="glibc"
+      runtime_test="glibc"
+      allowed_tests="toolchain boot libc ltp mksh native"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc64"
+      qemu=qemu-system-arc64
+      qemu_machine=virt,ram_start=0
+      qemu_args="-nographic -monitor none -serial stdio -cpu hs6x -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
+      march=arc
       piggyback=1
       ;;
     avr32)
