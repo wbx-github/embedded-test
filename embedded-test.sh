@@ -24,17 +24,17 @@
 
 # uClibc-ng
 arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
-  armv5 armv5-nommu-arm armv5-nommu-thumb armv5-nommu-fdpic armv6 armv7 \
-  armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
+  armv5 armv5-nommu-arm armv5-nommu-thumb armv5-nommu-fdpic armv5-nommu-elf \
+  armv6 armv7 armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
-  crisv10 crisv32 csky-ck807 csky-ck810 \
+  c6x crisv10 crisv32 csky-ck807 csky-ck810 \
   h8300-h8300h h8300-h8s hppa ia64 kvx lm32 \
-  m68k m68k-nommu metag microblazeel microblazebe \
+  m68k m68k-nommu-flat m68k-nommu-elf metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
-  nios2 or1k ppc ppcsf riscv32-nommu riscv64 riscv64-nommu sh2 sh2eb sh3 \
-  sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
+  nios2 or1k ppc ppcsf riscv32-nommu riscv64 riscv64-nommu-flat riscv64-nommu-elf \
+  sh2 sh2eb sh3 sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu"
 
 # musl
@@ -328,6 +328,20 @@ get_arch_info() {
       qemu=qemu-system-arm
       qemu_machine=versatilepb
       suffix=${cpu_arch}_soft_eabi_fdpic_arm_nommu
+      dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
+      qemu_args="${qemu_args} -m 256 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      piggyback=1
+      ;;
+    armv5-nommu-elf)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arm-versatilepb ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_INSTRUCTION_SET=arm ADK_TARGET_BINFMT=elf ADK_TARGET_THREADS=none ADK_TARGET_FLOAT=soft"
+      cpu_arch=arm926ej_s
+      march=arm-versatilepb
+      qemu=qemu-system-arm
+      qemu_machine=versatilepb
+      suffix=${cpu_arch}_soft_eabi_elf_arm_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
       qemu_args="${qemu_args} -m 256 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       piggyback=1
@@ -661,17 +675,30 @@ get_arch_info() {
       qemu_machine=q800
       suffix=${cpu_arch}
       ;;
-    m68k-nommu)
+    m68k-nommu-flat)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208 ADK_TARGET_MMU=no"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208 ADK_TARGET_MMU=no ADK_TARGET_BINFMT=flat ADK_TARGET_THREADS=lt"
       cpu_arch=cf5208
       march=m68k-mcf5208
       qemu=qemu-system-m68k
       qemu_args="-nographic -m 256"
       qemu_machine=mcf5208evb
       suffix=${cpu_arch}_nommu
+      piggyback=1
+      ;;
+    m68k-nommu-elf)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=m68k ADK_TARGET_FS=initramfsarchive ADK_TARGET_SYSTEM=qemu-m68k-mcf5208 ADK_TARGET_MMU=no ADK_TARGET_BINFMT=elf ADK_TARGET_THREADS=none"
+      cpu_arch=cf5208
+      march=m68k-mcf5208
+      qemu=qemu-system-m68k
+      qemu_args="-nographic -m 256"
+      qemu_machine=mcf5208evb
+      suffix=${cpu_arch}_elf_nommu
       piggyback=1
       ;;
     metag)
@@ -1089,18 +1116,31 @@ get_arch_info() {
       qemu_machine=virt
       piggyback=1
       ;;
-    riscv64-nommu)
+    riscv64-nommu-flat)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64 ADK_TARGET_MMU=no"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64 ADK_TARGET_MMU=no ADK_TARGET_BINFMT=flat ADK_TARGET_THREADS=none"
       cpu_arch=riscv64
       march=riscv64
       qemu=qemu-system-${cpu_arch}
       qemu_args="${qemu_args} -bios none -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0 -cpu rv64,mmu=off"
       qemu_machine=virt
       piggyback=1
-      suffix=nommu
+      suffix=flat_nommu
+      ;;
+    riscv64-nommu-elf)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv64 ADK_TARGET_MMU=no ADK_TARGET_BINFMT=elf ADK_TARGET_THREADS=none"
+      cpu_arch=riscv64
+      march=riscv64
+      qemu=qemu-system-${cpu_arch}
+      qemu_args="${qemu_args} -bios none -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0 -cpu rv64,mmu=off"
+      qemu_machine=virt
+      piggyback=1
+      suffix=elf_nommu
       ;;
     rx)
       allowed_libc="newlib"
