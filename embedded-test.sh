@@ -633,7 +633,7 @@ get_arch_info() {
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=hppa ADK_TARGET_SYSTEM=qemu-hppa"
       qemu=qemu-system-hppa
       qemu_args="-nographic -device e1000,netdev=adk0 -netdev user,id=adk0"
-      qemu_machine=hppa
+      qemu_machine=B160L
       piggyback=1
       ;;
     lm32)
@@ -1100,7 +1100,7 @@ get_arch_info() {
       qemu_args="${qemu_args} -bios none -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0 -cpu rv32,mmu=off"
       qemu_machine=virt
       piggyback=1
-      suffix=nommu
+      suffix=flat_nommu
       ;;
     riscv64)
       allowed_libc="uclibc-ng musl glibc newlib"
@@ -1343,7 +1343,7 @@ get_arch_info() {
       qemu=qemu-system-xtensa
       qemu_machine=kc705-nommu
       qemu_args="${qemu_args} -cpu de212 -m 256"
-      suffix=${cpu_arch}_nommu
+      suffix=${cpu_arch}_flat_nommu
       piggyback=1
       ;;
     *)
