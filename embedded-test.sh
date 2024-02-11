@@ -685,7 +685,7 @@ get_arch_info() {
       qemu=qemu-system-m68k
       qemu_args="-nographic -m 256"
       qemu_machine=mcf5208evb
-      suffix=${cpu_arch}_nommu
+      suffix=${cpu_arch}_flat_nommu
       piggyback=1
       ;;
     m68k-nommu-elf)
