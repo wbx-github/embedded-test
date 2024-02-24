@@ -118,6 +118,7 @@ Explanation:
 	--debug                      make debug build
 	--verbose                    enable verbose output from OpenADK
 	--shell                      start a shell instead of test autorun
+	--timestamp		     add a timestamp to REPORT
 	--help                       this help text
 EOF
 	exit 1
@@ -135,6 +136,7 @@ static=0
 cxx=0
 ssp=0
 debug=0
+timestamp=0
 ntp=""
 libc=""
 os="linux"
@@ -153,6 +155,7 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--debug) debug=1; shift ;;
   (--continue) cont=1; shift ;;
   (--shell) shell=1 shift ;;
+  (--timestamp) timestamp=1 shift ;;
   (--libc=*) libc=${1#*=}; shift ;;
   (--os=*) os=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
@@ -201,6 +204,9 @@ if [ $debug -eq 1 ]; then
 fi
 if [ $cxx -eq 1 ]; then
   rsuffix=${rsuffix}.cxx
+fi
+if [ $timestamp -eq 1 ]; then
+  rsuffix=${rsuffix}.$(date +%s)
 fi
 
 if [ ! -d openadk ]; then
