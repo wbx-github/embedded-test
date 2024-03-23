@@ -33,7 +33,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
-  nios2 or1k ppc ppcsf riscv32-nommu riscv64 riscv64-nommu-flat riscv64-nommu-elf \
+  nios2 or1k ppc ppcsf riscv32 riscv32-nommu riscv64 riscv64-nommu-flat riscv64-nommu-elf \
   sh2 sh2eb sh3 sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu"
 
@@ -1085,10 +1085,11 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     riscv32)
-      allowed_libc="glibc"
-      runtime_test="glibc"
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc mksh ltp native"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv32 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv32"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=riscv32 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-riscv32"
       cpu_arch=riscv32
       qemu=qemu-system-${cpu_arch}
       qemu_args="${qemu_args} -m 512 -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
