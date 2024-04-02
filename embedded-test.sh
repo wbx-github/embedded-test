@@ -70,7 +70,7 @@ valid_thread_types="none lt nptl"
 bootserver=10.0.0.1
 buildserver=10.0.0.2
 
-tools='make git xz cpio tar awk sed'
+tools='make git gzip cpio tar awk sed'
 f=0
 for tool in $tools; do
   if ! which $tool >/dev/null; then
@@ -1540,10 +1540,10 @@ runtest() {
     echo "Generating root filesystem for test run"
     root=$(mktemp -d /tmp/XXXX)
     if [ ! -z $suffix ]; then
-      archive=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.xz
+      archive=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/qemu-${march}-${lib}-initramfsarchive.tar.gz
       kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/qemu-${march}-initramfsarchive-kernel
     else
-      archive=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-${lib}-initramfsarchive.tar.xz
+      archive=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-${lib}-initramfsarchive.tar.gz
       kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfsarchive-kernel
     fi
 
@@ -1559,10 +1559,10 @@ runtest() {
   if [ $piggyback -eq 1 ]; then
     (cd openadk && make v)
   elif [ $disk -eq 1 ]; then
-    (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${libc}-archive+kernel.tar.xz)
+    (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${libc}-archive+kernel.tar.gz)
   else
     echo "Creating initramfs filesystem"
-    (cd $root; find . | cpio -o -C512 -Hnewc |xz --check=crc32 --stdout > ${topdir}/initramfs.${arch})
+    (cd $root; find . | cpio -o -C512 -Hnewc |gzip -c > ${topdir}/initramfs.${arch})
     rm -rf $root
     qemu_args="$qemu_args -initrd initramfs.${arch}"
   fi
@@ -1797,14 +1797,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/${libver}.tar.xz ]; then
+    if [ ! -f openadk/dl/${libver}.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating C library source tarball openadk/dl/${libver}.tar.xz"
+	echo "Creating C library source tarball openadk/dl/${libver}.tar.gz"
 	cp -a $libcsource $usrc/$libver
 	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/${libver}.tar.xz 2>/dev/null
-	(cd $usrc && tar cJf $topdir/openadk/dl/${libver}.tar.xz ${libver} && rm -rf $usrc)
-	touch $topdir/openadk/dl/${libver}.tar.xz.nohash
+	rm $topdir/openadk/dl/${libver}.tar.gz 2>/dev/null
+	(cd $usrc && tar czf $topdir/openadk/dl/${libver}.tar.gz ${libver} && rm -rf $usrc)
+	touch $topdir/openadk/dl/${libver}.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1819,16 +1819,16 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/binutils-git.tar.xz ]; then
+    if [ ! -f openadk/dl/binutils-git.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating binutils source tarball openadk/dl/binutils-git.tar.xz"
+	echo "Creating binutils source tarball openadk/dl/binutils-git.tar.gz"
 	(cd $binutilssource && ./src-release.sh binutils)
 	tar xf $binutilssource/binutils-*.tar -C $usrc
 	(cd $usrc && mv binutils-* binutils-git)
 	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/binutils-git.tar.xz 2>/dev/null
-	(cd $usrc && tar cJf $topdir/openadk/dl/binutils-git.tar.xz binutils-git && rm -rf $usrc)
-	touch $topdir/openadk/dl/binutils-git.tar.xz.nohash
+	rm $topdir/openadk/dl/binutils-git.tar.gz 2>/dev/null
+	(cd $usrc && tar czf $topdir/openadk/dl/binutils-git.tar.gz binutils-git && rm -rf $usrc)
+	touch $topdir/openadk/dl/binutils-git.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1843,14 +1843,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/gcc-git.tar.xz ]; then
+    if [ ! -f openadk/dl/gcc-git.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating gcc source tarball openadk/dl/gcc-git.tar.xz"
+	echo "Creating gcc source tarball openadk/dl/gcc-git.tar.gz"
 	cp -a $gccsource $usrc/gcc-git
 	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/gcc-git.tar.xz 2>/dev/null
-	(cd $usrc && tar cJf $topdir/openadk/dl/gcc-git.tar.xz gcc-git && rm -rf $usrc)
-	touch $topdir/openadk/dl/gcc-git.tar.xz.nohash
+	rm $topdir/openadk/dl/gcc-git.tar.gz 2>/dev/null
+	(cd $usrc && tar czf $topdir/openadk/dl/gcc-git.tar.gz gcc-git && rm -rf $usrc)
+	touch $topdir/openadk/dl/gcc-git.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1865,14 +1865,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/gdb-git.tar.xz ]; then
+    if [ ! -f openadk/dl/gdb-git.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating gdb source tarball openadk/dl/gdb-git.tar.xz"
+	echo "Creating gdb source tarball openadk/dl/gdb-git.tar.gz"
 	cp -a $gdbsource $usrc/gdb-git
 	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/gdb-git.tar.xz 2>/dev/null
-	(cd $usrc && tar cJf $topdir/openadk/dl/gdb-git.tar.xz gdb-git && rm -rf $usrc)
-	touch $topdir/openadk/dl/gdb-git.tar.xz.nohash
+	rm $topdir/openadk/dl/gdb-git.tar.gz 2>/dev/null
+	(cd $usrc && tar czf $topdir/openadk/dl/gdb-git.tar.gz gdb-git && rm -rf $usrc)
+	touch $topdir/openadk/dl/gdb-git.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1887,14 +1887,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/linux-git.tar.xz ]; then
+    if [ ! -f openadk/dl/linux-git.tar.gz ]; then
       usrc=$(mktemp -d /tmp/XXXX)
-      echo "Creating Linux kernel source tarball openadk/dl/linux-git.tar.xz"
+      echo "Creating Linux kernel source tarball openadk/dl/linux-git.tar.gz"
       cp -a $kernelsource $usrc/linux-git
       mkdir -p $topdir/openadk/dl 2>/dev/null
-      rm $topdir/openadk/dl/linux-git.tar.xz 2>/dev/null
-      (cd $usrc && tar cJf $topdir/openadk/dl/linux-git.tar.xz linux-git && rm -rf $usrc)
-      touch $topdir/openadk/dl/linux-git.tar.xz.nohash
+      rm $topdir/openadk/dl/linux-git.tar.gz 2>/dev/null
+      (cd $usrc && tar czf $topdir/openadk/dl/linux-git.tar.gz linux-git && rm -rf $usrc)
+      touch $topdir/openadk/dl/linux-git.tar.gz.nohash
       # we need to clean system, when external source is used
       if [ $noclean -eq 0 ]; then
         clean=1
@@ -1923,11 +1923,11 @@ for lib in ${libc}; do
       echo "Testing target system $target_system ($target_arch) with $target_rootfs on $target_host"
       build $lib $target_arch $test $target_system $target_rootfs
       kernel=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${target_rootfs}-kernel
-      tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.xz
+      tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.gz
       scp $kernel root@${bootserver}:/tftpboot/${target_host}
       ssh -n root@${bootserver} "cd /tftpboot; ln -sf ${target_host} vmlinux"
       ssh -n root@${bootserver} "mkdir /nfsroot/${target_host} 2>/dev/null"
-      xzcat $tarball | ssh root@${bootserver} "tar -xf - -C /nfsroot/${target_host}"
+      gunzip $tarball | ssh root@${bootserver} "tar -xf - -C /nfsroot/${target_host}"
       scp run.sh root@${bootserver}:/nfsroot/${target_host}
       echo "Powering on target system"
       ssh -n root@${bootserver} "sispmctl -o $target_powerid"
