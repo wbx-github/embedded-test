@@ -1201,6 +1201,7 @@ get_arch_info() {
       qemu_machine=r2d
       qemu_args="${qemu_args} -monitor null -serial null -serial stdio"
       suffix=${cpu_arch}
+      piggyback=0
       disk=1
       ;;
     sh4eb)
@@ -1216,6 +1217,7 @@ get_arch_info() {
       qemu_machine=r2d
       qemu_args="${qemu_args} -monitor null -serial null -serial stdio -append noiotrap"
       suffix=${cpu_arch}
+      piggyback=0
       disk=1
       ;;
     sparc)
