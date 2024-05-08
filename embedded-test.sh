@@ -1189,7 +1189,7 @@ get_arch_info() {
     sh4)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain boot libc"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
@@ -1203,7 +1203,7 @@ get_arch_info() {
     sh4eb)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain boot libc"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
@@ -1237,8 +1237,8 @@ get_arch_info() {
       ;;
     sparc64)
       allowed_libc="uclibc-ng glibc newlib"
-      runtime_test="glibc"
-      allowed_tests="toolchain"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="toolchain boot libc"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initrampiggyback ADK_TARGET_SYSTEM=qemu-sparc64"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sparc64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc64"
