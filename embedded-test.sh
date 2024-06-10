@@ -47,8 +47,8 @@ arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
   x86 x86_64 x86_64_x32"
 
 # glibc
-arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arc32 arc64 \
-  csky-ck807 csky-ck810 ia64 m68k microblazeel microblazebe \
+arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arc32 \
+  csky-ck807 csky-ck810 m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 loongarch \
