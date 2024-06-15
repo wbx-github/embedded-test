@@ -1239,7 +1239,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng glibc newlib"
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initrampiggyback ADK_TARGET_SYSTEM=qemu-sparc64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sparc64"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sparc64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc64"
       cpu_arch=v9
