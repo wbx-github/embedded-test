@@ -32,7 +32,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
   m68k m68k-nommu-flat m68k-nommu-elf metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
-  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
+  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
   nios2 or1k ppc ppcsf riscv32 riscv32-nommu-flat riscv32-nommu-elf \
   riscv64 riscv64-nommu-flat riscv64-nommu-elf \
   sh2 sh2eb sh3 sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
@@ -1245,7 +1245,7 @@ get_arch_info() {
       cpu_arch=v9
       qemu=qemu-system-sparc64
       qemu_machine=sun4u
-      qemu_args="${qemu_args} -net nic,model=e1000 -net user"
+      qemu_args="${qemu_args} -m 512 -net nic,model=e1000 -net user"
       suffix=${cpu_arch}
       ;;
     tilegx)
@@ -1690,7 +1690,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.48
+        version=1.0.49
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
