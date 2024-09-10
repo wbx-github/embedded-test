@@ -1309,7 +1309,7 @@ get_arch_info() {
       qemu=qemu-system-xtensa
       qemu_machine=kc705
       qemu_args="${qemu_args} -cpu dc233c -m 256"
-      suffix=${cpu_arch}
+      suffix=${cpu_arch}_windowed
       ;;
     xtensabe)
       allowed_libc="uclibc-ng"
