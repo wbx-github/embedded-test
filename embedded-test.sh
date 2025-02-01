@@ -52,7 +52,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arc32 \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 loongarch \
-  nios2 or1k ppc ppcsf ppc64 ppc64le riscv32 riscv64 s390 sh4 sh4eb sparc64 \
+  or1k ppc ppcsf ppc64 ppc64le riscv32 riscv64 s390 sh4 sh4eb sparc64 \
   x86_64 x86_64_x32"
 
 # newlib
@@ -434,10 +434,9 @@ get_arch_info() {
       ;;
     arc32)
       allowed_libc="uclibc-ng glibc"
-      runtime_test="uclibc-ng glibc"
+      runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc32"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc32"
       qemu=qemu-system-arc
       qemu_machine=virt,ram_start=0
       qemu_args="-nographic -monitor none -serial stdio -cpu hs5x -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
@@ -585,11 +584,10 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=frv"
       ;;
     ia64)
-      allowed_libc="uclibc-ng glibc newlib"
+      allowed_libc="uclibc-ng newlib"
       runtime_test=""
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=generic-ia64"
-      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=generic-ia64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=ia64"
       ;;
     kvx)
@@ -990,11 +988,10 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nds32 ADK_TARGET_ENDIAN=big"
       ;;
     nios2)
-      allowed_libc="uclibc-ng glibc newlib"
-      runtime_test="uclibc-ng glibc"
+      allowed_libc="uclibc-ng newlib"
+      runtime_test="uclibc-ng"
       allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nios2"
       qemu_machine=10m50-ghrd
       ;;
@@ -1700,7 +1697,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.40
+        version=2.41
       fi
       libver=glibc-${version}
       libdir=glibc
