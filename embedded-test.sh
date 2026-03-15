@@ -27,7 +27,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
   armv5 armv5-nommu-arm armv5-nommu-thumb armv5-nommu-fdpic armv5-nommu-elf \
   armv6 armv7 armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
-  c6x crisv10 crisv32 csky-ck807 csky-ck810 frv \
+  c6x crisv10 crisv32 csky-ck807 csky-ck810 \
   h8300-h8300h h8300-h8s hppa ia64 kvx lm32 \
   m68k m68k-nommu-flat m68k-nommu-elf metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
@@ -1222,7 +1222,7 @@ get_arch_info() {
       qemu=qemu-system-sparc
       qemu_machine=SS-10
       qemu_args="${qemu_args} -m 256"
-      suffix=${cpu_arch}
+      suffix=${cpu_arch}_hard
       ;;
     sparc-leon3)
       allowed_libc="uclibc-ng"
@@ -1230,7 +1230,7 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_CPU=leon3 ADK_TARGET_SYSTEM=generic-sparc"
       cpu_arch=leon
-      suffix=${cpu_arch}
+      suffix=${cpu_arch}_soft
       ;;
     sparc64)
       allowed_libc="uclibc-ng glibc newlib"
@@ -1687,7 +1687,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.55
+        version=1.0.57
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
