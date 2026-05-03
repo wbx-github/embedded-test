@@ -1153,6 +1153,13 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sh ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no"
       ;;
+    j2)
+      allowed_libc="musl"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_musl="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=numato-mimasv2 ADK_TARGET_CPU=j2 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=big"
+      cpu_arch=sh2
+      ;;
     sh2)
       allowed_libc="uclibc-ng"
       runtime_test=""
