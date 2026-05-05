@@ -36,7 +36,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
   nios2 or1k ppc ppcsf riscv32 riscv32-nommu-flat riscv32-nommu-elf \
   riscv64 riscv64-nommu-flat riscv64-nommu-elf \
   sh2 sh2eb sh3 sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
-  xtensa xtensabe xtensa-nommu"
+  xtensa xtensabe xtensa-nommu xtensa-nommu-fdpic"
 
 # musl
 arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
@@ -1337,6 +1337,18 @@ get_arch_info() {
       qemu_machine=kc705-nommu
       qemu_args="${qemu_args} -cpu de212 -m 256"
       suffix=${cpu_arch}_flat_nommu
+      ;;
+    xtensa-nommu-fdpic)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=xtensa ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-xtensa ADK_TARGET_CPU=dc233c ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no ADK_TARGET_ABI=call0 ADK_TARGET_BINFMT=fdpic"
+      cpu_arch=dc233c
+      march=xtensa
+      qemu=qemu-system-xtensa
+      qemu_machine=lx60
+      qemu_args="${qemu_args} -cpu dc233c -m 256"
+      suffix=${cpu_arch}_call0_fdpic_nommu
       ;;
     *)
       echo "architecture ${arch} not supported"; exit 1;;
