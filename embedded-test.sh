@@ -1,6 +1,6 @@
 #!/usr/bin/env mksh
 #
-# Copyright © 2014-2025
+# Copyright © 2014-2026
 #	Waldemar Brodkorb <wbx@openadk.org>
 #
 # Provided that these terms and disclaimer and all copyright notices
@@ -977,7 +977,7 @@ get_arch_info() {
       allowed_libc="uclibc-ng newlib"
       runtime_test=""
       allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nds32 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=generic-nds32 ADK_TARGET_ENDIAN=little"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nds32 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=andes-ag101p ADK_TARGET_ENDIAN=little"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nds32 ADK_TARGET_ENDIAN=little"
       ;;
     nds32be)
@@ -1706,7 +1706,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.57
+        version=1.0.58
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
