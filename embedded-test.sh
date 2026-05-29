@@ -27,12 +27,12 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
   armv5 armv5-nommu-arm armv5-nommu-thumb armv5-nommu-fdpic armv5-nommu-elf \
   armv6 armv7 armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf512-flat bf512-fdpic bf532-flat bf532-fdpic \
-  c6x crisv10 crisv32 csky-ck807 csky-ck810 \
+  c6x crisv10 crisv32 csky-ck807 csky-ck810 frv \
   h8300-h8300h h8300-h8s hppa ia64 kvx lm32 \
   m68k m68k-nommu-flat m68k-nommu-elf metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
-  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 \
+  mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
   nios2 or1k ppc ppcsf riscv32 riscv32-nommu-flat riscv32-nommu-elf \
   riscv64 riscv64-nommu-flat riscv64-nommu-elf \
   sh2 sh2eb sh3 sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
