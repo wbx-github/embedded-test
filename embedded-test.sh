@@ -1755,14 +1755,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/${libver}.tar.gz ]; then
+    if [ ! -f openadk/dl/${libdir}/${libver}.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating C library source tarball openadk/dl/${libver}.tar.gz"
+	echo "Creating C library source tarball openadk/dl/${libdir}/${libver}.tar.gz"
 	cp -a $libcsource $usrc/$libver
-	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/${libver}.tar.gz 2>/dev/null
-	(cd $usrc && tar czf $topdir/openadk/dl/${libver}.tar.gz ${libver} && rm -rf $usrc)
-	touch $topdir/openadk/dl/${libver}.tar.gz.nohash
+	mkdir -p $topdir/openadk/dl/${libdir} 2>/dev/null
+	rm $topdir/openadk/dl/${libdir}/${libver}.tar.gz 2>/dev/null
+	(cd $usrc && tar czf $topdir/openadk/dl/${libdir}/${libver}.tar.gz ${libver} && rm -rf $usrc)
+	touch $topdir/openadk/dl/${libdir}/${libver}.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1777,16 +1777,16 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/binutils-git.tar.gz ]; then
+    if [ ! -f openadk/dl/binutils/binutils-git.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating binutils source tarball openadk/dl/binutils-git.tar.gz"
+	echo "Creating binutils source tarball openadk/dl/binutils/binutils-git.tar.gz"
 	(cd $binutilssource && ./src-release.sh binutils)
 	tar xf $binutilssource/binutils-*.tar -C $usrc
 	(cd $usrc && mv binutils-* binutils-git)
-	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/binutils-git.tar.gz 2>/dev/null
-	(cd $usrc && tar czf $topdir/openadk/dl/binutils-git.tar.gz binutils-git && rm -rf $usrc)
-	touch $topdir/openadk/dl/binutils-git.tar.gz.nohash
+	mkdir -p $topdir/openadk/dl/binutils 2>/dev/null
+	rm $topdir/openadk/dl/binutils/binutils-git.tar.gz 2>/dev/null
+	(cd $usrc && tar czf $topdir/openadk/dl/binutils/binutils-git.tar.gz binutils-git && rm -rf $usrc)
+	touch $topdir/openadk/dl/binutils/binutils-git.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1801,14 +1801,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/gcc-git.tar.gz ]; then
+    if [ ! -f openadk/dl/gcc/gcc-git.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating gcc source tarball openadk/dl/gcc-git.tar.gz"
+	echo "Creating gcc source tarball openadk/dl/gcc/gcc-git.tar.gz"
 	cp -a $gccsource $usrc/gcc-git
-	mkdir -p $topdir/openadk/dl 2>/dev/null
-	rm $topdir/openadk/dl/gcc-git.tar.gz 2>/dev/null
-	(cd $usrc && tar czf $topdir/openadk/dl/gcc-git.tar.gz gcc-git && rm -rf $usrc)
-	touch $topdir/openadk/dl/gcc-git.tar.gz.nohash
+	mkdir -p $topdir/openadk/dl/gcc 2>/dev/null
+	rm $topdir/openadk/dl/gcc/gcc-git.tar.gz 2>/dev/null
+	(cd $usrc && tar czf $topdir/openadk/dl/gcc/gcc-git.tar.gz gcc-git && rm -rf $usrc)
+	touch $topdir/openadk/dl/gcc/gcc-git.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1823,14 +1823,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/gdb-git.tar.gz ]; then
+    if [ ! -f openadk/dl/gdb/gdb-git.tar.gz ]; then
 	usrc=$(mktemp -d /tmp/XXXX)
-	echo "Creating gdb source tarball openadk/dl/gdb-git.tar.gz"
+	echo "Creating gdb source tarball openadk/dl/gdb/gdb-git.tar.gz"
 	cp -a $gdbsource $usrc/gdb-git
-	mkdir -p $topdir/openadk/dl 2>/dev/null
+	mkdir -p $topdir/openadk/dl/gdb 2>/dev/null
 	rm $topdir/openadk/dl/gdb-git.tar.gz 2>/dev/null
-	(cd $usrc && tar czf $topdir/openadk/dl/gdb-git.tar.gz gdb-git && rm -rf $usrc)
-	touch $topdir/openadk/dl/gdb-git.tar.gz.nohash
+	(cd $usrc && tar czf $topdir/openadk/dl/gdb/gdb-git.tar.gz gdb-git && rm -rf $usrc)
+	touch $topdir/openadk/dl/gdb/gdb-git.tar.gz.nohash
 	# we need to clean system, when external source is used
 	if [ $noclean -eq 0 ]; then
 	    clean=1
@@ -1845,14 +1845,14 @@ for lib in ${libc}; do
       echo "Not a directory."
       exit 1
     fi
-    if [ ! -f openadk/dl/linux-git.tar.gz ]; then
+    if [ ! -f openadk/dl/linux/linux-git.tar.gz ]; then
       usrc=$(mktemp -d /tmp/XXXX)
-      echo "Creating Linux kernel source tarball openadk/dl/linux-git.tar.gz"
+      echo "Creating Linux kernel source tarball openadk/dl/linux/linux-git.tar.gz"
       cp -a $kernelsource $usrc/linux-git
-      mkdir -p $topdir/openadk/dl 2>/dev/null
-      rm $topdir/openadk/dl/linux-git.tar.gz 2>/dev/null
-      (cd $usrc && tar czf $topdir/openadk/dl/linux-git.tar.gz linux-git && rm -rf $usrc)
-      touch $topdir/openadk/dl/linux-git.tar.gz.nohash
+      mkdir -p $topdir/openadk/dl/linux 2>/dev/null
+      rm $topdir/openadk/dl/linux/linux-git.tar.gz 2>/dev/null
+      (cd $usrc && tar czf $topdir/openadk/dl/linux/linux-git.tar.gz linux-git && rm -rf $usrc)
+      touch $topdir/openadk/dl/linux/linux-git.tar.gz.nohash
       # we need to clean system, when external source is used
       if [ $noclean -eq 0 ]; then
         clean=1
