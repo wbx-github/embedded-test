@@ -1716,7 +1716,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=2.43
+        version=2.44
       fi
       libver=glibc-${version}
       libdir=glibc
