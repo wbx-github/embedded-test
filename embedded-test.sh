@@ -633,13 +633,14 @@ get_arch_info() {
       skipcxx=lm32
       ;;
     loongarch)
-      allowed_libc="glibc"
-      runtime_test="glibc"
-      allowed_tests="toolchain"
+      allowed_libc="uclibc-ng glibc"
+      runtime_test="uclibc-ng glibc"
+      allowed_tests="toolchain boot libc ltp native"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch ADK_TARGET_THREADS=none"
       qemu=qemu-system-loongarch64
       qemu_machine=virt
-      qemu_args='-nographic -bios target/loongarch/QEMU_EFI.fd -append console=ttyS0,115200'
+      qemu_args='-nographic -bios openadk/target/loongarch/QEMU_EFI.fd -append console=ttyS0,115200'
       ;;
     m32r)
       allowed_libc="newlib"
@@ -1706,7 +1707,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=1.0.58
+        version=1.0.59
       fi
       libver=uClibc-ng-${version}
       libdir=uClibc-ng
