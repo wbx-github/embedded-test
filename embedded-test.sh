@@ -57,9 +57,9 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arc32 \
 
 # newlib
 arch_list_newlib="aarch64 aarch64be armv5 bfin crisv10 \
-  crisv32 csky-ck807 epiphany ft32 frv h8300-h8300h ia64 m32r m68k microblazeel \
-  microblazebe mips32 mips32el mn10300 moxie msp430 nds32le nds32be \
-  nios2 or1k ppc riscv64 rx sh sparc v850 x86 x86_64 xtensa"
+  crisv32 csky-ck807 ft32 h8300-h8300h ia64 m68k microblazeel \
+  microblazebe mips32 mips32el msp430 nds32le nds32be \
+  nios2 or1k ppc riscv64 sh v850 x86 x86_64 xtensa"
 
 topdir=$(pwd)
 giturl=https://git.openadk.org/git/openadk.git
@@ -1737,7 +1737,7 @@ for lib in ${libc}; do
       if [[ $libcversion ]]; then
         version=$libcversion
       else
-        version=4.4.0
+        version=4.6.0
       fi
       libver=newlib-${version}
       libdir=newlib
