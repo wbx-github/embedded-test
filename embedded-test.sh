@@ -23,7 +23,7 @@
 # ware Foundation.
 
 # uClibc-ng
-arch_list_uclibcng="aarch64 aarch64be alpha arcv2 arc32 \
+arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arc32 \
   armv5 armv5-nommu-arm armv5-nommu-thumb armv5-nommu-fdpic armv5-nommu-elf \
   armv6 armv7 armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf532-flat bf532-fdpic \
@@ -417,6 +417,15 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arm ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=generic-arm ADK_TARGET_FLOAT=soft ADK_TARGET_ENDIAN=big"
+      ;;
+    arcv1)
+      allowed_libc="uclibc-ng"
+      runtime_test=""
+      allowed_tests="toolchain"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=generic-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc700"
+      cpu_arch=arc700
+      march=arc
+      suffix=${cpu_arch}
       ;;
     arcv2)
       allowed_libc="uclibc-ng glibc"
