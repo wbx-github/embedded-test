@@ -977,7 +977,7 @@ get_arch_info() {
     nios2)
       allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=nios2 ADK_TARGET_SYSTEM=qemu-nios2"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=nios2"
       qemu_machine=10m50-ghrd
