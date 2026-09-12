@@ -308,7 +308,7 @@ get_arch_info() {
       qemu_machine=versatilepb
       suffix=${cpu_arch}_soft_eabi_flat_arm_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -m 256 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      qemu_args="${qemu_args} -m 512 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       ;;
     armv5-nommu-thumb)
       allowed_libc="uclibc-ng"
@@ -321,7 +321,7 @@ get_arch_info() {
       qemu_machine=versatilepb
       suffix=${cpu_arch}_soft_eabi_flat_thumb_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -m 256 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      qemu_args="${qemu_args} -m 512 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       ;;
     armv5-nommu-fdpic)
       allowed_libc="uclibc-ng"
@@ -334,7 +334,7 @@ get_arch_info() {
       qemu_machine=versatilepb
       suffix=${cpu_arch}_soft_eabi_fdpic_arm_nommu
       dtbdir=openadk/firmware/qemu-${march}_${lib}_${suffix}
-      qemu_args="${qemu_args} -m 256 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
+      qemu_args="${qemu_args} -m 512 -cpu arm926 -net user -net nic,model=smc91c111 -dtb ${dtbdir}/versatile-pb.dtb"
       ;;
     armv5-nommu-elf)
       allowed_libc="uclibc-ng"
@@ -696,8 +696,8 @@ get_arch_info() {
       cpu_arch=microblaze
       endian=el
       march=microblaze-s3adsp1800
-      qemu=qemu-system-microblazeel
-      qemu_machine=petalogix-s3adsp1800
+      qemu=qemu-system-microblaze
+      qemu_machine=petalogix-s3adsp1800,endianness=little
       suffix=${cpu_arch}${endian}
       skipssp=microblazeel
       ;;
