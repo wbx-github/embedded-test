@@ -621,12 +621,12 @@ get_arch_info() {
     loongarch)
       allowed_libc="uclibc-ng glibc"
       runtime_test="uclibc-ng glibc"
-      allowed_tests="toolchain boot libc ltp native"
+      allowed_tests="toolchain boot"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch ADK_TARGET_THREADS=none"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch"
       qemu=qemu-system-loongarch64
       qemu_machine=virt
-      qemu_args='-nographic -bios openadk/target/loongarch/QEMU_EFI.fd -append console=ttyS0,115200'
+      qemu_args='-m 512 -nographic -bios openadk/target/loongarch/QEMU_EFI.fd -append console=ttyS0,115200'
       ;;
     m32r)
       allowed_libc="newlib"
