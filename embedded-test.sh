@@ -245,9 +245,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_CPU=aarch64-cortex-a53 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_CPU=aarch64-cortex-a53 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_CPU=aarch64-cortex-a53 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64"
       cpu_arch=cortex_a53
       qemu_machine=virt
@@ -259,9 +259,9 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc newlib"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc ltp mksh native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64be ADK_TARGET_ENDIAN=big"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64be ADK_TARGET_ENDIAN=big"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64be ADK_TARGET_ENDIAN=big"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_CPU=aarch64-cortex-a53 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64be ADK_TARGET_ENDIAN=big"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_CPU=aarch64-cortex-a53 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64be ADK_TARGET_ENDIAN=big"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=aarch64 ADK_TARGET_CPU=aarch64-cortex-a53 ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-aarch64be ADK_TARGET_ENDIAN=big"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=aarch64 ADK_TARGET_ENDIAN=big"
       cpu_arch=cortex_a53
       qemu=qemu-system-aarch64
