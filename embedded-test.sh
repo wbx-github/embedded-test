@@ -28,7 +28,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arc32 \
   armv6 armv7 armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf532-flat bf532-fdpic \
   c6x crisv10 crisv32 csky-ck807 csky-ck807f frv \
-  h8300-h8300h h8300-h8s hppa ia64 kvx lm32 \
+  h8300-h8300h h8300-h8s hppa ia64 kvx lm32 loongarch \
   m68k m68k-nommu-flat m68k-nommu-elf metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -42,7 +42,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arc32 \
 arch_list_musl="aarch64 aarch64be armv5 armv6 armv7 armeb \
   m68k microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32elsf \
-  mips64n32 mips64n64 mips64eln32 mips64eln64 \
+  mips64n32 mips64n64 mips64eln32 mips64eln64 loongarch \
   or1k ppc ppcsf ppc64 ppc64le riscv32 riscv64 s390 sh4 sh4eb \
   x86 x86_64 x86_64_x32"
 
@@ -623,6 +623,7 @@ get_arch_info() {
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc ltp native"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=loongarch ADK_TARGET_SYSTEM=qemu-loongarch"
       qemu=qemu-system-loongarch64
       qemu_machine=virt
