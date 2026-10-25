@@ -26,7 +26,7 @@
 arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arc32 \
   armv5 armv5-nommu-arm armv5-nommu-thumb armv5-nommu-fdpic armv5-nommu-elf \
   armv6 armv7 armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
-  bf532-flat bf532-fdpic \
+  bf537-flat bf537-fdpic \
   c6x crisv10 crisv32 csky-ck807 csky-ck807f frv \
   h8300-h8300h h8300-h8s hppa ia64 kvx lm32 loongarch \
   m68k m68k-nommu-flat m68k-nommu-elf metag microblazeel microblazebe \
@@ -462,25 +462,23 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=generic-avr32"
       ;;
-    bf532-flat)
+    bf537-flat)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf532 ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
-      model=bf532
+      allowed_tests="toolchain boot libc ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf537 ADK_TARGET_SYSTEM=qemu-bfin ADK_TARGET_BINFMT=flat"
       march=bfin
       binfmt=flat
-      suffix=bf532_flat
+      suffix=bf537_flat
       ;;
-    bf532-fdpic)
+    bf537-fdpic)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf532 ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
-      model=bf532
+      allowed_tests="toolchain boot libc ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf537 ADK_TARGET_SYSTEM=qemu-bfin ADK_TARGET_BINFMT=fdpic"
       march=bfin
       binfmt=fdpic
-      suffix=bf532_fdpic
+      suffix=bf537_fdpic
       ;;
     bfin)
       allowed_libc="newlib"
