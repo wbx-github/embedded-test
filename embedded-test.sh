@@ -225,7 +225,6 @@ get_arch_info() {
   lib=$2
 
   emulator=qemu
-  gdbcmd=
   noappend=0
   endian=
   suffix=
@@ -1374,7 +1373,7 @@ if [ -x /usr/sbin/rdate ]; then
   if [ \$ntpserver ]; then
     rdate \$ntpserver
   else
-    rdate time.fu-berlin.de
+    rdate time.fu-berlin.de 2>/dev/null
   fi
 fi
 EOF
@@ -1438,13 +1437,6 @@ tty=\$(cat /proc/consoles |cut -f 1 -d " ")
 mksh -T !/dev/\$tty -c '/opt/mksh/test.sh' $tee
 EOF
   fi
-  # libc test
-  if [ $test = "libc" ]; then
-cat >> $file << EOF
-cd /usr/lib/uclibc-ng-test/test
-./uclibcng-testrunner $tee
-EOF
-  fi
   # info
 cat >> $file <<EOF
 if [ -f /etc/.adkgithash ]; then
@@ -1460,18 +1452,19 @@ if [ -f /etc/.adklinker ]; then
   cat /etc/.adklinker
 fi
 EOF
-
-  if [ "$type" = "netcat" ]; then
+  # libc test
+  if [ $test = "libc" ]; then
 cat >> $file << EOF
-echo quit|nc $buildserver 9999
+cd /usr/lib/uclibc-ng-test/test
+./uclibcng-testrunner $tee
+echo "UCLIBC_TESTS_DONE"
+sleep 3
 EOF
   fi
-
-  if [ "$type" = "quit" ]; then
 cat >> $file << EOF
-exit
+echo "UCLIBC_TESTS_DONE"
+sleep 3
 EOF
-  fi
   chmod u+x $file
 }
 
@@ -1516,12 +1509,25 @@ runtest() {
 
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
   echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-  ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
+  ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
+
+  while ! grep -q 'UCLIBC_TESTS_DONE' "$report"; do
+    sleep 1
+  done
+
+  # Send QMP commands to QEMU.
+  {
+    printf '%s\n' '{"execute":"qmp_capabilities"}'
+    sleep 0.2
+    printf '%s\n' '{"execute":"quit"}'
+  } | nc 127.0.0.1 4444
+
   if [ $? -eq 0 ]; then
     echo "Test ${test} for ${arch} finished. See $report"
   else
     echo "Test ${test} failed for ${arch} with ${lib} ${libver}."
   fi
+  sleep 3
 }
 
 build() {
