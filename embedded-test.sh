@@ -1434,7 +1434,7 @@ EOF
   if [ $test = "libc" ]; then
 cat >> $file << EOF
 cd /usr/lib/uclibc-ng-test/test
-sh ./uclibcng-testrunner.sh $tee
+./uclibcng-testrunner $tee
 EOF
   fi
   # info
