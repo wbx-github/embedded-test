@@ -92,7 +92,6 @@ Explanation:
 	--os=<operating system>      operating system to use (${valid_os})
 	--arch=<arch>                architecture to check (otherwise all supported)
 	--skip-arch=<arch>           architectures to skip when all choosen
-	--targets=<targets.txt>      a list of remote targets to test via nfsroot or chroot
 	--test=<test>                run test (${valid_tests}), default toolchain
 	--threads=<type>             configure threading support (${valid_thread_types}) (only for uClibc-ng)
 	--libc-source=<dir>          use directory with source for C library
@@ -161,7 +160,6 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--os=*) os=${1#*=}; shift ;;
   (--arch=*) archs=${1#*=}; shift ;;
   (--skip-arch=*) skiparchs=${1#*=}; shift ;;
-  (--targets=*) targets=${1#*=}; shift ;;
   (--test=*) test=${1#*=}; shift ;;
   (--threads=*) threads=${1#*=}; shift ;;
   (--libc-source=*) libcsource=${1#*=}; shift ;;
@@ -180,10 +178,6 @@ while [[ $1 != -- && $1 = -* ]]; do case $1 {
   (--*) echo "unknown option $1"; exit 1 ;; 
   (-*) help ;;
 }; done
-
-if [ ! -z $targets ]; then
-  targetmode=1
-fi
 
 if [ -z "$libc" ]; then
   if [[ $libcversion ]]; then
@@ -1570,11 +1564,7 @@ build() {
   DEFAULT=
   cd openadk
 
-  if [[ $targetmode ]]; then
-    DEFAULT="ADK_APPLIANCE=test ADK_TARGET_ARCH=$arch ADK_TARGET_SYSTEM=$system ADK_TARGET_FS=$rootfs"
-  else
-    get_arch_info $arch $lib
-  fi
+  get_arch_info $arch $lib
 
   if [ $verbose -eq 1 ]; then
     DEFAULT="$DEFAULT ADK_VERBOSE=1"
@@ -1872,36 +1862,6 @@ for lib in ${libc}; do
     (cd openadk && make cleandir)
   fi
 
-  if [[ $targetmode ]]; then
-    create_run_sh $test run.sh netcat
-
-    while read -u3 line; do
-      target_host=$(echo $line|cut -f 1 -d ,)
-      target_ip=$(echo $line|cut -f 2 -d ,)
-      target_arch=$(echo $line|cut -f 3 -d ,)
-      target_system=$(echo $line|cut -f 4 -d ,)
-      target_suffix=$(echo $line|cut -f 5 -d ,)
-      target_rootfs=$(echo $line|cut -f 6 -d ,)
-      target_powerid=$(echo $line|cut -f 7 -d ,)
-      echo "Testing target system $target_system ($target_arch) with $target_rootfs on $target_host"
-      build $lib $target_arch $test $target_system $target_rootfs
-      kernel=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${target_rootfs}-kernel
-      tarball=openadk/firmware/${target_system}_${lib}_${target_suffix}/${target_system}-${lib}-${target_rootfs}.tar.gz
-      scp $kernel root@${bootserver}:/tftpboot/${target_host}
-      ssh -n root@${bootserver} "cd /tftpboot; ln -sf ${target_host} vmlinux"
-      ssh -n root@${bootserver} "mkdir /nfsroot/${target_host} 2>/dev/null"
-      gunzip $tarball | ssh root@${bootserver} "tar -xf - -C /nfsroot/${target_host}"
-      scp run.sh root@${bootserver}:/nfsroot/${target_host}
-      echo "Powering on target system"
-      ssh -n root@${bootserver} "sispmctl -o $target_powerid"
-      echo "Waiting for target system to finish"
-      nc -l -p 9999
-      echo "Test finished. Powering off target system"
-      ssh -n root@${bootserver} "sispmctl -f $target_powerid"
-      scp root@${bootserver}:/nfsroot/${target_host}/REPORT REPORT.${target_arch}.${target_system}.${test}.${libver}
-      ssh -n root@${bootserver} "rm /nfsroot/${target_host}/REPORT"
-    done 3< $targets
-  else
     for arch in $archlist; do
       get_arch_info $arch $lib
       report=REPORT.${arch}.${test}.${libver}${rsuffix}
@@ -1952,7 +1912,6 @@ for lib in ${libc}; do
          echo "$test not available for $arch and $lib"
       fi
     done
-  fi
 done
 echo "All tests finished."
 exit 0
