@@ -607,10 +607,14 @@ get_arch_info() {
       ;;
     lm32)
       allowed_libc="uclibc-ng newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=lm32 ADK_TARGET_SYSTEM=qemu-lm32"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=lm32 ADK_TARGET_SYSTEM=qemu-lm32 ADK_TARGET_FS=initramfspiggyback"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=lm32"
+      qemu=qemu-system-lm32
+      qemu_machine=milkymist
+      qemu_args="-nographic -monitor pty -serial stdio"
+      suffix=flat_nommu
       skipcxx=lm32
       ;;
     loongarch)
