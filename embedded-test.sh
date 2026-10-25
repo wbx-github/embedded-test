@@ -458,9 +458,11 @@ get_arch_info() {
       ;;
     avr32)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=generic-avr32"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=avr32 ADK_TARGET_SYSTEM=qemu-avr32"
+      qemu=qemu-system-avr32
+      qemu_machine=atngw100
       ;;
     bf537-flat)
       allowed_libc="uclibc-ng"
