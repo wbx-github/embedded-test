@@ -414,9 +414,12 @@ get_arch_info() {
       ;;
     arcv1)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=generic-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc700"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc ltp mksh native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc700"
+      qemu=qemu-system-arc
+      qemu_args="-monitor none -serial stdio -nographic -cpu arc700"
+      qemu_machine=virt
       cpu_arch=arc700
       march=arc
       suffix=${cpu_arch}
@@ -440,7 +443,7 @@ get_arch_info() {
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp mksh native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=arc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-arc ADK_TARGET_ENDIAN=little ADK_TARGET_CPU=arc32"
-      qemu=qemu-system-arc
+      qemu=qemu-system-arc32
       qemu_machine=virt,ram_start=0
       qemu_args="-nographic -monitor none -serial stdio -cpu hs5x -netdev user,id=eth0 -device virtio-net-device,netdev=eth0"
       march=arc
