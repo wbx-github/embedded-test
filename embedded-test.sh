@@ -504,20 +504,25 @@ get_arch_info() {
       ;;
     crisv10)
       allowed_libc="uclibc-ng newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=cris ADK_TARGET_SYSTEM=generic-cris ADK_TARGET_CPU=crisv10"
+      allowed_tests="toolchain boot libc mksh ltp"
+      runtime_test="uclibc-ng"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-crisv10 ADK_TARGET_CPU=crisv10"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=cris ADK_TARGET_CPU=crisv10"
+      cpu_arch=crisv10
+      march=crisv10
+      qemu=qemu-system-cris
+      qemu_machine=etrax100lx
+      suffix=${cpu_arch}
       ;;
     crisv32)
       allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc ltp"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-cris"
+      allowed_tests="toolchain boot libc mksh ltp"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=cris ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-crisv32 ADK_TARGET_CPU=crisv32"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=cris ADK_TARGET_CPU=crisv32"
       cpu_arch=crisv32
-      march=cris
-      qemu=qemu-system-${march}
+      march=crisv32
+      qemu=qemu-system-cris32
       qemu_machine=axis-dev88
       suffix=${cpu_arch}
       ;;
