@@ -467,11 +467,9 @@ get_arch_info() {
       runtime_test="uclibc-ng"
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf532 ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=flat"
-      emulator=gdb
       model=bf532
       march=bfin
       binfmt=flat
-      gdbcmd="bfin-openadk-uclinux-uclibc-run --env operating --model bf532"
       suffix=bf532_flat
       ;;
     bf532-fdpic)
@@ -479,11 +477,9 @@ get_arch_info() {
       runtime_test="uclibc-ng"
       allowed_tests="toolchain"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf532 ADK_TARGET_SYSTEM=sim-bfin ADK_TARGET_BINFMT=fdpic"
-      emulator=gdb
       model=bf532
       march=bfin
       binfmt=fdpic
-      gdbcmd="bfin-openadk-linux-uclibc-run --env operating --model bf532"
       suffix=bf532_fdpic
       ;;
     bfin)
@@ -1489,30 +1485,6 @@ runtest() {
   march=${arch}
   get_arch_info $arch $lib
 
-  case $emulator in
-    qemu)
-      echo "Using QEMU as emulator"
-      if ! which $qemu >/dev/null; then
-        echo "Checking if $qemu is installed... failed"
-        exit 1
-      fi
-      qemuver=$(${qemu} -version|awk '{ print $4 }'|head -1)
-      if [ "$arch" != "metag" ]; then
-        if [ $(echo $qemuver |sed -e "s#\.##g" -e "s#,##") -lt 240 ]; then
-          echo "Your qemu version is too old. Please update to 2.4 or greater"
-          exit 1
-        fi
-      fi
-      ;;
-    gdb)
-      echo "Using GDB as simulator"
-      ;;
-    *)
-      echo "emulator/simulator not supported"
-      exit 1
-      ;;
-  esac
-
   echo "Starting test for $lib and $arch"
 
   echo "Using extra directory for test image creation"
@@ -1537,16 +1509,8 @@ runtest() {
   report=REPORT.${arch}.${test}.${libver}${rsuffix}
 
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
-  case $emulator in
-    qemu)
-      echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-      ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
-      ;;
-    gdb)
-      echo "$emulator ${arch} ${kernel}"
-      ./openadk/toolchain_${emulator}-${march}_${lib}_${model}_${binfmt}/usr/bin/${gdbcmd} ${kernel}
-      ;;
-  esac
+  echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+  ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report
   if [ $? -eq 0 ]; then
     echo "Test ${test} for ${arch} finished. See $report"
   else
