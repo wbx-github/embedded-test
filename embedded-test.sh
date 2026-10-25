@@ -466,19 +466,25 @@ get_arch_info() {
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf537 ADK_TARGET_SYSTEM=qemu-bfin ADK_TARGET_BINFMT=flat"
-      march=bfin
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf537 ADK_TARGET_SYSTEM=qemu-bf537 ADK_TARGET_BINFMT=flat"
+      qemu=qemu-system-bfin
+      qemu_machine=bf537-stamp
+      qemu_args="-nographic -m 256 -append console=ttyBF0"
+      march=bf537
       binfmt=flat
-      suffix=bf537_flat
+      suffix=bf537_flat_nommu
       ;;
     bf537-fdpic)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot libc ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf537 ADK_TARGET_SYSTEM=qemu-bfin ADK_TARGET_BINFMT=fdpic"
-      march=bfin
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=bfin ADK_TARGET_CPU=bf537 ADK_TARGET_SYSTEM=qemu-bf537 ADK_TARGET_BINFMT=fdpic"
+      qemu=qemu-system-bfin
+      qemu_machine=bf537-stamp
+      qemu_args="-nographic -m 256 -append console=ttyBF0"
+      march=bf537
       binfmt=fdpic
-      suffix=bf537_fdpic
+      suffix=bf537_fdpic_nommu
       ;;
     bfin)
       allowed_libc="newlib"
