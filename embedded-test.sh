@@ -35,7 +35,8 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arc32 \
   mips64r6n32 mips64r6n64 mips64r6eln32 mips64r6eln64 nds32le \
   nios2 or1k ppc ppcsf ppcspe riscv32 riscv32-nommu-flat riscv32-nommu-elf \
   riscv64 riscv64-nommu-flat riscv64-nommu-elf \
-  sh2 sh2eb sh3 sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 tilegx x86 x86_64 \
+  j2-flat j2-fdpic sh2 sh2eb sh3 sh3eb sh4 sh4eb sparc sparc-leon3 sparc64 \
+  tilegx x86 x86_64 \
   xtensa xtensabe xtensa-nommu xtensa-nommu-fdpic"
 
 # musl
@@ -1165,12 +1166,31 @@ get_arch_info() {
       allowed_tests="toolchain"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sh ADK_TARGET_ENDIAN=little ADK_TARGET_MMU=no"
       ;;
-    j2)
-      allowed_libc="musl"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_musl="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=numato-mimasv2 ADK_TARGET_CPU=j2 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=big"
+    j2-flat)
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-j2 ADK_TARGET_CPU=j2 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=big"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-j2 ADK_TARGET_CPU=j2 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=big"
       cpu_arch=sh2
+      qemu=qemu-system-sh4eb
+      qemu_machine=j2
+      qemu_args="${qemu_args} -m 256"
+      march=j2
+      suffix=j2eb_flat_nommu
+      ;;
+    j2-fdpic)
+      allowed_libc="uclibc-ng musl"
+      runtime_test="uclibc-ng musl"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-j2 ADK_TARGET_CPU=j2 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=big ADK_TARGET_BINFMT=fdpic"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_SYSTEM=qemu-j2 ADK_TARGET_CPU=j2 ADK_TARGET_MMU=no ADK_TARGET_ENDIAN=big"
+      cpu_arch=sh2
+      qemu=qemu-system-sh4eb
+      qemu_machine=j2
+      qemu_args="${qemu_args} -m 256"
+      march=j2
+      suffix=j2eb_fdpic_nommu
       ;;
     sh2)
       allowed_libc="uclibc-ng"
