@@ -1285,10 +1285,13 @@ get_arch_info() {
       suffix=${cpu_arch}
       ;;
     tilegx)
-      allowed_libc="uclibc-ng glibc"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_glibc="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=tile ADK_TARGET_CPU=tilegx ADK_TARGET_SYSTEM=generic-tile"
+      allowed_libc="uclibc-ng"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=tile ADK_TARGET_CPU=tilegx ADK_TARGET_SYSTEM=qemu-tilegx ADK_TARGET_THREADS=none"
+      qemu=qemu-system-tilegx
+      qemu_machine=tilegx
+      qemu_args="${qemu_args} -m 256"
       ;;
     v850)
       allowed_libc="newlib"
