@@ -575,10 +575,13 @@ get_arch_info() {
       ;;
     ia64)
       allowed_libc="uclibc-ng newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=generic-ia64"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc mksh ltp native"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=qemu-ia64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=ia64"
+      qemu=qemu-system-ia64
+      qemu_args="-nographic -m 256"
+      qemu_machine=virt
       ;;
     kvx)
       allowed_libc="uclibc-ng"
