@@ -523,7 +523,7 @@ get_arch_info() {
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=cris ADK_TARGET_CPU=crisv32"
       cpu_arch=crisv32
       march=crisv32
-      qemu=qemu-system-cris32
+      qemu=qemu-system-cris
       qemu_machine=axis-dev88
       suffix=${cpu_arch}
       ;;
