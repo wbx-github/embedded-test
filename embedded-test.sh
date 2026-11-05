@@ -568,10 +568,14 @@ get_arch_info() {
       ;;
     frv)
       allowed_libc="uclibc-ng newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=frv ADK_TARGET_SYSTEM=generic-frv"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot libc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=frv ADK_TARGET_SYSTEM=qemu-frv"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=frv"
+      qemu=qemu-system-frv
+      qemu_args="-nographic -m 256"
+      qemu_machine=mb93091
+      suffix=fdpic_nommu
       ;;
     ia64)
       allowed_libc="uclibc-ng newlib"
@@ -692,8 +696,8 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=metag ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-metag"
       cpu_arch=metag
       qemu=qemu-system-meta
-      qemu_args="-nographic -display none -device da,exit_threads=1 -chardev stdio,id=chan1 -chardev pty,id=chan2"
-      qemu_machine=01sp
+      qemu_args="-nographic -device da,exit_threads=1"
+      qemu_machine=comet
       skiplt=metag
       skipstatic=metag
       ;;
@@ -1228,7 +1232,7 @@ get_arch_info() {
     sh4)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
-      allowed_tests="toolchain boot libc"
+      allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
@@ -1243,7 +1247,7 @@ get_arch_info() {
     sh4eb)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
-      allowed_tests="toolchain boot libc"
+      allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
