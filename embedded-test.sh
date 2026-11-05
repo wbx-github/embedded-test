@@ -1226,29 +1226,31 @@ get_arch_info() {
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=little"
       cpu_arch=sh4
       march=sh
       qemu=qemu-system-sh4
       qemu_machine=r2d
       qemu_args="${qemu_args} -monitor null -serial null -serial stdio"
       suffix=${cpu_arch}
+      use_disk=1
       ;;
     sh4eb)
       allowed_libc="uclibc-ng musl glibc"
       runtime_test="uclibc-ng musl glibc"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
-      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+      default_musl="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sh ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sh ADK_TARGET_ENDIAN=big"
       cpu_arch=sh4eb
       march=sh
       qemu=qemu-system-sh4eb
       qemu_machine=r2d
       qemu_args="${qemu_args} -monitor null -serial null -serial stdio -append noiotrap"
       suffix=${cpu_arch}
+      use_disk=1
       ;;
     sparc)
       allowed_libc="uclibc-ng glibc newlib"
@@ -1520,20 +1522,33 @@ runtest() {
   get_arch_info $arch $lib
 
   echo "Starting test for $lib and $arch"
-
-  echo "Using extra directory for test image creation"
   root=openadk/extra
   rm -rf openadk/extra 2>/dev/null
   mkdir openadk/extra 2>/dev/null
-  if [ ! -z $suffix ]; then
-    kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
+
+  echo "Using extra directory for test image creation"
+  if [ $use_disk -eq 1 ]; then
+    echo "Using disk image for test"
+    if [ ! -z $suffix ]; then
+      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-archive-kernel
+    else
+      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-archive-kernel
+    fi
   else
-    kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
+    if [ ! -z $suffix ]; then
+      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfspiggyback-kernel
+    else
+      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfspiggyback-kernel
+  fi
   fi
 
   create_run_sh $test ${root}/run.sh quit
 
-  (cd openadk && make v)
+  if [ $use_disk -eq 1 ]; then
+    (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${libc}-archive+kernel.tar.gz)
+  else
+    (cd openadk && make v)
+  fi
 
   # qemu-ppc overwrites existing commandline
   if [ $noappend -eq 0 ]; then
@@ -1543,8 +1558,13 @@ runtest() {
   report=REPORT.${arch}.${test}.${libver}${rsuffix}
 
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
-  echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-  ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
+  if [ $use_disk -eq 1 ]; then
+    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot openadk/qemu-${march}.img"
+    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot openadk/qemu-${march}.img | tee $report &
+  else
+    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
+  fi
 
   while ! grep -q 'UCLIBC_TESTS_DONE' "$report"; do
     sleep 1
