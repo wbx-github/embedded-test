@@ -138,6 +138,7 @@ cxx=0
 ssp=0
 debug=0
 timestamp=0
+use_disk=0
 ntp=""
 libc=""
 os="linux"
@@ -607,10 +608,16 @@ get_arch_info() {
       ;;
     h8300-h8s)
       allowed_libc="uclibc-ng newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8s ADK_TARGET_SYSTEM=sim-h8300"
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8s ADK_TARGET_SYSTEM=qemu-h8300 ADK_TARGET_FS=archive"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8s"
+      march=h8300
+      qemu=qemu-system-h8300
+      qemu_args="-nographic -device virtio-blk-device,drive=hd -drive file=openadk/qemu-h8300.img,format=raw,if=none,id=hd -m 14M"
+      qemu_machine=edosk2674,ram-base=0x100000
+      suffix=flat_nommu
+      use_disk=1
       ;;
     hppa)
       allowed_libc="uclibc-ng glibc"
@@ -1241,7 +1248,7 @@ get_arch_info() {
       march=sh
       qemu=qemu-system-sh4
       qemu_machine=r2d
-      qemu_args="${qemu_args} -monitor null -serial null -serial stdio"
+      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -drive file=openadk/qemu-sh.img,format=raw,if=none,id=hd"
       suffix=${cpu_arch}
       use_disk=1
       ;;
@@ -1256,7 +1263,7 @@ get_arch_info() {
       march=sh
       qemu=qemu-system-sh4eb
       qemu_machine=r2d
-      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -append noiotrap"
+      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -drive file=openadk/qemu-sh.img,format=raw,if=none,id=hd"
       suffix=${cpu_arch}
       use_disk=1
       ;;
@@ -1572,8 +1579,8 @@ runtest() {
 
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
   if [ $use_disk -eq 1 ]; then
-    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot openadk/qemu-${march}.img"
-    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot openadk/qemu-${march}.img | tee $report &
+    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
   else
     echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
     ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
