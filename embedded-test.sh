@@ -1420,8 +1420,8 @@ create_run_sh() {
 
 cat > $file << EOF
 #!/bin/sh
-uname -a
-mount -o remount,rw /
+/bin/uname -a
+/bin/mount -o remount,rw / 2>/dev/null
 if [ -x /usr/sbin/rdate ]; then
   if [ \$ntpserver ]; then
     rdate \$ntpserver
@@ -1439,26 +1439,26 @@ EOF
   if [ $test = "boot" ]; then
 cat >> $file << EOF
 if [ -x /usr/bin/size ]; then
-  size /bin/busybox $tee
+  /usr/bin/size /bin/busybox $tee
 else
-  ls -la /bin/busybox $tee
+  /bin/ls -la /bin/busybox $tee
 fi
-helloworld
-helloworld.static
-if [ -x helloworld-cxx ]; then
-helloworld-cxx
+/usr/bin/helloworld
+/usr/bin/helloworld.static
+if [ -x /usr/bin/helloworld-cxx ]; then
+/usr/bin/helloworld-cxx
 fi
-if [ -x helloworld-cxx.static ]; then
-helloworld-cxx.static
+if [ -x /usr/bin/helloworld-cxx.static ]; then
+/usr/bin/helloworld-cxx.static
 fi
 EOF
   if [ $static -eq 0 ]; then
 cat >> $file << EOF
-for i in \$(ls /lib/* 2>/dev/null);do
+for i in \$(/bin/ls /lib/* 2>/dev/null);do
   if [ -x /usr/bin/size ]; then
-    size \$i $tee
+    /usr/bin/size \$i $tee
   else
-    ls -la \$i $tee
+    /bin/ls -la \$i $tee
   fi
 done
 EOF
@@ -1494,15 +1494,15 @@ EOF
 cat >> $file <<EOF
 if [ -f /etc/.adkgithash ]; then
   echo "OpenADK git version:"
-  cat /etc/.adkgithash
+  /bin/cat /etc/.adkgithash
 fi
 if [ -f /etc/.adkcompiler ]; then
   echo "Compiler used:"
-  cat /etc/.adkcompiler
+  /bin/cat /etc/.adkcompiler
 fi
 if [ -f /etc/.adklinker ]; then
   echo "Linker used:"
-  cat /etc/.adklinker
+  /bin/cat /etc/.adklinker
 fi
 EOF
   # libc test
@@ -1511,12 +1511,12 @@ cat >> $file << EOF
 cd /usr/lib/uclibc-ng-test/test
 ./uclibcng-testrunner $tee
 echo "UCLIBC_TESTS_DONE"
-sleep 3
+/bin/sleep 3
 EOF
   fi
 cat >> $file << EOF
 echo "UCLIBC_TESTS_DONE"
-sleep 3
+/bin/sleep 3
 EOF
   chmod u+x $file
 }
@@ -1581,7 +1581,7 @@ runtest() {
   echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
   ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
 
-  while ! grep -q 'UCLIBC_TESTS_DONE' "$report"; do
+  while ! grep -q 'UCLIBC_TESTS_DONE' "$report" 2>/dev/null; do
     sleep 1
   done
 
