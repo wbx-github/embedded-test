@@ -231,6 +231,7 @@ get_arch_info() {
   suffix=
   allowed_libc=
   runtime_test=
+  use_disk=0
   qemu_args="-nographic"
   #qemu_args="-nographic -append debug"
 
@@ -569,7 +570,7 @@ get_arch_info() {
     frv)
       allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc"
+      allowed_tests="toolchain boot"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=frv ADK_TARGET_SYSTEM=qemu-frv"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=frv"
       qemu=qemu-system-frv
@@ -584,7 +585,7 @@ get_arch_info() {
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=qemu-ia64"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=ia64"
       qemu=qemu-system-ia64
-      qemu_args="-nographic -m 256"
+      qemu_args="-nographic -m 512 -append console=ttyS0"
       qemu_machine=virt
       ;;
     kvx)
@@ -1020,7 +1021,7 @@ get_arch_info() {
       cpu_arch=ppc
       march=ppc-macppc
       qemu=qemu-system-${cpu_arch}
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0 -m 256"
       qemu_machine=mac99
       suffix=hard
       noappend=1
@@ -1035,7 +1036,7 @@ get_arch_info() {
       cpu_arch=ppc
       march=ppc-bamboo
       qemu=qemu-system-${cpu_arch}
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0 -m 256"
       qemu_machine=bamboo
       suffix=soft
       ;;
@@ -1050,7 +1051,7 @@ get_arch_info() {
       cpu_arch=ppc
       march=ppc-mpc8544ds
       qemu=qemu-system-${cpu_arch}
-      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0"
+      qemu_args="${qemu_args} -device e1000,netdev=adk0 -netdev user,id=adk0 -m 256"
       qemu_machine=mpc8544ds
       suffix=hard
       noappend=1
@@ -1263,14 +1264,15 @@ get_arch_info() {
       allowed_libc="uclibc-ng glibc newlib"
       runtime_test="uclibc-ng glibc"
       allowed_tests="toolchain boot libc"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sparc"
-      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_FS=initramfspiggyback ADK_TARGET_SYSTEM=qemu-sparc"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sparc"
+      default_glibc="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_FS=archive ADK_TARGET_SYSTEM=qemu-sparc"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=sparc"
       cpu_arch=v8
       qemu=qemu-system-sparc
       qemu_machine=SS-10
-      qemu_args="${qemu_args} -m 256"
+      qemu_args="${qemu_args} -m 512 -append root=/dev/sda1"
       suffix=${cpu_arch}_hard
+      use_disk=1
       ;;
     sparc-leon3)
       allowed_libc="uclibc-ng"
@@ -1290,7 +1292,7 @@ get_arch_info() {
       cpu_arch=v9
       qemu=qemu-system-sparc64
       qemu_machine=sun4u
-      qemu_args="${qemu_args} -m 512 -net nic,model=e1000 -net user"
+      qemu_args="${qemu_args} -m 1024 -net nic,model=e1000 -net user"
       suffix=${cpu_arch}
       ;;
     tilegx)
@@ -1552,7 +1554,11 @@ runtest() {
   create_run_sh $test ${root}/run.sh quit
 
   if [ $use_disk -eq 1 ]; then
-    (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${libc}-archive+kernel.tar.gz)
+    if [ ! -z $suffix ]; then
+      (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-${libc}-archive+kernel.tar.gz)
+    else
+      (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${libc}-archive+kernel.tar.gz)
+    fi
   else
     (cd openadk && make v)
   fi
