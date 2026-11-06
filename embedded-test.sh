@@ -1248,7 +1248,7 @@ get_arch_info() {
       march=sh
       qemu=qemu-system-sh4
       qemu_machine=r2d
-      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -drive file=openadk/qemu-sh.img,format=raw,if=none,id=hd"
+      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -drive file=openadk/qemu-sh.img,format=raw,if=ide,id=hd"
       suffix=${cpu_arch}
       use_disk=1
       ;;
@@ -1263,7 +1263,7 @@ get_arch_info() {
       march=sh
       qemu=qemu-system-sh4eb
       qemu_machine=r2d
-      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -drive file=openadk/qemu-sh.img,format=raw,if=none,id=hd"
+      qemu_args="${qemu_args} -monitor null -serial null -serial stdio -append noiotrap -drive file=openadk/qemu-sh.img,format=raw,if=ide,id=hd"
       suffix=${cpu_arch}
       use_disk=1
       ;;
@@ -1277,7 +1277,7 @@ get_arch_info() {
       cpu_arch=v8
       qemu=qemu-system-sparc
       qemu_machine=SS-10
-      qemu_args="${qemu_args} -m 512 -append root=/dev/sda1"
+      qemu_args="${qemu_args} -m 512 -drive file=openadk/qemu-sparc.img,format=raw,if=scsi,id=hd -append root=/dev/sda1"
       suffix=${cpu_arch}_hard
       use_disk=1
       ;;
@@ -1578,13 +1578,8 @@ runtest() {
   report=REPORT.${arch}.${test}.${libver}${rsuffix}
 
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
-  if [ $use_disk -eq 1 ]; then
-    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
-  else
-    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
-  fi
+  echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+  ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
 
   while ! grep -q 'UCLIBC_TESTS_DONE' "$report"; do
     sleep 1
