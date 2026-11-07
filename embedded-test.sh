@@ -1283,7 +1283,7 @@ get_arch_info() {
     sparc-leon3)
       allowed_libc="uclibc-ng"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot"
+      allowed_tests="toolchain boot libc mksh ltp native"
       default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_CPU=leon3 ADK_TARGET_SYSTEM=qemu-sparc-leon3 ADK_TARGET_FS=initramfspiggyback"
       cpu_arch=leon3
       qemu=qemu-system-sparc
