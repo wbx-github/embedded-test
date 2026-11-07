@@ -1282,10 +1282,13 @@ get_arch_info() {
       ;;
     sparc-leon3)
       allowed_libc="uclibc-ng"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_CPU=leon3 ADK_TARGET_SYSTEM=generic-sparc"
-      cpu_arch=leon
+      runtime_test="uclibc-ng"
+      allowed_tests="toolchain boot"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=sparc ADK_TARGET_CPU=leon3 ADK_TARGET_SYSTEM=qemu-sparc-leon3 ADK_TARGET_FS=initramfspiggyback"
+      cpu_arch=leon3
+      qemu=qemu-system-sparc
+      qemu_machine=leon3_generic
+      qemu_args="${qemu_args} -m 512"
       suffix=${cpu_arch}_soft
       ;;
     sparc64)
