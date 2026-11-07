@@ -28,7 +28,7 @@ arch_list_uclibcng="aarch64 aarch64be alpha arcv1 arcv2 arc32 \
   armv6 armv7 armv7-thumb2 armv8 armv8-thumb2 armeb avr32 \
   bf537-flat bf537-fdpic \
   c6x crisv10 crisv32 csky-ck807 csky-ck807f frv \
-  h8300-h8300h h8300-h8s hppa ia64 kvx lm32 loongarch \
+  h8300 hppa ia64 kvx lm32 loongarch \
   m68k m68k-nommu-flat m68k-nommu-elf metag microblazeel microblazebe \
   mips32 mips32r6 mips32sf mips32el mips32r6el mips32elsf \
   mips64 mips64n32 mips64n64 mips64el mips64eln32 mips64eln64 \
@@ -58,7 +58,7 @@ arch_list_glibc="aarch64 aarch64be alpha armv7 arcv2 arc32 \
 
 # newlib
 arch_list_newlib="aarch64 aarch64be armv5 bfin crisv10 \
-  crisv32 csky-ck807 ft32 h8300-h8300h ia64 m68k microblazeel \
+  crisv32 csky-ck807 ft32 h8300 ia64 m68k microblazeel \
   microblazebe mips32 mips32el msp430 nds32le nds32be \
   nios2 or1k ppc riscv64 sh v850 x86 x86_64 xtensa"
 
@@ -139,6 +139,7 @@ ssp=0
 debug=0
 timestamp=0
 use_disk=0
+noinit=0
 ntp=""
 libc=""
 os="linux"
@@ -228,6 +229,7 @@ get_arch_info() {
 
   emulator=qemu
   noappend=0
+  noinit=0
   endian=
   suffix=
   allowed_libc=
@@ -599,25 +601,19 @@ get_arch_info() {
       qemu_machine=mppa-coolidge
       skiplt=kvx
       ;;
-    h8300-h8300h)
-      allowed_libc="uclibc-ng newlib"
-      runtime_test=""
-      allowed_tests="toolchain"
-      default_uclibc_ng="ADK_APPLIANCE=toolchain ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8300h ADK_TARGET_SYSTEM=sim-h8300"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8300h"
-      ;;
-    h8300-h8s)
+    h8300)
       allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
       allowed_tests="toolchain boot"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8s ADK_TARGET_SYSTEM=qemu-h8300 ADK_TARGET_FS=archive"
-      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8s"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8300h ADK_TARGET_SYSTEM=qemu-h8300 ADK_TARGET_FS=archive"
+      default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=h8300 ADK_TARGET_CPU=h8300h"
       march=h8300
       qemu=qemu-system-h8300
       qemu_args="-nographic -device virtio-blk-device,drive=hd -drive file=openadk/qemu-h8300.img,format=raw,if=none,id=hd -m 14M"
       qemu_machine=edosk2674,ram-base=0x100000
       suffix=flat_nommu
       use_disk=1
+      noinit=1
       ;;
     hppa)
       allowed_libc="uclibc-ng glibc"
@@ -1414,27 +1410,19 @@ create_run_sh() {
   file=$2
   type=$3
 
-  if [ "$type" = "netcat" ]; then
-    tee="| tee -a /REPORT"
-  fi
-
 cat > $file << EOF
 #!/bin/sh
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 /bin/uname -a
 /bin/mount -o remount,rw / 2>/dev/null
 if [ -x /usr/sbin/rdate ]; then
   if [ \$ntpserver ]; then
-    rdate \$ntpserver
+    /usr/bin/rdate \$ntpserver 2>/dev/null
   else
-    rdate time.fu-berlin.de 2>/dev/null
+    /usr/bin/rdate time.fu-berlin.de 2>/dev/null
   fi
 fi
 EOF
-  if [ "$type" = "netcat" ]; then
-cat >> $file << EOF
-dmesg >> /REPORT
-EOF
-  fi
   # boot test
   if [ $test = "boot" ]; then
 cat >> $file << EOF
@@ -1540,7 +1528,7 @@ runtest() {
   echo "Starting test for $lib and $arch"
   root=openadk/extra
   rm -rf openadk/extra 2>/dev/null
-  mkdir openadk/extra 2>/dev/null
+  mkdir -p openadk/extra/sbin 2>/dev/null
 
   echo "Using extra directory for test image creation"
   if [ $use_disk -eq 1 ]; then
@@ -1558,7 +1546,13 @@ runtest() {
   fi
   fi
 
-  create_run_sh $test ${root}/run.sh quit
+  if [ $noinit -eq 1 ]; then
+    (cd openadk/extra/sbin && ln -sf ../usr/lib/uclibc-ng-test/test/uclibcng-testrunner init)
+  else
+    create_run_sh $test ${root}/run.sh quit
+  fi
+
+  (cd openadk && make)
 
   if [ $use_disk -eq 1 ]; then
     if [ ! -z $suffix ]; then
@@ -1566,8 +1560,6 @@ runtest() {
     else
       (cd openadk && ./scripts/create.sh -i 256 qemu-${march}.img firmware/${emulator}-${march}_${lib}_${cpu_arch}/${emulator}-${march}-${libc}-archive+kernel.tar.gz)
     fi
-  else
-    (cd openadk && make v)
   fi
 
   # qemu-ppc overwrites existing commandline
