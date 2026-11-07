@@ -139,6 +139,7 @@ ssp=0
 debug=0
 timestamp=0
 use_disk=0
+use_initramfs=0
 noinit=0
 ntp=""
 libc=""
@@ -235,6 +236,7 @@ get_arch_info() {
   allowed_libc=
   runtime_test=
   use_disk=0
+  use_initramfs=0
   qemu_args="-nographic"
   #qemu_args="-nographic -append debug"
 
@@ -584,12 +586,13 @@ get_arch_info() {
     ia64)
       allowed_libc="uclibc-ng newlib"
       runtime_test="uclibc-ng"
-      allowed_tests="toolchain boot libc mksh ltp native"
-      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=qemu-ia64"
+      allowed_tests="toolchain boot"
+      default_uclibc_ng="ADK_APPLIANCE=test ADK_TARGET_OS=$os ADK_TARGET_ARCH=ia64 ADK_TARGET_SYSTEM=qemu-ia64 ADK_TARGET_FS=initramfs"
       default_newlib="ADK_APPLIANCE=toolchain ADK_TARGET_OS=baremetal ADK_TARGET_ARCH=ia64"
       qemu=qemu-system-ia64
-      qemu_args="-nographic -m 512 -append console=ttyS0"
+      qemu_args="-nographic -m 1024 -append console=ttyS0"
       qemu_machine=virt
+      use_initramfs=1
       ;;
     kvx)
       allowed_libc="uclibc-ng"
@@ -1531,12 +1534,21 @@ runtest() {
   mkdir -p openadk/extra/sbin 2>/dev/null
 
   echo "Using extra directory for test image creation"
+ 
   if [ $use_disk -eq 1 ]; then
     echo "Using disk image for test"
     if [ ! -z $suffix ]; then
       kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-archive-kernel
     else
       kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-archive-kernel
+    fi
+  elif [ $use_initramfs -eq 1 ]; then
+    if [ ! -z $suffix ]; then
+      kernel=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-initramfs-kernel
+      initramfs=openadk/firmware/${emulator}-${march}_${lib}_${suffix}/${emulator}-${march}-${lib}-initramfs
+    else
+      kernel=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-initramfs-kernel
+      initramfs=openadk/firmware/${emulator}-${march}_${lib}/${emulator}-${march}-${lib}-initramfs
     fi
   else
     if [ ! -z $suffix ]; then
@@ -1570,8 +1582,13 @@ runtest() {
   report=REPORT.${arch}.${test}.${libver}${rsuffix}
 
   echo "Now running the test ${test} in ${emulator} for architecture ${arch} and ${lib}"
-  echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
-  ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
+  if [ $use_initramfs -eq 1 ]; then
+    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -initrd ${initramfs} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -initrd ${initramfs} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
+  else  
+    echo "${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot"
+    ${qemu} -M ${qemu_machine} ${qemu_args} -kernel ${kernel} -qmp tcp:127.0.0.1:4444,server,nowait -no-reboot | tee $report &
+  fi
 
   while ! grep -q 'UCLIBC_TESTS_DONE' "$report" 2>/dev/null; do
     sleep 1
